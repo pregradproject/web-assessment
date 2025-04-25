@@ -30,7 +30,7 @@ test:
 production:
   primary:
     <<: *default
-    database: storage/production.sqlite3
+    database: <%= ENV['DB_NAME'] %>_production
   cache:
     <<: *default
     database: storage/production_cache.sqlite3
