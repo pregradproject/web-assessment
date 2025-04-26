@@ -19,8 +19,14 @@ sqlite: &sqlite
   timeout: 5000
 
 development:
-  <<: *default
-  database: <%= ENV['DB_NAME'] %>_development
+  primary:
+    <<: *default
+    database: <%= ENV['DB_NAME'] %>_development
+  queue:
+    <<: *sqlite
+    database: storage/development_queue.sqlite3
+    migrations_paths: db/queue_migrate
+    adapter: sqlite3
 
 # Warning: The database defined as "test" will be erased and
 # re-generated from your development database when you run "rake".
