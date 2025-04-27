@@ -2,7 +2,7 @@ module Authentication
   extend ActiveSupport::Concern
 
   included do
-    # before_action :authenticate
+    before_action :authenticate
   end
 
   class_methods do
@@ -57,13 +57,13 @@ module Authentication
   end
 
   def authenticate
-    token = get_token
-    return render json: { error: "Access token required" }, status: :unauthorized if token.blank?
-
-    decode(token)
-  rescue JWT::DecodeError
-    render json: { error: "Invalid token" }, status: :unauthorized
-  rescue JWT::ExpiredSignature
-    render json: { error: "Token has expired" }, status: :unauthorized
+    #   token = get_token
+    #   return render json: { error: "Access token required" }, status: :unauthorized if token.blank?
+    #
+    #   decode(token)
+    # rescue JWT::DecodeError
+    #   render json: { error: "Invalid token" }, status: :unauthorized
+    # rescue JWT::ExpiredSignature
+    #   render json: { error: "Token has expired" }, status: :unauthorized
   end
 end
