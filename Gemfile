@@ -13,7 +13,7 @@ gem "bootsnap", require: false
 gem "kamal", require: false
 gem "thruster", require: false
 gem "mission_control-jobs", "~> 1.0", ">= 1.0.1"
-gem "propshaft", "~> 0.8.0"
+gem "propshaft", "~> 1.1.0"
 
 group :development, :test do
   gem "debug", platforms: %i[ mri windows ], require: "debug/prelude"
