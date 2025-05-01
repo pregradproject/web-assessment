@@ -1,6 +1,11 @@
 Rails.application.routes.draw do
-  devise_for :admin_users, ActiveAdmin::Devise.config
-  ActiveAdmin.routes(self)
-  mount MissionControl::Jobs::Engine, at: "/jobs"
-  get "up" => "rails/health#show", as: :rails_health_check
+  get 'up' => 'rails/health#show', as: :rails_health_check
+
+  draw(:admin)
+  draw(:jobs)
+  draw(:api)
+
+  match '*path' => 'api#no_routes', via: :all, constraints: lambda { |req|
+    req.path.exclude? 'rails/active_storage'
+  }
 end

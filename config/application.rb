@@ -1,7 +1,7 @@
-require_relative "boot"
+require_relative 'boot'
 
-require "rails/all"
-require "sprockets/railtie"
+require 'rails/all'
+require 'sprockets/railtie'
 
 # Require the gems listed in Gemfile, including any gems
 # you've limited to :test, :development, or :production.
@@ -24,5 +24,9 @@ module WebAssessment
     #
     # config.time_zone = "Central Time (US & Canada)"
     # config.eager_load_paths << Rails.root.join("extras")
+    config.mission_control.jobs.base_controller_class = 'AdminController'
+    config.mission_control.jobs.http_basic_auth_enabled = false
+
+    config.exceptions_app = routes
   end
 end
