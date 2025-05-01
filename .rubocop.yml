@@ -1,8 +1,67 @@
 # Omakase Ruby styling for Rails
 inherit_gem: { rubocop-rails-omakase: rubocop.yml }
 
-# Overwrite or add rules to create your own house style
-#
-# # Use `[a, [b, c]]` not `[ a, [ b, c ] ]`
-# Layout/SpaceInsideArrayLiteralBrackets:
-#   Enabled: false
+Layout/IndentationConsistency:
+  EnforcedStyle: "indented_internal_methods"
+
+Layout/LineLength:
+  Max: 100
+  Exclude:
+    - "config/environments/*"
+    - "config/initializers/*"
+
+Metrics/BlockLength:
+  Exclude:
+    - "app/admin/**/*"
+    - "spec/**/*"
+    - "Guardfile"
+    - "config/environments/*"
+    - "config/routes/api.rb"
+
+Metrics/ClassLength:
+  Description: 'Avoid class longer than 140 lines of code.'
+  Exclude:
+    - "db/seeds.rb"
+  CountAsOne: ['array', 'heredoc', 'hash']
+  Max: 140
+
+Metrics/ModuleLength:
+  Description: 'Avoid module longer than 100 lines of code.'
+  CountAsOne: ['array', 'heredoc', 'hash']
+  Max: 100
+
+Naming/FileName:
+  Exclude:
+    - "Gemfile"
+    - "Guardfile"
+    - "Rakefile"
+
+Naming/MemoizedInstanceVariableName:
+  Exclude:
+    - "app/controllers/**/*"
+
+Style/Documentation:
+  Enabled: false
+
+Style/HashSyntax:
+  Enabled: true
+
+Style/StringLiterals:
+  Enabled: true
+  EnforcedStyle: single_quotes
+
+Lint/MissingSuper:
+  Exclude:
+    - "app/services/**/*"
+    - "lib/**/*"
+
+Metrics/MethodLength:
+  Description: 'Avoid methods longer than 10 lines of code.'
+  StyleGuide: '<https://github.com/bbatsov/ruby-style-guide#short-methods>'
+  Max: 10
+  Enabled: true
+  CountAsOne: ['array', 'heredoc', 'hash']
+
+Metrics/ParameterLists:
+  Description: 'Pass no more than four parameters into a method.'
+  Max: 4
