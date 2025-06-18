@@ -4,6 +4,7 @@ Rails.application.routes.draw do
   draw(:admin)
   draw(:jobs)
   draw(:api)
+  draw(:error)
 
   match '*path' => 'api#no_routes', via: :all, constraints: lambda { |req|
     req.path.exclude? 'rails/active_storage'

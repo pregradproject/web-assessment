@@ -25,6 +25,7 @@ gem 'sassc-rails'
 gem 'pg'
 gem 'jwt'
 gem 'bcrypt'
+gem 'jsonapi-serializer'
 
 group :development, :test do
   gem 'debug', platforms: %i[ mri windows ], require: 'debug/prelude'
@@ -41,3 +42,5 @@ group :test do
   gem 'capybara'
   gem 'selenium-webdriver'
 end
+
+gem 'byebug', '~> 12.0', groups: [ :development, :test ]
