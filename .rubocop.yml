@@ -61,6 +61,8 @@ Metrics/MethodLength:
   Max: 10
   Enabled: true
   CountAsOne: ['array', 'heredoc', 'hash']
+  Exclude:
+    - "db/migrate/*"
 
 Metrics/ParameterLists:
   Description: 'Pass no more than four parameters into a method.'
