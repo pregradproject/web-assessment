@@ -59,6 +59,12 @@ module ExceptionHandler
 
       json_response(response, :unprocessable_entity, true)
     end
+
+    rescue_from CkvExceptions::UnprocessableEntityError do |e|
+      response = { code: e.code, error: true,
+                   status: :unprocessable_entity, errors: e.errors }
+      render json: response, status: :unprocessable_entity
+    end
   end
 
   def error_payload(exception, message)
