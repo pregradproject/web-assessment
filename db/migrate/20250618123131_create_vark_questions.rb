@@ -4,6 +4,7 @@ class CreateVarkQuestions < ActiveRecord::Migration[8.0]
       t.uuid :vark_question_set_id, null: false
       t.uuid :vark_category_id, null: false
       t.text :body, null: false
+      t.integer :max_weight, null: false, default: 5
       t.timestamps
     end
 

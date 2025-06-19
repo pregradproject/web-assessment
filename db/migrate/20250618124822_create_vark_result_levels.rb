@@ -1,8 +1,8 @@
 class CreateVarkResultLevels < ActiveRecord::Migration[8.0]
   def change
-    create_table :vark_result_levels do |t|
-      t.uuid :question_set_id, null: false
-      t.uuid :category_id, null: false
+    create_table :vark_result_levels, id: :uuid do |t|
+      t.uuid :vark_test_id, null: false
+      t.uuid :user_id, null: false
       t.integer :min_score, null: false
       t.integer :max_score, null: false
       t.integer :visual_score
@@ -12,7 +12,7 @@ class CreateVarkResultLevels < ActiveRecord::Migration[8.0]
       t.timestamps
     end
 
-    add_index :vark_result_levels, :question_set_id
-    add_index :vark_result_levels, :category_id
+    add_index :vark_result_levels, :vark_test_id
+    add_index :vark_result_levels, :user_id
   end
 end

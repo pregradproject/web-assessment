@@ -1,0 +1,11 @@
+class ApplicationService
+  def self.call(*args)
+    new(*args).call
+  end
+
+  def call
+    # raise NoMethodError
+    raise NotImplementedError,
+          "#{self.class} has not implemented method '#{__method__}'"
+  end
+end

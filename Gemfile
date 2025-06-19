@@ -26,6 +26,7 @@ gem 'pg'
 gem 'jwt'
 gem 'bcrypt'
 gem 'jsonapi-serializer'
+gem 'roo'
 
 group :development, :test do
   gem 'debug', platforms: %i[ mri windows ], require: 'debug/prelude'

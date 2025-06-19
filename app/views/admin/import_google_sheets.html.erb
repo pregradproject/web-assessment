@@ -1,0 +1,65 @@
+<% content_for :title, "Import VARK Questions from Google Sheets" %>
+
+<div class="panel">
+  <h3>Import from Google Sheets</h3>
+
+  <div class="panel_contents">
+    <%= form_tag process_google_sheets_import_admin_vark_question_sets_path, method: :post do %>
+      <fieldset class="inputs">
+        <ol>
+          <li class="string input required">
+            <%= label_tag :google_sheets_url, "Google Sheets URL", class: "label" %>
+            <%= text_field_tag :google_sheets_url, "",
+                               placeholder: "https://docs.google.com/spreadsheets/d/...",
+                               class: "text_input",
+                               required: true %>
+            <p class="inline-hints">
+              Make sure the Google Sheet is publicly accessible and follows the template format.
+            </p>
+          </li>
+        </ol>
+      </fieldset>
+
+      <fieldset class="actions">
+        <ol>
+          <li class="action input_action">
+            <%= submit_tag "Import Questions", class: "button" %>
+            <%= link_to "Cancel", admin_vark_question_sets_path, class: "button" %>
+          </li>
+        </ol>
+      </fieldset>
+    <% end %>
+
+    <div class="template-info" style="margin-top: 20px; padding: 15px; background: #f8f9fa; border: 1px solid #dee2e6;">
+      <h4>Required Google Sheets Template Format:</h4>
+      <table style="width: 100%; border-collapse: collapse; margin-top: 10px;">
+        <thead>
+        <tr style="background: #e9ecef;">
+          <th style="border: 1px solid #dee2e6; padding: 8px;">Category</th>
+          <th style="border: 1px solid #dee2e6; padding: 8px;">Question</th>
+          <th style="border: 1px solid #dee2e6; padding: 8px;">Max Weight</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+          <td style="border: 1px solid #dee2e6; padding: 8px;">V</td>
+          <td style="border: 1px solid #dee2e6; padding: 8px;">Your question text here</td>
+          <td style="border: 1px solid #dee2e6; padding: 8px;">5</td>
+        </tr>
+        <tr>
+          <td style="border: 1px solid #dee2e6; padding: 8px;">A</td>
+          <td style="border: 1px solid #dee2e6; padding: 8px;">Another question text</td>
+          <td style="border: 1px solid #dee2e6; padding: 8px;">3</td>
+        </tr>
+        </tbody>
+      </table>
+      <p style="margin-top: 10px; font-size: 0.9em; color: #6c757d;">
+        <strong>Notes:</strong><br>
+        • Category must be one of: V, A, R, K<br>
+        • Max Weight should be a number (default: 5)<br>
+        • Question text is required<br>
+        • First row should contain headers
+      </p>
+    </div>
+  </div>
+</div>
