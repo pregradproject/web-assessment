@@ -9,4 +9,8 @@ class VarkQuestion < ApplicationRecord
 
   belongs_to :vark_question_set
   belongs_to :vark_category
+  has_many :vark_test_answers, dependent: :destroy
+
+  scope :by_category, ->(category) { where(vark_category: category) }
+  scope :ordered, -> { order(:created_at) }
 end

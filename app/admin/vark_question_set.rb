@@ -1,7 +1,8 @@
 ActiveAdmin.register VarkQuestionSet do
   permit_params :version, :name, :active
 
-  # Add custom action for Google Sheets import
+  config.clear_action_items!
+
   collection_action :import_from_google_sheets, method: :get do
     render 'admin/import_google_sheets'
   end
@@ -36,7 +37,9 @@ ActiveAdmin.register VarkQuestionSet do
       question_set.vark_questions.count
     end
     column :created_at
-    actions
+    actions defaults: false do |resource|
+      item 'View', admin_vark_question_set_path(resource), class: 'member_link'
+    end
   end
 
   show do

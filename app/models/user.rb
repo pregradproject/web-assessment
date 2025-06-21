@@ -12,6 +12,8 @@ class User < ApplicationRecord
 
   validates :email, presence: true, uniqueness: true
 
+  has_many :vark_tests, dependent: :destroy
+  has_many :vark_result_levels, dependent: :destroy
   has_one_attached :avatar
 
   def avatar_url
