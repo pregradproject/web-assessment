@@ -12,6 +12,12 @@ module Api
         json_response(Vark::TestSerializer.new(vark_test).to_h, :ok, false)
       end
 
+      def active_question_set
+        question_set = VarkQuestionSet.active
+
+        json_response(Vark::ActiveQuestionSetSerializer.new(question_set).to_h, :ok, false)
+      end
+
       private
 
       def set_vark_test
