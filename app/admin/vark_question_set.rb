@@ -9,7 +9,7 @@ ActiveAdmin.register VarkQuestionSet do
 
   collection_action :process_google_sheets_import, method: :post do
     begin
-      service = GoogleSheetsImportService.new(params[:google_sheets_url])
+      service = GoogleSheetsImportService.new(params[:google_sheets_url], params[:time_limit])
       question_set = service.import!
 
       redirect_to admin_vark_question_set_path(question_set),
@@ -36,6 +36,7 @@ ActiveAdmin.register VarkQuestionSet do
     column :questions_count do |question_set|
       question_set.vark_questions.count
     end
+    column :time_limit
     column :created_at
     actions defaults: false do |resource|
       item 'View', admin_vark_question_set_path(resource), class: 'member_link'
@@ -48,6 +49,7 @@ ActiveAdmin.register VarkQuestionSet do
       row :version
       row :name
       row :active
+      row :time_limit
       row :created_at
       row :updated_at
     end

@@ -12,8 +12,7 @@ class VarkQuestionSet < ApplicationRecord
   has_many :vark_question_set_categories, dependent: :destroy
   has_many :vark_categories, through: :vark_question_set_categories
 
-  scope :active, -> { where(active: true) }
-  scope :recent, -> { order(version: :desc) }
+  scope :active, -> { where(active: true).order(created_at: :desc).first }
 
   def total_questions
     vark_questions.count

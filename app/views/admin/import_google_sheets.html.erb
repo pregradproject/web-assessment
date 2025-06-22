@@ -17,6 +17,10 @@
               Make sure the Google Sheet is publicly accessible and follows the template format.
             </p>
           </li>
+          <li class="number input required">
+            <%= label_tag :time_limit, "Question Set Time Limit", class: "label" %>
+            <%= number_field_tag :time_limit, 30, min: 1, class: "text_input", required: true %>
+          </li>
         </ol>
       </fieldset>
 

@@ -3,8 +3,9 @@ class GoogleSheetsImportService < ApplicationService
 
   attr_accessor :google_sheets_url
 
-  def initialize(google_sheets_url)
+  def initialize(google_sheets_url, time_limit)
     @google_sheets_url = google_sheets_url
+    @time_limit = time_limit
     @errors = []
   end
 
@@ -51,7 +52,8 @@ class GoogleSheetsImportService < ApplicationService
     VarkQuestionSet.create!(
       version: highest_version + 1,
       name: "Upload (#{Date.current.strftime('%Y-%m-%d')})",
-      active: false
+      active: false,
+      time_limit: @time_limit
     )
   end
 

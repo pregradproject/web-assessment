@@ -7,10 +7,13 @@ namespace :api do
         post :register, to: 'users#register'
       end
 
-      resource :vark_tests, only: %i[show create] do
+      resources :vark_tests, only: %i[index create] do
         member do
-          # get :active_question_set, to: 'vark_tests#active_question_set'
           # post :submit_answers, to: 'vark_tests#submit_answers'
+        end
+
+        collection do
+          get :active_question_set, to: 'vark_tests#active_question_set'
         end
       end
     end
