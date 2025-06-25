@@ -92,7 +92,7 @@ GEM
       activesupport (>= 3.0.0)
       ruby2_keywords (>= 0.0.2)
     ast (2.4.3)
-    base64 (0.2.0)
+    base64 (0.3.0)
     bcrypt (3.1.20)
     bcrypt_pbkdf (1.1.1)
     benchmark (0.4.0)
@@ -184,7 +184,7 @@ GEM
     json (2.11.3)
     jsonapi-serializer (2.2.0)
       activesupport (>= 4.2)
-    jwt (2.10.1)
+    jwt (3.1.1)
       base64
     kamal (2.5.3)
       activesupport (>= 7.0)
