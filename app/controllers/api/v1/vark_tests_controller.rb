@@ -3,8 +3,8 @@ module Api
     class VarkTestsController < ApiController
       before_action :authenticate_user!
       before_action :set_vark_question_set!, only: %w[create]
-      # before_action :set_vark_test, only: %w[show submit_answers]
-      # before_action :validate_test_submission, only: %w[submit_answers]
+      before_action :set_vark_test, only: %w[show submit_answers]
+      before_action :validate_test_submission, only: %w[submit_answers]
 
       def create
         vark_test = Vark::CreateServices.call(@vark_question_set, current_user)
@@ -18,6 +18,19 @@ module Api
         json_response(Vark::ActiveQuestionSetSerializer.new(question_set).to_h, :ok, false)
       end
 
+      def show
+        json_response(Vark::TestSerializer.new(@vark_test).to_h, :ok, false)
+      end
+
+      def submit_answers
+        validate = Vark::SubmitAnswerValidator.new(params, @vark_test)
+        raise CkvExceptions::UnprocessableEntityError, validate.errors unless validate.valid?
+
+        Vark::SubmitAnswersServices.call(@vark_test, params, current_user)
+
+        json_response('ok', :ok, false)
+      end
+
       private
 
       def set_vark_test
@@ -26,6 +39,17 @@ module Api
 
       def set_vark_question_set!
         @vark_question_set = VarkQuestionSet.find(params[:vark_question_set_id])
+      end
+
+      def validate_test_submission
+        raise CkvExceptions::ForbiddenError, 'Vark test is already completed' if @vark_test.completed?
+        raise CkvExceptions::ForbiddenError, 'Vark test time is expired' if test_expired?
+      end
+
+      def test_expired?
+        return false unless @vark_test.started_at && @vark_test.vark_question_set.time_limit.positive?
+
+        Time.current > @vark_test.started_at + @vark_test.vark_question_set.time_limit.seconds
       end
     end
   end

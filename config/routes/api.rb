@@ -7,9 +7,9 @@ namespace :api do
         post :register, to: 'users#register'
       end
 
-      resources :vark_tests, only: %i[index create] do
+      resources :vark_tests, only: %i[show create] do
         member do
-          # post :submit_answers, to: 'vark_tests#submit_answers'
+          post :submit_answers, to: 'vark_tests#submit_answers'
         end
 
         collection do
