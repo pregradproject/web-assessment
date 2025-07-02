@@ -34,6 +34,97 @@ This is a Rails 8.0.2 API application for a web assessment platform focused on V
 - `rails assets:precompile` - Precompile assets for production
 - `rails assets:clean` - Clean old assets
 
+## Kamal Deployment
+
+This project uses Kamal for containerized deployment to production servers. Kamal automates Docker-based deployments with zero-downtime rolling updates.
+
+### Configuration Overview
+
+- **Main Config**: `config/deploy.yml` - Primary Kamal configuration
+- **Secrets**: `.kamal/secrets` - Environment variables and secrets (safe for git)
+- **Dockerfile**: Multi-stage production build optimized for Rails 8
+- **Docker Entrypoint**: `bin/docker-entrypoint` - Database preparation and jemalloc setup
+- **Hooks**: `.kamal/hooks/` - Deployment lifecycle hooks (samples provided)
+
+### Environment Setup
+
+**Required Secrets** (configured in `.kamal/secrets`):
+- `KAMAL_REGISTRY_PASSWORD` - Docker registry authentication
+- `RAILS_MASTER_KEY` - Rails encryption key (auto-loaded from `config/master.key`)
+
+**Environment Variables**:
+- `SOLID_QUEUE_IN_PUMA=true` - Runs background jobs in Puma process
+- Database and concurrency settings configurable per deployment
+
+### Current Configuration (Needs Customization)
+
+- **Service**: `web_assessment`
+- **Image**: `your-user/web_assessment` (update with actual registry)
+- **Server**: `192.168.0.1` (update with production server IP)
+- **Domain**: `app.example.com` (update with actual domain)
+- **SSL**: Enabled via Let's Encrypt automatic certificates
+- **Proxy**: Traefik for load balancing and SSL termination
+- **Storage**: Persistent volume `web_assessment_storage:/rails/storage`
+
+### Deployment Commands
+
+**Essential Commands**:
+- `bin/kamal setup` - Initial server setup and first deployment
+- `bin/kamal deploy` - Deploy latest code with zero-downtime rolling update
+- `bin/kamal rollback` - Rollback to previous deployment
+- `bin/kamal lock` - Lock deployments to prevent conflicts
+- `bin/kamal unlock` - Unlock deployments
+
+**Management Aliases** (pre-configured shortcuts):
+- `bin/kamal console` - Access Rails console in production
+- `bin/kamal shell` - Access container bash shell
+- `bin/kamal logs` - Stream application logs
+- `bin/kamal dbc` - Access Rails database console
+
+**Monitoring Commands**:
+- `bin/kamal app logs` - View application logs
+- `bin/kamal proxy logs` - View proxy logs
+- `bin/kamal ps` - List running containers
+- `bin/kamal images` - List deployed images
+
+### Deployment Workflow
+
+1. **Build Phase**: Kamal builds Docker image using multi-stage Dockerfile
+   - Installs dependencies and gems
+   - Precompiles assets and bootsnap cache
+   - Creates production-optimized image
+
+2. **Push Phase**: Built image pushed to configured Docker registry
+   - Requires `KAMAL_REGISTRY_PASSWORD` authentication
+   - Tagged with deployment timestamp
+
+3. **Deploy Phase**: Rolling deployment to target servers
+   - Pulls latest image to servers
+   - Starts new containers alongside existing ones
+   - Health checks ensure new version is working
+   - Traffic switched to new containers
+   - Old containers removed
+
+4. **Proxy Setup**: Traefik automatically configured
+   - SSL certificates via Let's Encrypt
+   - Load balancing across containers
+   - Health check endpoints
+
+5. **Database Preparation**: Docker entrypoint handles DB setup
+   - Runs `rails db:prepare` automatically
+   - Includes migrations and schema setup
+
+### Pre-Deployment Checklist
+
+Before deploying, ensure:
+- [ ] Update server IP in `config/deploy.yml` (`servers.web`)
+- [ ] Update domain name (`proxy.host`)
+- [ ] Update Docker image name (`image`)
+- [ ] Update registry credentials (`registry.username`)
+- [ ] Set `KAMAL_REGISTRY_PASSWORD` environment variable
+- [ ] Verify `config/master.key` exists and is secure
+- [ ] Test build locally: `docker build -t web_assessment .`
+
 ## Architecture & Key Components
 
 ### API Structure
