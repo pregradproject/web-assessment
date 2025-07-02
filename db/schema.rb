@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_06_21_120919) do
+ActiveRecord::Schema[8.0].define(version: 2025_07_02_120000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -66,6 +66,53 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_21_120919) do
     t.datetime "updated_at", null: false
     t.index ["email"], name: "index_admin_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_admin_users_on_reset_password_token", unique: true
+  end
+
+  create_table "configs", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.string "key", null: false
+    t.text "value", null: false
+    t.text "description"
+    t.string "value_type", default: "string", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["key"], name: "index_configs_on_key", unique: true
+  end
+
+  create_table "orders", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "user_id", null: false
+    t.string "testable_type", null: false
+    t.uuid "testable_id", null: false
+    t.string "order_number", null: false
+    t.integer "category", default: 0, null: false
+    t.decimal "amount", precision: 10, scale: 2, null: false
+    t.integer "status", default: 0, null: false
+    t.datetime "expires_at"
+    t.text "description"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["order_number"], name: "index_orders_on_order_number", unique: true
+    t.index ["status"], name: "index_orders_on_status"
+    t.index ["testable_type", "testable_id"], name: "index_orders_on_testable"
+    t.index ["user_id"], name: "index_orders_on_user_id"
+  end
+
+  create_table "payments", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "order_id", null: false
+    t.string "payment_method"
+    t.string "midtrans_transaction_id"
+    t.string "midtrans_order_id"
+    t.string "snap_token"
+    t.decimal "amount", precision: 10, scale: 2, null: false
+    t.integer "status", default: 0, null: false
+    t.text "midtrans_response"
+    t.datetime "paid_at"
+    t.datetime "expires_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["midtrans_order_id"], name: "index_payments_on_midtrans_order_id"
+    t.index ["midtrans_transaction_id"], name: "index_payments_on_midtrans_transaction_id"
+    t.index ["order_id"], name: "index_payments_on_order_id"
+    t.index ["status"], name: "index_payments_on_status"
   end
 
   create_table "signatures", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -168,4 +215,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_21_120919) do
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "orders", "users"
+  add_foreign_key "payments", "orders"
 end

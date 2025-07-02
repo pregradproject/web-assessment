@@ -86,12 +86,14 @@ This is a Rails 8.0.2 API application for a web assessment platform focused on V
 - Services in dedicated namespace directories
 - Serializers use jsonapi-serializer gem
 - Custom validators in dedicated validator classes
+- **Validation Pattern**: Instead of multiple unprocessable entity validations in controllers, create separate validator classes in `app/validators/` (similar to `app/validators/vark/submit_answer_validator.rb`) and use them with `raise CkvExceptions::UnprocessableEntityError, validate.errors unless validate.valid?`
 
 ### API Design
 - RESTful endpoints under `/api/v1/`
 - JWT authentication required for protected endpoints
 - Consistent JSON response structure
 - Proper HTTP status codes and error messages
+- **Always use serializers for API responses**: `json_response(Serializer.new(data).to_h, :ok, false)` instead of raw hash responses
 
 ## Testing
 
@@ -107,3 +109,40 @@ This is a Rails 8.0.2 API application for a web assessment platform focused on V
 - Autoloading configured for `lib/` directory
 - Mission Control Jobs integrated for job monitoring
 - Exception handling configured for API responses
+
+## Code Generation Reminders
+
+- Always remember that for service, controller, validation, and serializer.. you need to use existing format.. example is vark_test
+- **Namespace conflicts**: Avoid using model class names as module names (e.g., don't use `Order` as a module since it's already a model class). Use descriptive module names like `OrderServices`, `VarkServices`, etc.
+- **Service naming**: Use plural module names like `Orders::CreateOrderServices` to avoid conflicts with singular model names
+- **Service validation**: Don't add validation logic in services (like `raise CkvExceptions::UnprocessableEntityError`). Put validations in controllers or dedicated validator classes
+- **Service database operations**: Use `create` methods instead of `build` + `save` patterns in services
+
+## Development Best Practices
+
+- Always run rubocop -A after you change something, and if there are rubocop errors.. try to fix it first
+
+## Code Generation Guidelines
+
+- 1 file will only have 1 class, create a new class if necessary but add it to appropriate folder
+- For service classes about vark order creation, add the service to vark folder and name it create order services
+- No need to add rescue, as there is already a global rescue in `app/controllers/concerns/exception_handler.rb`
+- For exceptions, use `lib/ckv_exceptions` to return specific status codes (e.g., 422 or 403)
+- Example validation pattern: `raise CkvExceptions::UnprocessableEntityError, validate.errors unless validate.valid?`
+
+## API Response Best Practices
+
+- For the API response, always use serializer
+- Example: `json_response(Vark::ActiveQuestionSetSerializer.new(question_set).to_h, :ok, false)` from `app/serializers/vark/active_question_set_serializer.rb`
+
+## Service Naming Conventions
+
+- Service names will be using plural, like Orders::CreateOrderServices.. so that it was not clased with Order model
+
+## Service Development Notes
+
+- When creating services, prefer simpler service method calls:
+  - Instead of `@order = @test.build_order(...)`, use `@test.create(...)` 
+  - Move validations like order existence and test completion checks to controllers or dedicated validator classes
+  - Avoid adding multiple validation checks directly in service methods
+  - Use separate validator classes in `app/validators/` for complex validation logic
