@@ -60,6 +60,11 @@ module ExceptionHandler
       json_response(response, :unprocessable_entity, true)
     end
 
+    rescue_from CkvExceptions::ForbiddenError do |e|
+      response = { code: e.code, message: e.message, error: true, status: :forbidden }
+      render json: response, status: :forbidden
+    end
+
     rescue_from CkvExceptions::UnprocessableEntityError do |e|
       response = { code: e.code, error: true,
                    status: :unprocessable_entity, errors: e.errors }

@@ -32,3 +32,4 @@ en:
     no_routes: "No route matches [%{method}] %{path}"
     validation:
       unprocessable_entity: "Unprocessable entity"
+      forbidden: "Forbidden"
