@@ -110,7 +110,13 @@ module Midtrans
       midtrans_transaction_id: notification_data['transaction_id'],
       midtrans_response: notification_data.to_json
     )
-    payment.order.update!(status: :paid)
+    order = payment.order
+    order.update!(status: :paid)
+
+    # Automatically trigger certificate generation for VARK tests
+    if order.testable_type == 'VarkTest' && order.testable.completed?
+      Certificates::GenerateJob.perform_later(order.id)
+    end
   end
 
   def handle_failed_payment(payment, transaction_status)

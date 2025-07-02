@@ -2,7 +2,7 @@ module Api
   module V1
     class OrdersController < ApiController
       before_action :authenticate_user!, except: [ :webhook ]
-      before_action :set_vark_test, only: [ :show, :create, :payment_token ]
+      before_action :set_vark_test, only: [ :show, :create, :payment_token, :generate_certificate, :download_certificate ]
 
       def show
         order = @vark_test.order
@@ -27,6 +27,35 @@ module Api
         result = Vark::InitiatePaymentServices.call(order)
 
         json_response(Vark::PaymentTokenSerializer.new(result).to_h, :ok, false)
+      end
+
+      def generate_certificate
+        order = @vark_test.order
+        raise CkvExceptions::NotFoundError, 'Order not found' unless order
+        raise CkvExceptions::UnprocessableEntityError, 'Order not paid' unless order.paid?
+        raise CkvExceptions::UnprocessableEntityError, 'Test not completed' unless @vark_test.completed?
+
+        if order.certificate_ready?
+          json_response({ message: 'Certificate already generated', status: 'ready' }, :ok, false)
+        elsif order.certificate_generating?
+          json_response({ message: 'Certificate generation in progress', status: 'generating' }, :ok, false)
+        else
+          # Queue the certificate generation job
+          Certificates::GenerateJob.perform_later(order.id)
+          json_response({ message: 'Certificate generation started', status: 'queued' }, :accepted, false)
+        end
+      end
+
+      def download_certificate
+        order = @vark_test.order
+        raise CkvExceptions::NotFoundError, 'Order not found' unless order
+        raise CkvExceptions::UnprocessableEntityError, 'Certificate not ready' unless order.certificate_ready?
+
+        # Send the PDF file
+        send_data order.certificate_pdf.download,
+                  filename: "VARK_Certificate_#{order.order_number}.pdf",
+                  type: 'application/pdf',
+                  disposition: 'attachment'
       end
 
       def webhook

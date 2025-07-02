@@ -1,0 +1,356 @@
+<div class="certificate-container">
+  <!-- Header Section -->
+  <div class="header">
+    <div class="logo">
+      <div>
+        <div class="logo-text">
+          <span class="logo-symbol">🧠</span>
+          logoipsum
+        </div>
+      </div>
+      <div class="report-type">
+        <div class="report-title">Cakrawala Official Score Report</div>
+        <div class="report-subtitle">Certificate | Test Date</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="main-content">
+    <!-- Date Information -->
+    <div class="date-info">
+      <%= Date.current.strftime("%d %B %Y") %>
+    </div>
+
+    <!-- Main Certificate Section with Two Columns -->
+    <div class="certificate-main">
+      <!-- Left Column - Certificate Info -->
+      <div class="certificate-info">
+        <h1 class="certificate-title">Certificate of Completion</h1>
+        
+        <div class="participant-info">
+          <p><strong>Name:</strong> <%= user.name %></p>
+          <p><strong>Date of Birth:</strong> <%= user.birthday&.strftime("%Y-%m-%d") || "Not provided" %></p>
+          <p><strong>Test Date:</strong> <%= test_completion_date %></p>
+        </div>
+      </div>
+
+      <!-- Right Column - Total Score Chart -->
+      <div class="total-score-section">
+        <div class="total-score-title">Total Learning Score</div>
+        <div class="total-score-chart-container">
+          <div id="totalScoreChart"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Learning Style Section -->
+    <div class="learning-style-section">
+      <h2 class="section-title">Your Learning Style</h2>
+      
+      <div class="primary-style-container">
+        <div class="primary-style-content">
+          <div class="style-score-badge">
+            <%= primary_learning_style[:style] %> Score: <%= scores.dig(primary_learning_style[:code].downcase.to_sym, :score) || 0 %>
+          </div>
+          
+          <div class="style-chart-box">
+            <div id="primaryStyleChart"></div>
+          </div>
+          
+          <div class="style-description">
+            <%= learning_style_description %>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Other Scores Section -->
+    <div class="other-scores-section">
+      <h2 class="section-title">Your Other Scores</h2>
+      
+      <div class="scores-grid">
+        <div class="score-item">
+          <div class="score-label">Visual Score: <%= scores[:visual][:score] %></div>
+          <div class="score-chart-container">
+            <div id="visualChart"></div>
+          </div>
+        </div>
+        
+        <div class="score-item">
+          <div class="score-label">Auditory Score: <%= scores[:aural][:score] %></div>
+          <div class="score-chart-container">
+            <div id="auralChart"></div>
+          </div>
+        </div>
+        
+        <div class="score-item">
+          <div class="score-label">Reading Score: <%= scores[:read][:score] %></div>
+          <div class="score-chart-container">
+            <div id="readChart"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Signature Section -->
+  <div class="signature-section">
+    <% if signature_image_data %>
+      <div class="signature-image">
+        <img src="<%= signature_image_data %>" alt="Signature" style="max-width: 150px; max-height: 60px; margin-bottom: 5px;">
+      </div>
+    <% else %>
+      <div class="signature-line"></div>
+    <% end %>
+    <div class="signature-name"><%= signature.name %></div>
+    <div class="signature-title"><%= signature.department %></div>
+  </div>
+</div>
+
+<!-- Chart Data for JavaScript -->
+<script>
+  // Store chart data in global variables for chart rendering
+  window.certificateData = {
+    scores: {
+      visual: {
+        score: <%= scores[:visual][:score] %>,
+        percentage: <%= scores[:visual][:percentage] %>
+      },
+      aural: {
+        score: <%= scores[:aural][:score] %>,
+        percentage: <%= scores[:aural][:percentage] %>
+      },
+      read: {
+        score: <%= scores[:read][:score] %>,
+        percentage: <%= scores[:read][:percentage] %>
+      },
+      kinesthetic: {
+        score: <%= scores[:kinesthetic][:score] %>,
+        percentage: <%= scores[:kinesthetic][:percentage] %>
+      },
+      total: <%= scores[:total] %>
+    },
+    primaryStyle: {
+      style: '<%= primary_learning_style[:style] %>',
+      code: '<%= primary_learning_style[:code] %>',
+      color: '<%= primary_learning_style[:color] %>'
+    }
+  };
+
+  // Chart colors
+  const chartColors = {
+    visual: '#60A5FA',
+    aural: '#FB7185', 
+    read: '#34D399',
+    kinesthetic: '#FBBF24'
+  };
+
+  // Initialize charts when document is ready
+  document.addEventListener('DOMContentLoaded', function() {
+    renderTotalScoreChart();
+    renderPrimaryStyleChart();
+    renderSmallCharts();
+  });
+
+  function renderTotalScoreChart() {
+    const scores = window.certificateData.scores;
+    const seriesData = [scores.visual.score, scores.aural.score, scores.read.score, scores.kinesthetic.score];
+    const labels = ['Visual', 'Auditory', 'Reading', 'Kinesthetic'];
+
+    const options = {
+      series: seriesData,
+      chart: {
+        height: 250,
+        type: 'donut',
+        animations: {
+          enabled: true,
+          easing: 'easeinout',
+          speed: 800
+        }
+      },
+      plotOptions: {
+        pie: {
+          startAngle: -90,
+          endAngle: 270,
+          donut: {
+            size: '60%',
+            labels: {
+              show: true,
+              name: {
+                show: true,
+                fontSize: '14px',
+                fontWeight: 'bold',
+                color: '#333',
+                offsetY: -10
+              },
+              value: {
+                show: true,
+                fontSize: '18px',
+                fontWeight: 'bold',
+                color: '#333',
+                offsetY: 10,
+                formatter: function (val) {
+                  return val + ' pts'
+                }
+              },
+              total: {
+                show: true,
+                showAlways: true,
+                label: 'Total Score',
+                fontSize: '12px',
+                fontWeight: 'normal',
+                color: '#999',
+                formatter: function (w) {
+                  const total = w.globals.seriesTotals.reduce((a, b) => {
+                    return a + b
+                  }, 0)
+                  return total + ' pts'
+                }
+              }
+            }
+          }
+        }
+      },
+      colors: ['#60A5FA', '#FB7185', '#34D399', '#FBBF24'], // Blue, Pink, Green, Yellow
+      dataLabels: {
+        enabled: false
+      },
+      legend: {
+        show: false
+      },
+      labels: labels,
+      stroke: {
+        width: 2,
+        colors: ['white']
+      },
+      responsive: [{
+        breakpoint: 480,
+        options: {
+          chart: {
+            height: 200
+          }
+        }
+      }]
+    };
+
+    const chart = new ApexCharts(document.querySelector("#totalScoreChart"), options);
+    chart.render();
+  }
+
+  function renderPrimaryStyleChart() {
+    const primaryStyle = window.certificateData.primaryStyle;
+    const scores = window.certificateData.scores;
+    const styleKey = primaryStyle.code.toLowerCase() === 'a' ? 'aural' : primaryStyle.code.toLowerCase() === 'r' ? 'read' : primaryStyle.code.toLowerCase() === 'k' ? 'kinesthetic' : 'visual';
+    const styleScore = scores[styleKey] ? scores[styleKey].score : 0;
+    const totalScore = scores.total;
+    const percentage = totalScore > 0 ? Math.round((styleScore / totalScore) * 100) : 0;
+
+    // Determine color based on style
+    let color = chartColors.visual;
+    if (styleKey === 'aural') color = chartColors.aural;
+    else if (styleKey === 'read') color = chartColors.read;
+    else if (styleKey === 'kinesthetic') color = chartColors.kinesthetic;
+
+    const options = {
+      series: [percentage],
+      chart: {
+        height: 160,
+        type: 'donut',
+      },
+      plotOptions: {
+        pie: {
+          donut: {
+            size: '65%',
+            labels: {
+              show: true,
+              name: {
+                show: false
+              },
+              value: {
+                show: true,
+                fontSize: '16px',
+                fontWeight: 'bold',
+                color: '#333',
+                formatter: function (val) {
+                  return styleScore + ' pts'
+                }
+              }
+            }
+          }
+        }
+      },
+      colors: [color, '#f3f4f6'],
+      dataLabels: {
+        enabled: false
+      },
+      legend: {
+        show: false
+      },
+      stroke: {
+        width: 0
+      }
+    };
+
+    const chart = new ApexCharts(document.querySelector("#primaryStyleChart"), options);
+    chart.render();
+  }
+
+  function renderSmallCharts() {
+    const chartConfigs = [
+      { element: '#visualChart', style: 'visual', color: chartColors.visual },
+      { element: '#auralChart', style: 'aural', color: chartColors.aural },
+      { element: '#readChart', style: 'read', color: chartColors.read }
+    ];
+
+    chartConfigs.forEach(config => {
+      const scores = window.certificateData.scores;
+      const styleScore = scores[config.style] ? scores[config.style].score : 0;
+      const totalScore = scores.total;
+      const percentage = totalScore > 0 ? Math.round((styleScore / totalScore) * 100) : 0;
+
+      const options = {
+        series: [percentage],
+        chart: {
+          height: 140,
+          type: 'donut',
+        },
+        plotOptions: {
+          pie: {
+            donut: {
+              size: '60%',
+              labels: {
+                show: true,
+                name: {
+                  show: false
+                },
+                value: {
+                  show: true,
+                  fontSize: '14px',
+                  fontWeight: 'bold',
+                  color: '#333',
+                  formatter: function (val) {
+                    return styleScore + ' pts'
+                  }
+                }
+              }
+            }
+          }
+        },
+        colors: [config.color, '#f3f4f6'],
+        dataLabels: {
+          enabled: false
+        },
+        legend: {
+          show: false
+        },
+        stroke: {
+          width: 0
+        }
+      };
+
+      const chart = new ApexCharts(document.querySelector(config.element), options);
+      chart.render();
+    });
+  }
+</script>

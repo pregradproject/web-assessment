@@ -1,4 +1,6 @@
 class Order < ApplicationRecord
+  include Rails.application.routes.url_helpers
+
   belongs_to :user
   belongs_to :testable, polymorphic: true
   has_many :payments, dependent: :destroy
@@ -17,6 +19,8 @@ class Order < ApplicationRecord
     expired: 3
   }
 
+  attribute :certificate_status, :integer, default: 0
+  
   enum :certificate_status, {
     not_generated: 0,
     generating: 1,
@@ -55,8 +59,18 @@ class Order < ApplicationRecord
     generating?
   end
 
+  def eligible_for_certificate?
+    paid? && testable.completed? && testable_type == 'VarkTest'
+  end
+
   def test_type
     testable_type.underscore.gsub('_', ' ').titleize
+  end
+
+  def certificate_url
+    return unless certificate_pdf.attached?
+
+    rails_blob_path(certificate_pdf, only_path: true, disposition: 'attachment')
   end
 
   private
