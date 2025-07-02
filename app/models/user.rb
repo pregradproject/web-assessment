@@ -14,6 +14,9 @@ class User < ApplicationRecord
 
   has_many :vark_tests, dependent: :destroy
   has_many :vark_result_levels, dependent: :destroy
+  has_many :orders, dependent: :destroy
+  has_many :payments, through: :orders
+
   has_one_attached :avatar
 
   def avatar_url

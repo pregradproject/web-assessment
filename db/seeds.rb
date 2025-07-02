@@ -7,4 +7,16 @@
 #   ["Action", "Comedy", "Drama", "Horror"].each do |genre_name|
 #     MovieGenre.find_or_create_by!(name: genre_name)
 #   end
-AdminUser.create!(email: 'admin@example.com', password: 'password', password_confirmation: 'password') if Rails.env.development?
+AdminUser.find_or_create_by!(email: 'admin@example.com') do |admin|
+  admin.password = 'password'
+  admin.password_confirmation = 'password'
+end if Rails.env.development?
+
+# Create default configurations
+Config.find_or_create_by!(key: 'vark_price') do |config|
+  config.value = '30000'
+  config.value_type = 'integer'
+  config.description = 'Price for VARK test certificate in IDR'
+end
+
+puts "Created default configs: vark_price = 30000"

@@ -7,6 +7,7 @@ class VarkTest < ApplicationRecord
   belongs_to :vark_question_set
   has_many :vark_test_answers, dependent: :destroy
   has_one :vark_result_level, dependent: :destroy
+  has_one :order, as: :testable, dependent: :destroy
 
   enum :status, { in_progress: 0, completed: 1, expired: 2 }
 

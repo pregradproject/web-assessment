@@ -15,7 +15,18 @@ namespace :api do
         collection do
           get :active_question_set, to: 'vark_tests#active_question_set'
         end
+
+        resource :orders, only: %i[show create] do
+          member do
+            post :payment_token, to: 'orders#payment_token'
+            post :generate_certificate, to: 'orders#generate_certificate'
+            get :download_certificate, to: 'orders#download_certificate'
+          end
+        end
       end
     end
+
+    # Midtrans webhook endpoint (no authentication needed)
+    post 'payments/webhook', to: 'orders#webhook'
   end
 end
