@@ -27,6 +27,6 @@ namespace :api do
     end
 
     # Midtrans webhook endpoint (no authentication needed)
-    post 'payments/webhook', to: 'orders#webhook'
+    post 'payments/webhook', to: 'orders#webhook', as: 'payments_webhook'
   end
 end
