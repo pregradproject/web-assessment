@@ -10,6 +10,7 @@ namespace :api do
       resources :vark_tests, only: %i[show create] do
         member do
           post :submit_answers, to: 'vark_tests#submit_answers'
+          get :results, to: 'vark_tests#results'
         end
 
         collection do

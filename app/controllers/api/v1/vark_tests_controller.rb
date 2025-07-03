@@ -3,7 +3,7 @@ module Api
     class VarkTestsController < ApiController
       before_action :authenticate_user!
       before_action :set_vark_question_set!, only: %w[create]
-      before_action :set_vark_test, only: %w[show submit_answers]
+      before_action :set_vark_test, only: %w[show submit_answers results]
       before_action :validate_test_submission, only: %w[submit_answers]
 
       def create
@@ -29,6 +29,13 @@ module Api
         Vark::SubmitAnswersServices.call(@vark_test, params, current_user)
 
         json_response('ok', :ok, false)
+      end
+
+      def results
+        validate = Vark::TestResultsValidator.new(@vark_test)
+        raise CkvExceptions::UnprocessableEntityError, validate.errors unless validate.valid?
+
+        json_response(Vark::TestResultsSerializer.new(@vark_test.vark_result_level).to_h, :ok, false)
       end
 
       private
