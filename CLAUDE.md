@@ -159,6 +159,19 @@ This is a Rails 8.0.2 API application for a web assessment platform focused on V
 - Configuration in `config/queue.yml` controls worker processes and polling
 - Production uses separate database connection for queue tables
 
+## CORS Configuration
+
+### Development
+- CORS is configured to allow all origins (`*`) for development
+- All HTTP methods are supported for API endpoints under `/api/*`
+- Authorization headers are exposed for JWT authentication
+
+### Production
+- CORS origins controlled by `CORS_ORIGINS` environment variable
+- Default production origin: `https://cakravia.web.id`
+- Multiple origins can be specified as comma-separated values
+- Example: `CORS_ORIGINS=https://app.example.com,https://admin.example.com`
+
 ## API Response Best Practices
 
 - For the API response, always use serializer

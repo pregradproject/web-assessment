@@ -8,7 +8,7 @@ module Api
         order = @vark_test.order
         raise CkvExceptions::NotFoundError, 'Order not found' unless order
 
-        json_response(OrderServices::OrderSerializer.new(order).to_h, :ok, false)
+        json_response(Vark::CreateOrderSerializer.new(order).to_h, :ok, false)
       end
 
       def create
