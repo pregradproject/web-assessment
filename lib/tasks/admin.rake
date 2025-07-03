@@ -1,8 +1,8 @@
 namespace :admin do
   desc 'Create an admin user'
   task create_user: :environment do
-    email = ENV['ADMIN_EMAIL'] || 'admin@cakravia.web.id'
-    password = ENV['ADMIN_PASSWORD'] || SecureRandom.hex(10)
+    email = ENV['ADMIN_EMAIL'] || 'admin@cakravia.com'
+    password = ENV['ADMIN_PASSWORD'] || 'password'
 
     admin = AdminUser.find_or_initialize_by(email: email)
 
