@@ -1,4 +1,4 @@
-module Order
+module Orders
   class WebhookResponseSerializer < ApplicationSerializer
     attributes :message
   end
