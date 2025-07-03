@@ -50,7 +50,9 @@ env:
     # Match this to any external database server to configure Active Record correctly
     # Use web_assessment-db for a db accessory server on same machine via local kamal docker network.
     DB_HOST: web_assessment-db
-    DATABASE_URL: postgresql://<%= ENV['POSTGRES_USER'] || 'postgres' %>@web_assessment-db:5432/<%= ENV['POSTGRES_DB'] || 'web_assessment_production' %>
+    POSTGRES_DB: <%= ENV['POSTGRES_DB'] || 'web_assessment_production' %>
+    POSTGRES_USER: <%= ENV['POSTGRES_USER'] || 'cakravia-usr' %>
+    POSTGRES_PORT: <%= ENV['POSTGRES_PORT'] || '5432' %>
 
     # Log everything from Rails
     # RAILS_LOG_LEVEL: debug
@@ -105,7 +107,7 @@ accessories:
     env:
       clear:
         POSTGRES_DB: <%= ENV['POSTGRES_DB'] || 'web_assessment_production' %>
-        POSTGRES_USER: <%= ENV['POSTGRES_USER'] || 'postgres' %>
+        POSTGRES_USER: <%= ENV['POSTGRES_USER'] || 'cakravia-usr' %>
       secret:
         - POSTGRES_PASSWORD
     directories:

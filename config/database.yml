@@ -39,7 +39,7 @@ production:
     <<: *default
     host: <%= ENV.fetch("DB_HOST") { "web_assessment-db" } %>
     port: <%= ENV.fetch("POSTGRES_PORT") { 5432 } %>
-    username: <%= ENV.fetch("POSTGRES_USER") {"postgres"} %>
+    username: <%= ENV.fetch("POSTGRES_USER") {"cakravia-usr"} %>
     password: <%= ENV.fetch("POSTGRES_PASSWORD") {"postgres_password"} %>
     database: <%= ENV.fetch("POSTGRES_DB") { "web_assessment_production" } %>
   cache:
