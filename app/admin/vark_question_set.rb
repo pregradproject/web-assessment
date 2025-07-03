@@ -20,6 +20,12 @@ ActiveAdmin.register VarkQuestionSet do
     end
   end
 
+  member_action :make_active, method: :patch do
+    VarkQuestionSet.where(active: true).update_all(active: false)
+    resource.update!(active: true)
+    redirect_to admin_vark_question_sets_path, notice: 'Question set is now active!'
+  end
+
   # Add import button to index page
   action_item :import_google_sheets, only: :index do
     link_to 'Import from Google Sheets',
@@ -40,6 +46,9 @@ ActiveAdmin.register VarkQuestionSet do
     column :created_at
     actions defaults: false do |resource|
       item 'View', admin_vark_question_set_path(resource), class: 'member_link'
+      unless resource.active?
+        item 'Make Active', make_active_admin_vark_question_set_path(resource), method: :patch, class: 'member_link'
+      end
     end
   end
 
