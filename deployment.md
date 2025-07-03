@@ -136,6 +136,19 @@ ssh cakravia-dev@157.10.160.74 'docker rm -f web_assessment-db'
 export $(grep -v '^#' .env | grep -v '^$' | xargs) && kamal setup
 ```
 
+### Rails Master Key Error
+If you get "ActiveSupport::MessageEncryptor::InvalidMessage" error:
+
+```bash
+# Check if master key is correct
+cat config/master.key
+
+# Verify secrets loading
+export $(grep -v '^#' .env | grep -v '^$' | xargs) && source .kamal/secrets && echo "RAILS_MASTER_KEY: '${RAILS_MASTER_KEY}'"
+
+# The issue might be newlines in the master key - this is fixed in .kamal/secrets with tr -d '\n'
+```
+
 ### General Troubleshooting
 - Commit your changes before deployment (Kamal builds from git)
 - Make sure Docker is running on your local machine
