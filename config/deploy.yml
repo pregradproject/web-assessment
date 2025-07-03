@@ -8,14 +8,14 @@ image: <%= ENV['KAMAL_IMAGE_NAME'] || 'arymprayoga/web_assessment' %>
 servers:
   web:
     hosts:
-      - <%= ENV['KAMAL_SERVER_IP'] || '157.10.160.74' %>
+      - <%= ENV['KAMAL_SERVER_IP'] || '103.186.1.139' %>
     env:
       clear:
         # Disable Solid Queue in Puma for web servers since we have dedicated job servers
         SOLID_QUEUE_IN_PUMA: false
   job:
     hosts:
-      - <%= ENV['KAMAL_SERVER_IP'] || '157.10.160.74' %>
+      - <%= ENV['KAMAL_SERVER_IP'] || '103.186.1.139' %>
     cmd: bin/rails solid_queue:start
     env:
       clear:
@@ -81,7 +81,7 @@ aliases:
 # Recommended to change this to a mounted volume path that is backed up off server.
 volumes:
   - "web_assessment_storage:/rails/storage"
-  - "/home/cakravia-dev/deploy/master.key:/rails/config/credentials/production.key:ro"
+  - "/home/cakravia/deploy/master.key:/rails/config/credentials/production.key:ro"
 
 
 # Bridge fingerprinted assets, like JS and CSS, between versions to avoid
