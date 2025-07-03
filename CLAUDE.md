@@ -30,6 +30,21 @@ This is a Rails 8.0.2 API application for a web assessment platform focused on V
 - `rails test:models` - Run model tests specifically
 - `rails test:controllers` - Run controller tests specifically
 
+### Job Queue Management
+- `rails solid_queue:start` - Start Solid Queue worker processes
+- `rails solid_queue:stop` - Stop Solid Queue worker processes
+- `rails solid_queue:restart` - Restart Solid Queue worker processes
+- `rails jobs:work` - Start a single job worker process (for development)
+- Queue monitoring available at `/jobs` via Mission Control Jobs interface
+
+### Kamal Deployment (with Solid Queue)
+- `kamal deploy` - Deploy both web and job services
+- `kamal app start -r job` - Start only job servers
+- `kamal app stop -r job` - Stop only job servers
+- `kamal job-logs` - View logs from job servers
+- `kamal job-shell` - Open shell in job container
+- `kamal job-restart` - Restart job servers
+
 ### Asset Management
 - `rails assets:precompile` - Precompile assets for production
 - `rails assets:clean` - Clean old assets
@@ -129,6 +144,20 @@ This is a Rails 8.0.2 API application for a web assessment platform focused on V
 - No need to add rescue, as there is already a global rescue in `app/controllers/concerns/exception_handler.rb`
 - For exceptions, use `lib/ckv_exceptions` to return specific status codes (e.g., 422 or 403)
 - Example validation pattern: `raise CkvExceptions::UnprocessableEntityError, validate.errors unless validate.valid?`
+
+## Background Jobs Usage
+
+### Creating Jobs
+- Jobs should inherit from `ApplicationJob` and be placed in `app/jobs/`
+- Use `queue_as :queue_name` to specify queue (defaults to `:default`)
+- Example: `SampleJob.perform_later("Hello World")` to enqueue a job
+- Example: `SampleJob.perform_now("Hello World")` to execute immediately
+
+### Queue Configuration
+- Solid Queue is configured for development and production environments
+- Test environment uses `:test` adapter for faster testing
+- Configuration in `config/queue.yml` controls worker processes and polling
+- Production uses separate database connection for queue tables
 
 ## API Response Best Practices
 
