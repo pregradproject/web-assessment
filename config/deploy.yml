@@ -75,6 +75,10 @@ aliases:
   job-logs: app logs -f -r job
   job-shell: app exec --interactive --reuse "bash" -r job
   job-restart: app start -r job
+  
+  # Admin management aliases
+  admin-create: app exec "bin/rails admin:create_user"
+  admin-list: app exec "bin/rails admin:list"
 
 
 # Use a persistent storage volume for sqlite database files and local Active Storage files.

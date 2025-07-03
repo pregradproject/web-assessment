@@ -45,6 +45,18 @@ This is a Rails 8.0.2 API application for a web assessment platform focused on V
 - `kamal job-shell` - Open shell in job container
 - `kamal job-restart` - Restart job servers
 
+### Admin User Management via Kamal
+- `kamal admin-create` - Create admin user with default credentials
+- `kamal admin-list` - List all admin users
+- Environment variables for custom admin creation:
+  - `ADMIN_EMAIL` - Custom admin email (default: admin@cakravia.web.id)
+  - `ADMIN_PASSWORD` - Custom admin password (auto-generated if not provided)
+
+### Local Admin Management
+- `rails admin:create_user` - Create admin user locally
+- `rails admin:list` - List admin users locally
+- `ADMIN_EMAIL=custom@email.com ADMIN_PASSWORD=mypass rails admin:create_user`
+
 ### Asset Management
 - `rails assets:precompile` - Precompile assets for production
 - `rails assets:clean` - Clean old assets
