@@ -106,7 +106,7 @@ builder:
 
 # Use a different ssh user than root
 ssh:
-  user: <%= ENV['KAMAL_SSH_USER'] || 'cakravia-dev' %>
+  user: <%= ENV['KAMAL_SSH_USER'] || 'cakravia' %>
   keys:
     - <%= ENV['KAMAL_SSH_KEY_PATH'] || '~/.ssh/kamal_deploy_key' %>
 
