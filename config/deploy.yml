@@ -49,6 +49,7 @@ env:
     - MIDTRANS_CLIENT_KEY
     - MIDTRANS_SERVER_KEY
     - MIDTRANS_MERCHANT_ID
+    - MIDTRANS_ENVIRONMENT
   clear:
     # Run database migrations automatically on deploy
     RAILS_DB_MIGRATE: true

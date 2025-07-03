@@ -10,8 +10,10 @@ module Midtrans
   def initialize
     @server_key = Rails.application.credentials.dig(:midtrans, :server_key) || ENV['MIDTRANS_SERVER_KEY']
     @merchant_id = Rails.application.credentials.dig(:midtrans, :merchant_id) || ENV['MIDTRANS_MERCHANT_ID']
-    @is_production = Rails.env.production?
+    @is_production = ENV['MIDTRANS_ENVIRONMENT'] == 'production'
     @base_url = @is_production ? PRODUCTION_BASE_URL : SANDBOX_BASE_URL
+
+    Rails.logger.info "Midtrans Config: Environment=#{ENV['MIDTRANS_ENVIRONMENT']}, Production=#{@is_production}, URL=#{@base_url}"
   end
 
   def create_snap_token(order)
