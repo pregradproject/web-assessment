@@ -92,6 +92,36 @@ docker buildx ls | grep docker-container | cut -d' ' -f1 | xargs -r docker build
 
 Then retry the deployment.
 
+### Database Environment Variables Error
+If you get "key not found: DB_NAME" during asset precompilation:
+
+The issue is that database environment variables are needed during Docker build but not available. You have two options:
+
+**Option 1: Provide build secrets (current approach)**
+Make sure your `.kamal/secrets` file has the database variables:
+```bash
+# Add to .kamal/secrets
+DB_NAME=${DB_NAME}
+DB_USER=${DB_USER}  
+DB_PASSWORD=${DB_PASSWORD}
+```
+
+**Option 2: Fix database.yml for build process**
+Modify `config/database.yml` to have fallback values during build:
+```yaml
+# In config/database.yml, change lines like:
+database: <%= ENV.fetch("DB_NAME") %>
+# To:
+database: <%= ENV.fetch("DB_NAME") { "dummy_db" } %>
+```
+
+**Option 3: Skip database connection during asset precompilation**
+Add to your `config/environments/production.rb`:
+```ruby
+# Skip database connection during asset precompilation
+config.assets.initialize_on_precompile = false
+```
+
 ### General Troubleshooting
 - Commit your changes before deployment (Kamal builds from git)
 - Make sure Docker is running on your local machine
