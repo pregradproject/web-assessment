@@ -22,7 +22,7 @@ class Order < ApplicationRecord
   attribute :certificate_status, :integer, default: 0
   
   enum :certificate_status, {
-    not_generated: 0,
+    pending_generation: 0,
     generating: 1,
     generated: 2,
     generation_failed: 3
