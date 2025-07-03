@@ -4,7 +4,7 @@ Rails.application.config.middleware.insert_before 0, Rack::Cors do
     if Rails.env.development?
       origins '*'
     else
-      origins ENV.fetch('CORS_ORIGINS', 'https://cakravia.web.id').split(',')
+      origins ENV.fetch('CORS_ORIGINS', 'https://cakravia-v0.vercel.app').split(',')
     end
 
     resource '/api/*',
