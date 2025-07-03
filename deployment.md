@@ -122,7 +122,22 @@ Add to your `config/environments/production.rb`:
 config.assets.initialize_on_precompile = false
 ```
 
+### Container Name Conflict Error
+If you get "Conflict. The container name is already in use" error:
+
+```bash
+# Remove existing accessory containers
+kamal accessory remove db
+
+# Or manually remove the container on the server
+ssh cakravia-dev@157.10.160.74 'docker rm -f web_assessment-db'
+
+# Then retry deployment
+export $(grep -v '^#' .env | grep -v '^$' | xargs) && kamal setup
+```
+
 ### General Troubleshooting
 - Commit your changes before deployment (Kamal builds from git)
 - Make sure Docker is running on your local machine
 - Ensure you have proper SSH access to the server
+- If containers exist from previous failed deployments, remove them first
