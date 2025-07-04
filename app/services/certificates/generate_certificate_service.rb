@@ -39,7 +39,12 @@ module Certificates
     end
 
     def generate_pdf(html_file_path)
-      browser = Ferrum::Browser.new(headless: true, window_size: [ 1200, 800 ])
+      browser = Ferrum::Browser.new(
+        headless: true,
+        window_size: [ 1200, 800 ],
+        process_timeout: 30,
+        timeout: 30
+      )
       browser.go_to("file://#{html_file_path}")
       sleep 2
       pdf_base64 = browser.pdf(
