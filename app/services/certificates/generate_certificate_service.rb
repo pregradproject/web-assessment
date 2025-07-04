@@ -42,8 +42,19 @@ module Certificates
       browser = Ferrum::Browser.new(
         headless: true,
         window_size: [ 1200, 800 ],
-        process_timeout: 30,
-        timeout: 30
+        process_timeout: 60,
+        timeout: 60,
+        browser_options: {
+          'no-sandbox': nil,
+          'disable-dev-shm-usage': nil,
+          'disable-gpu': nil,
+          'disable-software-rasterizer': nil,
+          'disable-background-timer-throttling': nil,
+          'disable-backgrounding-occluded-windows': nil,
+          'disable-renderer-backgrounding': nil,
+          'disable-features': 'TranslateUI',
+          'disable-ipc-flooding-protection': nil
+        }
       )
       browser.go_to("file://#{html_file_path}")
       sleep 2
