@@ -28,10 +28,7 @@ module Vark
 
     def format_payment_result(result)
       if result[:success]
-        {
-          snap_token: result[:snap_token],
-          payment_id: result[:payment_id]
-        }
+        Payment.find(result[:payment_id])
       else
         raise CkvExceptions::UnprocessableEntityError, result[:error]
       end

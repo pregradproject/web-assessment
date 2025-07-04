@@ -113,6 +113,11 @@ module Midtrans
       midtrans_response: notification_data.to_json
     )
     payment.order.update!(status: :paid)
+
+    # Trigger certificate generation if test is completed
+    if payment.order.testable&.completed?
+      GenerateCertificateJob.perform_later(payment.order.id)
+    end
   end
 
   def handle_failed_payment(payment, transaction_status)

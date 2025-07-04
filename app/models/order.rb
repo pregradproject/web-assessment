@@ -1,4 +1,6 @@
 class Order < ApplicationRecord
+  include Rails.application.routes.url_helpers
+
   belongs_to :user
   belongs_to :testable, polymorphic: true
   has_many :payments, dependent: :destroy
@@ -57,6 +59,10 @@ class Order < ApplicationRecord
 
   def test_type
     testable_type.underscore.gsub('_', ' ').titleize
+  end
+
+  def certificate_url
+    rails_blob_url(certificate_pdf, only_path: true)
   end
 
   private
