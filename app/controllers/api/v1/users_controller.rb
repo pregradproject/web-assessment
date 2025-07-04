@@ -32,6 +32,40 @@ module Api
 
       def login
         user = User.find_by(email: params[:email])
+
+        check_google_only_user(user)
+        authenticate_user(user)
+      end
+
+      def google_login
+        validate = Users::GoogleLoginValidator.new(params)
+        raise CkvExceptions::UnprocessableEntityError, validate.errors unless validate.valid?
+
+        auth_result = GoogleAuthService.new(params[:id_token]).call
+
+        unless auth_result[:success]
+          raise CkvExceptions::UnprocessableEntityError, auth_result[:error]
+        end
+
+        user = Users::GoogleLoginService.new(auth_result).call
+        token = encode(user_id: user.id)
+
+        json_response({
+          token: token,
+          user: Users::UserSerializer.new(user).to_h
+        }, :ok, false)
+      end
+
+      private
+
+      def check_google_only_user(user)
+        return unless user&.auth_provider == 'google'
+
+        raise CkvExceptions::GoogleAuthRequiredError,
+              'This account requires Google authentication. Please use Google Sign-In.'
+      end
+
+      def authenticate_user(user)
         if user&.authenticate(params[:password])
           token = encode(user_id: user.id)
           render json: { token: token }, status: :ok
@@ -39,8 +73,6 @@ module Api
           render json: { error: 'Invalid credentials' }, status: :unauthorized
         end
       end
-
-      private
 
       def user_params
         params.require(:user).permit(:name, :email, :password, :password_confirmation)

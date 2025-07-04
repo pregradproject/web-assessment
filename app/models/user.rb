@@ -4,13 +4,15 @@ class User < ApplicationRecord
   include Rails.application.routes.url_helpers
 
   def self.ransackable_attributes(auth_object = nil)
-    %w[birthday created_at email id id_value name phone updated_at]
+    %w[birthday created_at email id id_value name phone updated_at google_id auth_provider google_email]
   end
   def self.ransackable_associations(auth_object = nil)
     %w[avatar_attachment avatar_blob]
   end
 
   validates :email, presence: true, uniqueness: true
+  validates :google_id, uniqueness: { allow_blank: true }
+  validates :auth_provider, presence: true, inclusion: { in: %w[email google both] }
 
   has_many :vark_tests, dependent: :destroy
   has_many :vark_result_levels, dependent: :destroy

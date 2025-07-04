@@ -5,6 +5,7 @@ namespace :api do
         get :profile, to: 'users#profile'
         post :login, to: 'users#login'
         post :register, to: 'users#register'
+        post :google_login, to: 'users#google_login'
       end
 
       resources :vark_tests, only: %i[index show create] do

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_07_03_212700) do
+ActiveRecord::Schema[8.0].define(version: 2025_07_04_090257) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -256,6 +256,12 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_03_212700) do
     t.string "phone"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "google_id"
+    t.string "auth_provider", default: "email"
+    t.string "google_email"
+    t.index ["auth_provider"], name: "index_users_on_auth_provider"
+    t.index ["google_email"], name: "index_users_on_google_email"
+    t.index ["google_id"], name: "index_users_on_google_id", unique: true
   end
 
   create_table "vark_categories", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|

@@ -70,6 +70,17 @@ module ExceptionHandler
                    status: :unprocessable_entity, errors: e.errors }
       render json: response, status: :unprocessable_entity
     end
+
+    rescue_from CkvExceptions::GoogleAuthRequiredError do |e|
+      response = {
+        code: e.code,
+        message: e.message,
+        auth_required: 'google',
+        error: true,
+        status: :forbidden
+      }
+      render json: response, status: :forbidden
+    end
   end
 
   def error_payload(exception, message)
