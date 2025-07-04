@@ -6,6 +6,13 @@ module Api
       before_action :set_vark_test, only: %w[show submit_answers results]
       before_action :validate_test_submission, only: %w[submit_answers]
 
+      def index
+        vark_tests = current_user.vark_tests.includes(:vark_question_set, :vark_result_level, :order)
+                                            .order(created_at: :desc)
+
+        json_response(Vark::TestListSerializer.new(vark_tests).to_h, :ok, false)
+      end
+
       def create
         vark_test = Vark::CreateServices.call(@vark_question_set, current_user)
 
