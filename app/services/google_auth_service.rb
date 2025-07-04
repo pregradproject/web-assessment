@@ -1,5 +1,3 @@
-require 'google/auth/id_tokens'
-
 class GoogleAuthService < ApplicationService
   def initialize(id_token)
     @id_token = id_token
@@ -14,6 +12,7 @@ class GoogleAuthService < ApplicationService
   attr_reader :id_token
 
   def validate_token
+    require 'google/auth/id_tokens'
     payload = Google::Auth::IDTokens.verify_oidc(id_token)
 
     {
