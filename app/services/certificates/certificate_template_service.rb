@@ -89,9 +89,9 @@ module Certificates
 
     def formatted_learning_style_description
       category = get_dominant_category
-      return default_description unless category&.description.present?
+      return default_description unless category&.result_text.present?
 
-      description = category.description.strip
+      description = category.result_text.strip
       paragraphs = description.split("\n\n")
       formatted_paragraphs = paragraphs.map { |p| "<p>#{p.strip}</p>" }
       title = "<h3>#{category.name} Learning Style</h3>"
