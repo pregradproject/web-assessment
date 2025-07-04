@@ -60,9 +60,9 @@ module Certificates
       sleep 2
       pdf_base64 = browser.pdf(
         paper_width: 8.27, paper_height: 11.7,
-        margin_top: 0.5, margin_bottom: 0.5,
-        margin_left: 0.5, margin_right: 0.5,
-        print_background: true, scale: 0.8
+        margin_top: 0, margin_bottom: 0,
+        margin_left: 0, margin_right: 0,
+        print_background: true, scale: 1.0
       )
       Base64.decode64(pdf_base64)
     ensure

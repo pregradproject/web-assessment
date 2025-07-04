@@ -4,6 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cakravia Official Score Report</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Merriweather+Sans:wght@300;400;700;800&display=block" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Merriweather+Sans:wght@300;400;700;800&display=block');
+    </style>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/apexcharts/4.7.0/apexcharts.min.js"></script>
     <style>
         * {
@@ -12,26 +18,31 @@
             box-sizing: border-box;
         }
 
-        body {
-            font-family: 'Arial', sans-serif;
-            background: linear-gradient(135deg, #e8f4fd 0%, #f0f8ff 100%);
-            padding: 20px;
-            color: #333;
+        @page {
+            margin: 0;
+            padding: 0;
+            size: A4;
         }
 
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            background: white;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-            overflow: hidden;
+        html, body {
+            font-family: 'Merriweather Sans', 'Open Sans', 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            color: #24348C;
+            width: 100%;
+            height: 100%;
+            box-sizing: border-box;
+        }
+
+        *, h1, h2, h3, h4, h5, h6, p, div, span {
+            font-family: 'Merriweather Sans', 'Open Sans', 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif !important;
+            color: #24348C !important;
         }
 
         .header {
-            background: linear-gradient(135deg, #4a90e2 0%, #357abd 100%);
-            color: white;
-            padding: 20px 30px;
+            background: #ABD305;
+            color: #24348C;
+            padding: 18px 30px;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -52,11 +63,11 @@
             align-items: center;
             justify-content: center;
             font-weight: bold;
-            color: white;
+            color: #24348C;
         }
 
         .logo-text {
-            font-size: 18px;
+            font-size: 16px;
             font-weight: bold;
         }
 
@@ -65,54 +76,76 @@
         }
 
         .report-title h1 {
-            font-size: 20px;
-            margin-bottom: 5px;
+            font-size: 18px;
+            margin-bottom: 3px;
         }
 
         .certificate-id {
-            font-size: 12px;
+            font-size: 10px;
             opacity: 0.9;
         }
 
         .main-content {
-            padding: 30px;
+            padding: 0;
         }
 
         .certificate-section {
+            background: url('<%= @background_image_path %>');
+            background-size: cover;
+            background-position: center;
+            padding: 25px 30px;
             display: flex;
             justify-content: space-between;
             align-items: flex-start;
-            margin-bottom: 40px;
+            margin-bottom: 0;
+            position: relative;
+        }
+
+        .certificate-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: #DFE4FF;
+            opacity: 0.8;
+            z-index: 1;
+        }
+
+        .certificate-section > * {
+            position: relative;
+            z-index: 2;
         }
 
         .certificate-info {
-            flex: 2;
+            flex: 7;
         }
 
         .date {
-            color: #666;
+            color: #24348C;
             font-size: 14px;
             margin-bottom: 10px;
         }
 
         .certificate-title {
-            font-size: 28px;
-            color: #4a90e2;
+            font-size: 24px;
+            color: #24348C;
             font-weight: bold;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
         }
 
         .student-info {
-            font-size: 16px;
-            line-height: 1.6;
+            font-size: 14px;
+            line-height: 1.4;
         }
 
         .student-info strong {
-            color: #4a90e2;
+            color: #24348C;
         }
 
         .score-circle {
-            flex: 1;
+            flex: 5;
             width: auto;
             max-width: none;
             background: white;
@@ -157,30 +190,31 @@
         }
 
         .chart-container {
-            width: 160px;
-            height: 160px;
+            width: 180px;
+            height: 180px;
         }
 
         .small-chart-container {
-            width: 140px;
-            height: 140px;
+            width: 170px;
+            height: 170px;
         }
 
         .learning-style-section {
-            margin-bottom: 40px;
+            margin: 0;
+            padding: 25px 30px;
         }
 
         .section-title {
-            font-size: 24px;
-            color: #4a90e2;
+            font-size: 20px;
+            color: #24348C;
             font-weight: bold;
             text-align: center;
-            margin-bottom: 30px;
+            margin-bottom: 22px;
         }
 
         .learning-style-content {
             display: flex;
-            gap: 30px;
+            gap: 20px;
             align-items: flex-start;
         }
 
@@ -192,7 +226,7 @@
             background: white;
             border-radius: 16px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-            padding: 20px;
+            padding: 15px;
         }
 
         .reading-widget {
@@ -204,8 +238,7 @@
             justify-content: center;
         }
 
-        .reading-title {
-            background: #9ed442;
+        .dominant-score-title {
             color: white;
             padding: 8px 16px;
             border-radius: 15px;
@@ -223,19 +256,42 @@
         }
 
         .style-description h3 {
-            font-size: 18px;
-            color: #4a90e2;
-            margin-bottom: 10px;
+            font-size: 16px;
+            color: #24348C;
+            margin-bottom: 8px;
         }
 
         .style-description p {
-            line-height: 1.6;
-            margin-bottom: 15px;
-            color: #555;
+            line-height: 1.4;
+            margin-bottom: 10px;
+            color: #24348C;
+            font-size: 13px;
         }
 
         .other-scores-section {
-            margin-bottom: 40px;
+            background: url('<%= @background_image_path %>');
+            background-size: cover;
+            background-position: center;
+            padding: 25px 30px;
+            margin: 0;
+            position: relative;
+        }
+
+        .other-scores-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: #DFE4FF;
+            opacity: 0.8;
+            z-index: 1;
+        }
+
+        .other-scores-section > * {
+            position: relative;
+            z-index: 2;
         }
 
         .scores-grid {
@@ -245,13 +301,13 @@
         }
 
         .score-item {
-            width: 180px;
-            height: 180px;
+            width: 200px;
+            height: 200px;
             position: relative;
             background: white;
             border-radius: 16px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-            padding: 20px;
+            padding: 15px;
         }
 
         .score-item-widget {
@@ -276,43 +332,42 @@
             white-space: nowrap;
         }
 
-        .visual-score-title { background: #8e44ad; }
-        .auditory-score-title { background: #e74c3c; }
-        .kinesthetic-score-title { background: #f39c12; }
+        .visual-score-title { background: #8979FF; }
+        .auditory-score-title { background: #FF928A; }
+        .kinesthetic-score-title { background: #FFAE4C; }
 
         .signature-section {
             text-align: center;
-            margin-top: 40px;
-            padding-top: 30px;
+            padding: 30px 30px 25px 30px;
             border-top: 1px solid #e9ecef;
+            background: white;
         }
 
         .validation-text {
-            font-size: 12px;
-            color: #666;
-            margin-bottom: 20px;
+            font-size: 11px;
+            color: #24348C;
+            margin-bottom: 15px;
         }
 
         .signature {
-            font-size: 24px;
+            font-size: 20px;
             font-style: italic;
-            color: #4a90e2;
-            margin-bottom: 10px;
+            color: #24348C;
+            margin-bottom: 8px;
         }
 
         .signature-name {
             font-weight: bold;
-            color: #333;
+            color: #24348C;
         }
 
         .signature-title {
-            font-size: 12px;
-            color: #666;
+            font-size: 11px;
+            color: #24348C;
         }
     </style>
 </head>
 <body>
-<div class="container">
     <div class="header">
         <div class="logo">
             <div class="logo-icon">b</div>
@@ -347,9 +402,9 @@
             <h2 class="section-title">Your Learning Style</h2>
             <div class="learning-style-content">
                 <div class="reading-score">
-                    <div class="reading-title">Reading Score: <%= @read_score %></div>
+                    <div class="dominant-score-title" style="background-color: <%= @dominant_style[:color] %>"><%= @dominant_style[:name] %> Score: <%= @dominant_style[:score] %></div>
                     <div class="reading-widget">
-                        <div class="chart-container" id="readingChart"></div>
+                        <div class="chart-container" id="dominantChart"></div>
                     </div>
                 </div>
                 <div class="style-description">
@@ -389,14 +444,13 @@
             <div class="signature-title">Dean of Malang University</div>
         </div>
     </div>
-</div>
 
 <script>
     // Total Learning Score Chart
     var totalOptions = {
         series: <%= @percentages.to_json %>,
         chart: {
-            height: 160,
+            height: 180,
             type: 'radialBar',
         },
         plotOptions: {
@@ -430,7 +484,7 @@
                 },
             }
         },
-        colors: ['#8e44ad', '#e74c3c', '#9ed442', '#f39c12'],
+        colors: ['#8979FF', '#FF928A', '#3CC3DF', '#FFAE4C'],
         labels: ['Visual', 'Auditory', 'Reading', 'Kinesthetic'],
         responsive: [{
             breakpoint: 480,
@@ -445,11 +499,56 @@
     var totalChart = new ApexCharts(document.querySelector("#totalChart"), totalOptions);
     totalChart.render();
 
-    // Reading Score Chart
-    var readingOptions = {
+    // Dominant Style Chart
+    var dominantOptions = {
         series: <%= @percentages.to_json %>,
         chart: {
-            height: 160,
+            height: 180,
+            type: 'radialBar',
+        },
+        plotOptions: {
+            radialBar: {
+                offsetY: 0,
+                startAngle: 0,
+                endAngle: 270,
+                hollow: {
+                    margin: 5,
+                    size: '30%',
+                    background: 'transparent',
+                    image: undefined,
+                },
+                dataLabels: {
+                    name: {
+                        show: false,
+                    },
+                    value: {
+                        show: false,
+                    }
+                },
+                barLabels: {
+                    enabled: true,
+                    useSeriesColors: true,
+                    offsetX: -8,
+                    fontSize: '11px',
+                    formatter: function(seriesName, opts) {
+                        var actualScores = <%= @scores.to_json %>;
+                        return seriesName + ": " + actualScores[opts.seriesIndex];
+                    },
+                },
+            }
+        },
+        colors: <%= @dominant_style[:chart_colors].to_json %>,
+        labels: ['Visual', 'Auditory', 'Reading', 'Kinesthetic']
+    };
+
+    var dominantChart = new ApexCharts(document.querySelector("#dominantChart"), dominantOptions);
+    dominantChart.render();
+
+    // Visual Score Chart
+    var visualOptions = {
+        series: <%= @percentages.to_json %>,
+        chart: {
+            height: 170,
             type: 'radialBar',
         },
         plotOptions: {
@@ -483,52 +582,7 @@
                 },
             }
         },
-        colors: ['#d3d3d3', '#d3d3d3', '#9ed442', '#d3d3d3'],
-        labels: ['Visual', 'Auditory', 'Reading', 'Kinesthetic']
-    };
-
-    var readingChart = new ApexCharts(document.querySelector("#readingChart"), readingOptions);
-    readingChart.render();
-
-    // Visual Score Chart
-    var visualOptions = {
-        series: <%= @percentages.to_json %>,
-        chart: {
-            height: 120,
-            type: 'radialBar',
-        },
-        plotOptions: {
-            radialBar: {
-                offsetY: 0,
-                startAngle: 0,
-                endAngle: 270,
-                hollow: {
-                    margin: 5,
-                    size: '30%',
-                    background: 'transparent',
-                    image: undefined,
-                },
-                dataLabels: {
-                    name: {
-                        show: false,
-                    },
-                    value: {
-                        show: false,
-                    }
-                },
-                barLabels: {
-                    enabled: true,
-                    useSeriesColors: true,
-                    offsetX: -8,
-                    fontSize: '8px',
-                    formatter: function(seriesName, opts) {
-                        var actualScores = <%= @scores.to_json %>;
-                        return seriesName + ": " + actualScores[opts.seriesIndex];
-                    },
-                },
-            }
-        },
-        colors: ['#8e44ad', '#d3d3d3', '#d3d3d3', '#d3d3d3'],
+        colors: ['#8979FF', '#d3d3d3', '#d3d3d3', '#d3d3d3'],
         labels: ['Visual', 'Auditory', 'Reading', 'Kinesthetic']
     };
 
@@ -539,7 +593,7 @@
     var auditoryOptions = {
         series: <%= @percentages.to_json %>,
         chart: {
-            height: 120,
+            height: 170,
             type: 'radialBar',
         },
         plotOptions: {
@@ -565,7 +619,7 @@
                     enabled: true,
                     useSeriesColors: true,
                     offsetX: -8,
-                    fontSize: '8px',
+                    fontSize: '10px',
                     formatter: function(seriesName, opts) {
                         var actualScores = <%= @scores.to_json %>;
                         return seriesName + ": " + actualScores[opts.seriesIndex];
@@ -573,7 +627,7 @@
                 },
             }
         },
-        colors: ['#d3d3d3', '#e74c3c', '#d3d3d3', '#d3d3d3'],
+        colors: ['#d3d3d3', '#FF928A', '#d3d3d3', '#d3d3d3'],
         labels: ['Visual', 'Auditory', 'Reading', 'Kinesthetic']
     };
 
@@ -584,7 +638,7 @@
     var kinestheticOptions = {
         series: <%= @percentages.to_json %>,
         chart: {
-            height: 120,
+            height: 170,
             type: 'radialBar',
         },
         plotOptions: {
@@ -610,7 +664,7 @@
                     enabled: true,
                     useSeriesColors: true,
                     offsetX: -8,
-                    fontSize: '8px',
+                    fontSize: '10px',
                     formatter: function(seriesName, opts) {
                         var actualScores = <%= @scores.to_json %>;
                         return seriesName + ": " + actualScores[opts.seriesIndex];
@@ -618,7 +672,7 @@
                 },
             }
         },
-        colors: ['#d3d3d3', '#d3d3d3', '#d3d3d3', '#f39c12'],
+        colors: ['#d3d3d3', '#d3d3d3', '#d3d3d3', '#FFAE4C'],
         labels: ['Visual', 'Auditory', 'Reading', 'Kinesthetic']
     };
 

@@ -1,5 +1,7 @@
 module Certificates
   class CertificateTemplateService < ApplicationService
+    include ActionView::Helpers::AssetUrlHelper
+
     def initialize(order)
       @order = order
       @vark_test = order.testable
@@ -47,6 +49,8 @@ module Certificates
       @scores = scores_array
       @percentages = percentages_array
       @learning_style_description = formatted_learning_style_description
+      @dominant_style = get_dominant_style_info
+      @background_image_path = "file://#{Rails.root}/public/background.jpg"
     end
 
     def render_template
@@ -112,6 +116,61 @@ module Certificates
       end
 
       VarkCategory.find_by(code: category_code)
+    end
+
+    def get_dominant_style_info
+      dominant_style = @vark_result.dominant_learning_styles.first
+      return default_style_info unless dominant_style
+
+      style = style_map[dominant_style]
+      return default_style_info unless style
+
+      {
+        name: style[:name],
+        score: style[:score].call,
+        color: style[:color],
+        chart_id: 'dominantChart',
+        chart_colors: style[:chart_colors]
+      }
+    end
+
+    def style_map
+      {
+        'Visual' => {
+          name: 'Visual',
+          score: -> { @vark_result.visual_score },
+          color: '#8979FF',
+          chart_colors: %w[#8979FF #d3d3d3 #d3d3d3 #d3d3d3]
+        },
+        'Aural' => {
+          name: 'Aural',
+          score: -> { @vark_result.aural_score },
+          color: '#FF928A',
+          chart_colors: %w[#d3d3d3 #FF928A #d3d3d3 #d3d3d3]
+        },
+        'Read/Write' => {
+          name: 'Reading',
+          score: -> { @vark_result.read_score },
+          color: '#3CC3DF',
+          chart_colors: %w[#d3d3d3 #d3d3d3 #3CC3DF #d3d3d3]
+        },
+        'Kinesthetic' => {
+          name: 'Kinesthetic',
+          score: -> { @vark_result.kinesthetic_score },
+          color: '#FFAE4C',
+          chart_colors: %w[#d3d3d3 #d3d3d3 #d3d3d3 #FFAE4C]
+        }
+      }
+    end
+
+    def default_style_info
+      {
+        name: 'Reading',
+        score: @vark_result.read_score,
+        color: '#3CC3DF',
+        chart_id: 'dominantChart',
+        chart_colors: %w[#d3d3d3 #d3d3d3 #3CC3DF #d3d3d3]
+      }
     end
 
     def default_description
