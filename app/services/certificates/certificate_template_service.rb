@@ -28,6 +28,7 @@ module Certificates
       prepare_basic_variables
       prepare_score_variables
       prepare_chart_variables
+      prepare_signature_variables
     end
 
     def prepare_basic_variables
@@ -51,6 +52,29 @@ module Certificates
       @learning_style_description = formatted_learning_style_description
       @dominant_style = get_dominant_style_info
       @background_image_path = "file://#{Rails.root}/public/background.jpg"
+    end
+
+    def prepare_signature_variables
+      signature = Signature.active.first
+      if signature&.signature_image&.attached?
+        load_signature(signature)
+      else
+        load_default_signature
+      end
+    end
+
+    def load_signature(sig)
+      @signature_name         = sig.name
+      @signature_title        = sig.department
+      @has_signature_image    = true
+      @signature_image_path   = get_signature_image_path(sig)
+    end
+
+    def load_default_signature
+      @signature_name         = 'John Doe'
+      @signature_title        = 'Dean of Malang University'
+      @has_signature_image    = false
+      @signature_image_path   = nil
     end
 
     def render_template
@@ -175,6 +199,15 @@ module Certificates
 
     def default_description
       '<h3>Learning Style</h3><p>Your learning style analysis is available.</p>'
+    end
+
+    def get_signature_image_path(signature)
+      # Create a temporary file for the signature image
+      temp_file = Tempfile.new([ 'signature', '.png' ])
+      temp_file.binmode
+      temp_file.write(signature.signature_image.download)
+      temp_file.close
+      "file://#{temp_file.path}"
     end
 
     def failure_result(error_message)
