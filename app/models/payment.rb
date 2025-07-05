@@ -1,4 +1,12 @@
 class Payment < ApplicationRecord
+  def self.ransackable_associations(auth_object = nil)
+    [ 'order' ]
+  end
+
+  def self.ransackable_attributes(auth_object = nil)
+    %w[amount created_at expires_at id id_value midtrans_order_id midtrans_response midtrans_transaction_id order_id paid_at payment_method snap_token status updated_at]
+  end
+
   belongs_to :order
 
   enum :status, {

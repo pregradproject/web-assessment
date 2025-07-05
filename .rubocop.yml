@@ -50,6 +50,12 @@ Style/StringLiterals:
   Enabled: true
   EnforcedStyle: single_quotes
 
+Style/WordArray:
+  Enabled: true
+  EnforcedStyle: percent
+  Exclude:
+    - "db/migrate/*"
+
 Lint/MissingSuper:
   Exclude:
     - "app/services/**/*"

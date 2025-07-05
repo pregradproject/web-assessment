@@ -3,6 +3,10 @@ class VarkTest < ApplicationRecord
     %w[completed_at created_at id started_at status updated_at user_id vark_question_set_id]
   end
 
+  def self.ransackable_associations(auth_object = nil)
+    %w[order user vark_question_set vark_result_level vark_test_answers]
+  end
+
   belongs_to :user
   belongs_to :vark_question_set
   has_many :vark_test_answers, dependent: :destroy

@@ -1,6 +1,14 @@
 class Order < ApplicationRecord
   include Rails.application.routes.url_helpers
 
+  def self.ransackable_associations(auth_object = nil)
+    %w[certificate_pdf_attachment certificate_pdf_blob payments successful_payment testable user]
+  end
+
+  def self.ransackable_attributes(auth_object = nil)
+    %w[amount category certificate_generated_at certificate_generation_error certificate_status created_at description expires_at id id_value order_number status testable_id testable_type updated_at user_id]
+  end
+
   belongs_to :user
   belongs_to :testable, polymorphic: true
   has_many :payments, dependent: :destroy
