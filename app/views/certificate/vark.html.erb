@@ -201,7 +201,7 @@
 
         .learning-style-section {
             margin: 0;
-            padding: 25px 30px;
+            padding: 35px 30px;
         }
 
         .section-title {
@@ -265,14 +265,14 @@
             line-height: 1.4;
             margin-bottom: 10px;
             color: #24348C;
-            font-size: 13px;
+            font-size: 11px;
         }
 
         .other-scores-section {
             background: url('<%= @background_image_path %>');
             background-size: cover;
             background-position: center;
-            padding: 25px 30px;
+            padding: 40px 30px;
             margin: 0;
             position: relative;
         }
@@ -338,7 +338,7 @@
 
         .signature-section {
             text-align: center;
-            padding: 30px 30px 25px 30px;
+            padding: 8px 30px 5px 30px;
             border-top: 1px solid #e9ecef;
             background: white;
         }
@@ -361,8 +361,8 @@
         }
 
         .signature-image img {
-            max-width: 200px;
-            max-height: 60px;
+            max-width: 120px;
+            max-height: 35px;
             object-fit: contain;
         }
 
@@ -451,7 +451,7 @@
             <div class="validation-text">Validated and approved</div>
             <% if @has_signature_image %>
             <div class="signature-image">
-                <img src="<%= @signature_image_path %>" alt="Signature" style="max-width: 200px; max-height: 60px;">
+                <img src="<%= @signature_image_path %>" alt="Signature" style="max-width: 120px; max-height: 35px;">
             </div>
             <% else %>
             <div class="signature"><%= @signature_name %></div>
