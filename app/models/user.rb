@@ -21,9 +21,28 @@ class User < ApplicationRecord
 
   has_one_attached :avatar
 
+  scope :with_reset_token, ->(token) { where(reset_password_token: token) }
+
   def avatar_url
     return unless avatar.attached?
 
     rails_blob_path(avatar, only_path: true, disposition: 'attachment')
+  end
+
+  def generate_reset_password_token!
+    self.reset_password_token = SecureRandom.urlsafe_base64
+    self.reset_password_sent_at = Time.current
+    save!
+  end
+
+  def reset_password_token_valid?
+    reset_password_sent_at && reset_password_sent_at > 1.hour.ago
+  end
+
+  def reset_password!(new_password)
+    self.password = new_password
+    self.reset_password_token = nil
+    self.reset_password_sent_at = nil
+    save!
   end
 end

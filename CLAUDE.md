@@ -184,6 +184,27 @@ This is a Rails 8.0.2 API application for a web assessment platform focused on V
 - Multiple origins can be specified as comma-separated values
 - Example: `CORS_ORIGINS=https://app.example.com,https://admin.example.com`
 
+## Email Configuration
+
+### Development (MailHog)
+- Uses MailHog for email testing on port 1025
+- No authentication required for localhost connections
+- Emails viewable at http://localhost:8025
+
+### Production (Local Mail Server)
+- Uses localhost mail server running on same VPS
+- No SMTP authentication required (trusted local connection)
+- Configuration: `address: 'localhost', port: 25, domain: 'cakravia.com'`
+- Mail server accepts connections from localhost without username/password
+- Secure because only local machine can connect
+
+### Password Reset Features
+- Secure token-based password reset with 1-hour expiration
+- Professional email templates with Cakravia branding
+- Support for both email/password and Google OAuth users
+- Rate limiting and comprehensive validation
+- API endpoints: `/password_reset`, `/password_reset_confirm`, `/password_change`
+
 ## API Response Best Practices
 
 - For the API response, always use serializer

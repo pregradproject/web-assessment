@@ -6,6 +6,9 @@ namespace :api do
         post :login, to: 'users#login'
         post :register, to: 'users#register'
         post :google_login, to: 'users#google_login'
+        post :password_reset, to: 'users#password_reset'
+        post :password_reset_confirm, to: 'users#password_reset_confirm'
+        patch :password_change, to: 'users#password_change'
       end
 
       resources :vark_tests, only: %i[index show create] do

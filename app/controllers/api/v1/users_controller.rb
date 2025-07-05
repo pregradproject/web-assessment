@@ -1,7 +1,7 @@
 module Api
   module V1
     class UsersController < ApiController
-      before_action :authenticate_user!, only: %w[show update profile]
+      before_action :authenticate_user!, only: %w[show update profile password_change]
 
       def register
         user = User.new(user_params)
@@ -54,6 +54,47 @@ module Api
           token: token,
           user: Users::UserSerializer.new(user).to_h
         }, :ok, false)
+      end
+
+      def password_reset
+        validate = Users::PasswordResetValidator.new(params)
+        raise CkvExceptions::UnprocessableEntityError, validate.errors unless validate.valid?
+
+        Users::PasswordResetService.new(params[:email]).call
+
+        json_response({ message: 'Password reset email sent if account exists' }, :ok, false)
+      end
+
+      def password_reset_confirm
+        validate = Users::PasswordResetConfirmValidator.new(params)
+        raise CkvExceptions::UnprocessableEntityError, validate.errors unless validate.valid?
+
+        user = Users::PasswordResetConfirmService.new(params[:token], params[:password]).call
+
+        unless user
+          raise CkvExceptions::UnprocessableEntityError, 'Invalid or expired token'
+        end
+
+        token = encode(user_id: user.id)
+        json_response({
+          message: 'Password reset successful',
+          token: token,
+          user: Users::UserSerializer.new(user).to_h
+        }, :ok, false)
+      end
+
+      def password_change
+        validate = Users::PasswordChangeValidator.new(params, current_user)
+        raise CkvExceptions::UnprocessableEntityError, validate.errors unless validate.valid?
+
+        service = Users::PasswordChangeService.new(current_user, params[:current_password], params[:new_password])
+        user = service.call
+
+        unless user
+          raise CkvExceptions::UnprocessableEntityError, 'Current password is incorrect'
+        end
+
+        json_response({ message: 'Password changed successfully' }, :ok, false)
       end
 
       private
