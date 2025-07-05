@@ -59,11 +59,11 @@ Rails.application.configure do
   # Set host to be used by links generated in mailer templates.
   config.action_mailer.default_url_options = { host: 'cakravia.com' }
 
-  # Configure SMTP settings for production (localhost mail server)
+  # Configure SMTP settings for production (host mail server)
   config.action_mailer.delivery_method = :smtp
   config.action_mailer.smtp_settings = {
-    address: 'localhost',
-    port: 25,
+    address: ENV.fetch('SMTP_HOST', '172.18.0.1'),
+    port: ENV.fetch('SMTP_PORT', 25).to_i,
     domain: 'cakravia.com'
   }
 

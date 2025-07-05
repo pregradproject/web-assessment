@@ -64,6 +64,13 @@ env:
     POSTGRES_USER: <%= ENV['POSTGRES_USER'] || 'cakravia-usr' %>
     POSTGRES_PORT: <%= ENV['POSTGRES_PORT'] || '5432' %>
 
+    # SMTP configuration for mail server on host
+    SMTP_HOST: <%= ENV['SMTP_HOST'] || '172.18.0.1' %>
+    SMTP_PORT: <%= ENV['SMTP_PORT'] || '25' %>
+
+    # Frontend URL for password reset emails
+    FRONTEND_URL: <%= ENV['FRONTEND_URL'] || 'https://cakravia.com' %>
+
     # Log everything from Rails
     # RAILS_LOG_LEVEL: debug
 
