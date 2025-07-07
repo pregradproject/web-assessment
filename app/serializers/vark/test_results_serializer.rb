@@ -22,7 +22,7 @@ module Vark
           percentage: object.percentage_for_category('V')
         },
         {
-          category: 'Aural',
+          category: 'Auditory',
           code: 'A',
           score: object.aural_score,
           percentage: object.percentage_for_category('A')

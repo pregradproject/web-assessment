@@ -198,7 +198,7 @@ module Certificates
           chart_colors: %w[#8979FF #d3d3d3 #d3d3d3 #d3d3d3]
         },
         'Aural' => {
-          name: 'Aural',
+          name: 'Auditory',
           score: -> { @vark_result.aural_score },
           color: '#FF928A',
           chart_colors: %w[#d3d3d3 #FF928A #d3d3d3 #d3d3d3]
