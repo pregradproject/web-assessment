@@ -23,12 +23,12 @@ ActiveAdmin.register VarkResultLevel do
     f.inputs 'Result Level' do
       f.input :vark_question_set
       f.input :vark_category
-      f.input :min_score
-      f.input :max_score
-      f.input :visual_score
-      f.input :aural_score
-      f.input :read_score
-      f.input :kinesthetic_score
+      f.input :min_score, input_html: { step: 0.1, placeholder: '0.0' }
+      f.input :max_score, input_html: { step: 0.1, placeholder: '0.0' }
+      f.input :visual_score, input_html: { step: 0.1, placeholder: '0.0' }
+      f.input :aural_score, input_html: { step: 0.1, placeholder: '0.0' }
+      f.input :read_score, input_html: { step: 0.1, placeholder: '0.0' }
+      f.input :kinesthetic_score, input_html: { step: 0.1, placeholder: '0.0' }
     end
     f.actions
   end

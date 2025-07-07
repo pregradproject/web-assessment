@@ -7,15 +7,15 @@ class VarkResultLevel < ApplicationRecord
   belongs_to :user
 
   def total_score
-    visual_score + aural_score + read_score + kinesthetic_score
+    (visual_score || 0) + (aural_score || 0) + (read_score || 0) + (kinesthetic_score || 0)
   end
 
   def scores_as_hash
     {
-      'V' => visual_score,
-      'A' => aural_score,
-      'R' => read_score,
-      'K' => kinesthetic_score
+      'V' => visual_score || 0,
+      'A' => aural_score || 0,
+      'R' => read_score || 0,
+      'K' => kinesthetic_score || 0
     }
   end
 

@@ -40,10 +40,10 @@ module Certificates
     end
 
     def prepare_score_variables
-      @visual_score = @vark_result.visual_score
-      @aural_score = @vark_result.aural_score
-      @read_score = @vark_result.read_score
-      @kinesthetic_score = @vark_result.kinesthetic_score
+      @visual_score = format_score(@vark_result.visual_score)
+      @aural_score = format_score(@vark_result.aural_score)
+      @read_score = format_score(@vark_result.read_score)
+      @kinesthetic_score = format_score(@vark_result.kinesthetic_score)
     end
 
     def prepare_chart_variables
@@ -102,18 +102,24 @@ module Certificates
 
     def scores_array
       [
-        @vark_result.visual_score,
-        @vark_result.aural_score,
-        @vark_result.read_score,
-        @vark_result.kinesthetic_score
+        format_score(@vark_result.visual_score),
+        format_score(@vark_result.aural_score),
+        format_score(@vark_result.read_score),
+        format_score(@vark_result.kinesthetic_score)
       ]
     end
 
     def percentages_array
-      total = scores_array.sum
+      raw_scores = [
+        @vark_result.visual_score || 0,
+        @vark_result.aural_score || 0,
+        @vark_result.read_score || 0,
+        @vark_result.kinesthetic_score || 0
+      ]
+      total = raw_scores.sum
       return [ 0, 0, 0, 0 ] if total.zero?
 
-      scores_array.map { |score| ((score.to_f / total) * 100).round }
+      raw_scores.map { |score| ((score.to_f / total) * 100).round }
     end
 
     def formatted_learning_style_description
@@ -193,25 +199,25 @@ module Certificates
       {
         'Visual' => {
           name: 'Visual',
-          score: -> { @vark_result.visual_score },
+          score: -> { format_score(@vark_result.visual_score) },
           color: '#8979FF',
           chart_colors: %w[#8979FF #d3d3d3 #d3d3d3 #d3d3d3]
         },
         'Aural' => {
           name: 'Auditory',
-          score: -> { @vark_result.aural_score },
+          score: -> { format_score(@vark_result.aural_score) },
           color: '#FF928A',
           chart_colors: %w[#d3d3d3 #FF928A #d3d3d3 #d3d3d3]
         },
         'Read/Write' => {
           name: 'Reading',
-          score: -> { @vark_result.read_score },
+          score: -> { format_score(@vark_result.read_score) },
           color: '#3CC3DF',
           chart_colors: %w[#d3d3d3 #d3d3d3 #3CC3DF #d3d3d3]
         },
         'Kinesthetic' => {
           name: 'Kinesthetic',
-          score: -> { @vark_result.kinesthetic_score },
+          score: -> { format_score(@vark_result.kinesthetic_score) },
           color: '#FFAE4C',
           chart_colors: %w[#d3d3d3 #d3d3d3 #d3d3d3 #FFAE4C]
         }
@@ -221,11 +227,17 @@ module Certificates
     def default_style_info
       {
         name: 'Reading',
-        score: @vark_result.read_score,
+        score: format_score(@vark_result.read_score),
         color: '#3CC3DF',
         chart_id: 'dominantChart',
         chart_colors: %w[#d3d3d3 #d3d3d3 #3CC3DF #d3d3d3]
       }
+    end
+
+    def format_score(score)
+      return '0.0' if score.nil?
+
+      '%.1f' % score.to_f
     end
 
     def default_description

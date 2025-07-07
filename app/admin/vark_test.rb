@@ -149,7 +149,9 @@ ActiveAdmin.register VarkTest do
           row :aural_score
           row :read_score
           row :kinesthetic_score
-          row :dominant_learning_style
+          row 'Dominant Learning Styles' do |result|
+            result.dominant_learning_styles.join(', ')
+          end
           row :created_at
         end
       end

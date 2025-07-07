@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_07_05_165353) do
+ActiveRecord::Schema[8.0].define(version: 2025_07_07_073219) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -310,12 +310,12 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_05_165353) do
   create_table "vark_result_levels", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.uuid "vark_test_id", null: false
     t.uuid "user_id", null: false
-    t.integer "min_score", null: false
-    t.integer "max_score", null: false
-    t.integer "visual_score"
-    t.integer "aural_score"
-    t.integer "read_score"
-    t.integer "kinesthetic_score"
+    t.decimal "min_score", precision: 6, scale: 1, null: false
+    t.decimal "max_score", precision: 6, scale: 1, null: false
+    t.decimal "visual_score", precision: 6, scale: 1
+    t.decimal "aural_score", precision: 6, scale: 1
+    t.decimal "read_score", precision: 6, scale: 1
+    t.decimal "kinesthetic_score", precision: 6, scale: 1
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["user_id"], name: "index_vark_result_levels_on_user_id"
@@ -326,7 +326,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_05_165353) do
     t.uuid "vark_test_id", null: false
     t.uuid "vark_question_id", null: false
     t.uuid "vark_category_id", null: false
-    t.integer "point", null: false
+    t.decimal "point", precision: 4, scale: 1, null: false
     t.datetime "answered_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
