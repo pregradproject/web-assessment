@@ -26,7 +26,7 @@ class VarkResultLevel < ApplicationRecord
     dominant_codes = scores.select { |_, score| score == max_score }.keys
     category_names = {
       'V' => 'Visual',
-      'A' => 'Aural',
+      'A' => 'Auditory',
       'R' => 'Read/Write',
       'K' => 'Kinesthetic'
     }

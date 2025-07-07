@@ -51,6 +51,7 @@ module Certificates
       @percentages = percentages_array
       @learning_style_description = formatted_learning_style_description
       @dominant_style = get_dominant_style_info
+      @other_styles = get_other_styles_info
       @background_image_path = "file://#{Rails.root}/public/background.jpg"
     end
 
@@ -133,7 +134,7 @@ module Certificates
 
       category_code = case dominant_style
       when 'Visual' then 'V'
-      when 'Aural' then 'A'
+      when 'Auditory' then 'A'
       when 'Read/Write' then 'R'
       when 'Kinesthetic' then 'K'
       else 'R'
@@ -156,6 +157,36 @@ module Certificates
         chart_id: 'dominantChart',
         chart_colors: style[:chart_colors]
       }
+    end
+
+    def get_other_styles_info
+      dominant_style = @vark_result.dominant_learning_styles.first || 'Read/Write'
+      all_styles = %w[Visual Aural Read/Write Kinesthetic]
+      other_styles = all_styles - [ dominant_style ]
+
+      other_styles.map.with_index do |style_name, index|
+        style = style_map[style_name]
+        next unless style
+
+        {
+          name: style[:name],
+          score: style[:score].call,
+          color: style[:color],
+          chart_id: "otherChart#{index}",
+          chart_colors: style[:chart_colors],
+          css_class: get_css_class_for_style(style_name)
+        }
+      end.compact
+    end
+
+    def get_css_class_for_style(style_name)
+      case style_name
+      when 'Visual' then 'visual-score-title'
+      when 'Aural' then 'auditory-score-title'
+      when 'Read/Write' then 'reading-score-title'
+      when 'Kinesthetic' then 'kinesthetic-score-title'
+      else 'visual-score-title'
+      end
     end
 
     def style_map

@@ -334,6 +334,7 @@
 
         .visual-score-title { background: #8979FF; }
         .auditory-score-title { background: #FF928A; }
+        .reading-score-title { background: #3CC3DF; }
         .kinesthetic-score-title { background: #FFAE4C; }
 
         .signature-section {
@@ -426,24 +427,14 @@
         <div class="other-scores-section">
             <h2 class="section-title">Your Other Scores</h2>
             <div class="scores-grid">
+                <% @other_styles.each do |style| %>
                 <div class="score-item">
-                    <div class="score-item-title visual-score-title">Visual Score: <%= @visual_score %></div>
+                    <div class="score-item-title <%= style[:css_class] %>"><%= style[:name] %> Score: <%= style[:score] %></div>
                     <div class="score-item-widget">
-                        <div class="small-chart-container" id="visualChart"></div>
+                        <div class="small-chart-container" id="<%= style[:chart_id] %>"></div>
                     </div>
                 </div>
-                <div class="score-item">
-                    <div class="score-item-title auditory-score-title">Aural Score: <%= @aural_score %></div>
-                    <div class="score-item-widget">
-                        <div class="small-chart-container" id="auditoryChart"></div>
-                    </div>
-                </div>
-                <div class="score-item">
-                    <div class="score-item-title kinesthetic-score-title">Kinesthetic Score: <%= @kinesthetic_score %></div>
-                    <div class="score-item-widget">
-                        <div class="small-chart-container" id="kinestheticChart"></div>
-                    </div>
-                </div>
+                <% end %>
             </div>
         </div>
 
@@ -562,8 +553,9 @@
     var dominantChart = new ApexCharts(document.querySelector("#dominantChart"), dominantOptions);
     dominantChart.render();
 
-    // Visual Score Chart
-    var visualOptions = {
+    // Other Styles Charts
+    <% @other_styles.each do |style| %>
+    var <%= style[:chart_id] %>Options = {
         series: <%= @percentages.to_json %>,
         chart: {
             height: 170,
@@ -600,102 +592,13 @@
                 },
             }
         },
-        colors: ['#8979FF', '#d3d3d3', '#d3d3d3', '#d3d3d3'],
+        colors: <%= style[:chart_colors].to_json %>,
         labels: ['Visual', 'Auditory', 'Reading', 'Kinesthetic']
     };
 
-    var visualChart = new ApexCharts(document.querySelector("#visualChart"), visualOptions);
-    visualChart.render();
-
-    // Auditory Score Chart
-    var auditoryOptions = {
-        series: <%= @percentages.to_json %>,
-        chart: {
-            height: 170,
-            type: 'radialBar',
-        },
-        plotOptions: {
-            radialBar: {
-                offsetY: 0,
-                startAngle: 0,
-                endAngle: 270,
-                hollow: {
-                    margin: 5,
-                    size: '30%',
-                    background: 'transparent',
-                    image: undefined,
-                },
-                dataLabels: {
-                    name: {
-                        show: false,
-                    },
-                    value: {
-                        show: false,
-                    }
-                },
-                barLabels: {
-                    enabled: true,
-                    useSeriesColors: true,
-                    offsetX: -8,
-                    fontSize: '10px',
-                    formatter: function(seriesName, opts) {
-                        var actualScores = <%= @scores.to_json %>;
-                        return seriesName + ": " + actualScores[opts.seriesIndex];
-                    },
-                },
-            }
-        },
-        colors: ['#d3d3d3', '#FF928A', '#d3d3d3', '#d3d3d3'],
-        labels: ['Visual', 'Auditory', 'Reading', 'Kinesthetic']
-    };
-
-    var auditoryChart = new ApexCharts(document.querySelector("#auditoryChart"), auditoryOptions);
-    auditoryChart.render();
-
-    // Kinesthetic Score Chart
-    var kinestheticOptions = {
-        series: <%= @percentages.to_json %>,
-        chart: {
-            height: 170,
-            type: 'radialBar',
-        },
-        plotOptions: {
-            radialBar: {
-                offsetY: 0,
-                startAngle: 0,
-                endAngle: 270,
-                hollow: {
-                    margin: 5,
-                    size: '30%',
-                    background: 'transparent',
-                    image: undefined,
-                },
-                dataLabels: {
-                    name: {
-                        show: false,
-                    },
-                    value: {
-                        show: false,
-                    }
-                },
-                barLabels: {
-                    enabled: true,
-                    useSeriesColors: true,
-                    offsetX: -8,
-                    fontSize: '10px',
-                    formatter: function(seriesName, opts) {
-                        var actualScores = <%= @scores.to_json %>;
-                        return seriesName + ": " + actualScores[opts.seriesIndex];
-                    },
-                },
-            }
-        },
-        colors: ['#d3d3d3', '#d3d3d3', '#d3d3d3', '#FFAE4C'],
-        labels: ['Visual', 'Auditory', 'Reading', 'Kinesthetic']
-    };
-
-    var kinestheticChart = new ApexCharts(document.querySelector("#kinestheticChart"), kinestheticOptions);
-    kinestheticChart.render();
+    var <%= style[:chart_id] %> = new ApexCharts(document.querySelector("#<%= style[:chart_id] %>"), <%= style[:chart_id] %>Options);
+    <%= style[:chart_id] %>.render();
+    <% end %>
 </script>
 </body>
 </html>
