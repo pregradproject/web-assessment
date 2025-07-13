@@ -1,3 +1,5 @@
+require 'ostruct'
+
 module Vark
   class ResultDescriptionMatcher < ApplicationService
     attr_reader :dominant_learning_styles, :result_level
