@@ -60,6 +60,11 @@ module ExceptionHandler
       json_response(response, :unprocessable_entity, true)
     end
 
+    rescue_from CkvExceptions::NotFoundError do |e|
+      response = { code: e.code, message: e.message, error: true, status: :not_found }
+      render json: response, status: :not_found
+    end
+
     rescue_from CkvExceptions::ForbiddenError do |e|
       response = { code: e.code, message: e.message, error: true, status: :forbidden }
       render json: response, status: :forbidden
