@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_07_07_073219) do
+ActiveRecord::Schema[8.0].define(version: 2025_07_13_122257) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -305,6 +305,21 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_07_073219) do
     t.datetime "updated_at", null: false
     t.index ["vark_category_id"], name: "index_vark_questions_on_vark_category_id"
     t.index ["vark_question_set_id"], name: "index_vark_questions_on_vark_question_set_id"
+  end
+
+  create_table "vark_result_descriptions", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.string "combination_pattern", null: false
+    t.string "title", null: false
+    t.text "description", null: false
+    t.text "characteristics"
+    t.text "study_recommendations"
+    t.text "strengths"
+    t.text "potential_challenges"
+    t.text "career_suggestions"
+    t.boolean "active", default: true, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["combination_pattern"], name: "index_vark_result_descriptions_on_combination_pattern", unique: true
   end
 
   create_table "vark_result_levels", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|

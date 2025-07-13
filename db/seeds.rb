@@ -20,3 +20,6 @@ Config.find_or_create_by!(key: 'vark_price') do |config|
 end
 
 puts "Created default configs: vark_price = 30000"
+
+# Load VARK result descriptions
+load Rails.root.join('db', 'seeds', 'vark_result_descriptions.rb')

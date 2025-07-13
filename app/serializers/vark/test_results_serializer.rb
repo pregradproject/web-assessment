@@ -56,5 +56,23 @@ module Vark
         kinesthetic: categories['K']&.result_text
       }
     end
+
+    # New comprehensive result description
+    attribute :result_description do |object|
+      detailed_data = object.detailed_result_data
+
+      {
+        title: detailed_data[:title],
+        description: detailed_data[:description],
+        characteristics: detailed_data[:characteristics],
+        study_recommendations: detailed_data[:study_recommendations],
+        strengths: detailed_data[:strengths],
+        potential_challenges: detailed_data[:potential_challenges],
+        career_suggestions: detailed_data[:career_suggestions],
+        style_type: detailed_data[:style_type],
+        learning_styles: detailed_data[:learning_styles],
+        multimodal: detailed_data[:multimodal]
+      }
+    end
   end
 end

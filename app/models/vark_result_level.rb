@@ -44,4 +44,31 @@ class VarkResultLevel < ApplicationRecord
     score = score_for_category(code)
     ((score.to_f / total_score) * 100).round(1)
   end
+
+  def result_description
+    @result_description ||= Vark::ResultDescriptionMatcher.new(dominant_learning_styles, self).call
+  end
+
+  def detailed_result_data
+    description = result_description
+
+    {
+      title: description.title,
+      description: description.description,
+      characteristics: description.characteristics,
+      study_recommendations: description.study_recommendations,
+      strengths: description.strengths,
+      potential_challenges: description.potential_challenges,
+      career_suggestions: description.career_suggestions,
+      style_type: description.respond_to?(:style_type) ? description.style_type : 'Unknown',
+      learning_styles: description.respond_to?(:learning_styles) ? description.learning_styles : dominant_learning_styles,
+      multimodal: description.respond_to?(:multimodal?) ? description.multimodal? : dominant_learning_styles.length > 1,
+      score_percentages: {
+        visual: percentage_for_category('V'),
+        auditory: percentage_for_category('A'),
+        read_write: percentage_for_category('R'),
+        kinesthetic: percentage_for_category('K')
+      }
+    }
+  end
 end
