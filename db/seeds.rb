@@ -19,7 +19,17 @@ Config.find_or_create_by!(key: 'vark_price') do |config|
   config.description = 'Price for VARK test certificate in IDR'
 end
 
-puts "Created default configs: vark_price = 30000"
+Config.find_or_create_by!(key: 'ai_knowledge_price') do |config|
+  config.value = '35000'
+  config.value_type = 'integer'
+  config.description = 'Price for AI Knowledge test certificate in IDR'
+end
+
+puts "Created default configs: vark_price = 30000, ai_knowledge_price = 35000"
 
 # Load VARK result descriptions
 load Rails.root.join('db', 'seeds', 'vark_result_descriptions.rb')
+
+# Load AI Knowledge categories and questions
+load Rails.root.join('db', 'seeds', 'ai_knowledge_categories.rb')
+load Rails.root.join('db', 'seeds', 'ai_knowledge_questions.rb')

@@ -12,7 +12,8 @@ class AiKnowledgeQuestionSet < ApplicationRecord
   has_many :ai_knowledge_question_set_categories, dependent: :destroy
   has_many :ai_knowledge_categories, through: :ai_knowledge_question_set_categories
 
-  scope :active, -> { where(active: true).order(created_at: :desc).first }
+  scope :active, -> { where(active: true).order(created_at: :desc) }
+  scope :current_active, -> { where(active: true).order(created_at: :desc).first }
 
   def total_questions
     ai_knowledge_questions.count
