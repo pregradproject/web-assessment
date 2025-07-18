@@ -29,6 +29,25 @@ namespace :api do
           end
         end
       end
+
+      resources :ai_knowledge_tests, only: %i[index show create] do
+        member do
+          post :submit_answers, to: 'ai_knowledge_tests#submit_answers'
+          get :results, to: 'ai_knowledge_tests#results'
+        end
+
+        collection do
+          get :active_question_set, to: 'ai_knowledge_tests#active_question_set'
+        end
+
+        resource :orders, only: %i[show create] do
+          member do
+            post :payment_token, to: 'orders#payment_token'
+            post :generate_certificate, to: 'orders#generate_certificate'
+            get :download_certificate, to: 'orders#download_certificate'
+          end
+        end
+      end
     end
 
     # Midtrans webhook endpoint (no authentication needed)

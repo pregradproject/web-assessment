@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_07_13_122257) do
+ActiveRecord::Schema[8.0].define(version: 2025_07_18_170343) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -66,6 +66,105 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_13_122257) do
     t.datetime "updated_at", null: false
     t.index ["email"], name: "index_admin_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_admin_users_on_reset_password_token", unique: true
+  end
+
+  create_table "ai_knowledge_categories", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.string "code", limit: 2, null: false
+    t.string "name"
+    t.string "description"
+    t.string "result_text"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["code"], name: "index_ai_knowledge_categories_on_code", unique: true
+  end
+
+  create_table "ai_knowledge_question_set_categories", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "ai_knowledge_question_set_id", null: false
+    t.uuid "ai_knowledge_category_id", null: false
+    t.integer "time_limit_secs", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["ai_knowledge_category_id"], name: "idx_on_ai_knowledge_category_id_09e4d8da87"
+    t.index ["ai_knowledge_question_set_id"], name: "idx_on_ai_knowledge_question_set_id_564fcefc03"
+  end
+
+  create_table "ai_knowledge_question_sets", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.integer "version", null: false
+    t.string "name"
+    t.boolean "active", default: true, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.integer "time_limit", default: 0, null: false
+  end
+
+  create_table "ai_knowledge_questions", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "ai_knowledge_question_set_id", null: false
+    t.uuid "ai_knowledge_category_id", null: false
+    t.text "body", null: false
+    t.integer "max_weight", default: 5, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["ai_knowledge_category_id"], name: "index_ai_knowledge_questions_on_ai_knowledge_category_id"
+    t.index ["ai_knowledge_question_set_id"], name: "index_ai_knowledge_questions_on_ai_knowledge_question_set_id"
+  end
+
+  create_table "ai_knowledge_result_descriptions", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.string "combination_pattern", null: false
+    t.string "title", null: false
+    t.text "description", null: false
+    t.text "characteristics"
+    t.text "study_recommendations"
+    t.text "strengths"
+    t.text "potential_challenges"
+    t.text "career_suggestions"
+    t.boolean "active", default: true, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["combination_pattern"], name: "index_ai_knowledge_result_descriptions_on_combination_pattern", unique: true
+  end
+
+  create_table "ai_knowledge_result_levels", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "ai_knowledge_test_id", null: false
+    t.uuid "user_id", null: false
+    t.decimal "min_score", precision: 6, scale: 1, null: false
+    t.decimal "max_score", precision: 6, scale: 1, null: false
+    t.decimal "performance_expectancy_score", precision: 6, scale: 1
+    t.decimal "effort_expectancy_score", precision: 6, scale: 1
+    t.decimal "social_influence_score", precision: 6, scale: 1
+    t.decimal "facilitating_conditions_score", precision: 6, scale: 1
+    t.decimal "hedonic_motivation_score", precision: 6, scale: 1
+    t.decimal "price_value_score", precision: 6, scale: 1
+    t.decimal "habit_score", precision: 6, scale: 1
+    t.decimal "behavioral_intention_score", precision: 6, scale: 1
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["ai_knowledge_test_id"], name: "index_ai_knowledge_result_levels_on_ai_knowledge_test_id"
+    t.index ["user_id"], name: "index_ai_knowledge_result_levels_on_user_id"
+  end
+
+  create_table "ai_knowledge_test_answers", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "ai_knowledge_test_id", null: false
+    t.uuid "ai_knowledge_question_id", null: false
+    t.uuid "ai_knowledge_category_id", null: false
+    t.decimal "point", precision: 4, scale: 1, null: false
+    t.datetime "answered_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["ai_knowledge_category_id"], name: "index_ai_knowledge_test_answers_on_ai_knowledge_category_id"
+    t.index ["ai_knowledge_question_id"], name: "index_ai_knowledge_test_answers_on_ai_knowledge_question_id"
+    t.index ["ai_knowledge_test_id"], name: "index_ai_knowledge_test_answers_on_ai_knowledge_test_id"
+  end
+
+  create_table "ai_knowledge_tests", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "user_id", null: false
+    t.uuid "ai_knowledge_question_set_id", null: false
+    t.datetime "started_at"
+    t.datetime "completed_at"
+    t.integer "status", default: 0, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["ai_knowledge_question_set_id"], name: "index_ai_knowledge_tests_on_ai_knowledge_question_set_id"
+    t.index ["user_id"], name: "index_ai_knowledge_tests_on_user_id"
   end
 
   create_table "configs", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|

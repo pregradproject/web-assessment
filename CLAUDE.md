@@ -7,8 +7,10 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 This is a Rails 8.0.2 API application for a web assessment platform focused on VARK (Visual, Auditory, Reading, Kinesthetic) learning style tests. The application provides:
 
 - User authentication and management via JWT tokens
-- VARK assessment functionality with question sets and result analysis
+- VARK assessment functionality with question sets and comprehensive result analysis
+- Advanced multiple VARK result system with 15 learning style combinations
 - Order and payment processing system
+- Certificate generation with digital signatures
 - ActiveAdmin interface for content management
 - RESTful API endpoints under `/api/v1`
 
@@ -74,11 +76,15 @@ This is a Rails 8.0.2 API application for a web assessment platform focused on V
 - **VarkTest**: Assessment test instances with time limits and scoring
 - **VarkQuestion/VarkQuestionSet**: Question management and categorization
 - **VarkCategory**: Learning style categories (Visual, Auditory, Reading, Kinesthetic)
+- **VarkResultDescription**: Comprehensive learning style descriptions for all 15 VARK combinations
+- **VarkResultLevel**: Individual test result scores, percentages, and dominant learning style analysis
 - **Order/Payment**: E-commerce functionality for paid assessments
+- **Signature**: Digital certificate signing functionality
 
 ### Services Architecture
 - Services follow single responsibility pattern in `app/services/`
-- **VarkServices**: Handle test creation and answer submission logic
+- **VarkServices**: Handle test creation, answer submission, and result analysis logic
+- **Vark::ResultDescriptionMatcher**: Sophisticated pattern matching for VARK result descriptions with fallback strategies
 - **OrderServices**: Manage order processing and payment workflows
 - **ApplicationService**: Base service class pattern
 
@@ -86,7 +92,7 @@ This is a Rails 8.0.2 API application for a web assessment platform focused on V
 - Custom validators in `app/validators/` for complex business logic
 - JWT token authentication with expiration handling
 - CSRF protection enabled for JSON requests
-- Custom exception classes in `lib/ckv_exceptions/`
+- Custom exception classes in `lib/ckv_exceptions/` (including NotFoundError for 404 responses)
 
 ### Admin Interface
 - ActiveAdmin for content management at `/admin`
@@ -156,6 +162,7 @@ This is a Rails 8.0.2 API application for a web assessment platform focused on V
 - No need to add rescue, as there is already a global rescue in `app/controllers/concerns/exception_handler.rb`
 - For exceptions, use `lib/ckv_exceptions` to return specific status codes (e.g., 422 or 403)
 - Example validation pattern: `raise CkvExceptions::UnprocessableEntityError, validate.errors unless validate.valid?`
+- Use `CkvExceptions::NotFoundError` for 404 responses when resources are not found
 
 ## Background Jobs Usage
 
@@ -209,6 +216,7 @@ This is a Rails 8.0.2 API application for a web assessment platform focused on V
 
 - For the API response, always use serializer
 - Example: `json_response(Vark::ActiveQuestionSetSerializer.new(question_set).to_h, :ok, false)` from `app/serializers/vark/active_question_set_serializer.rb`
+- Test results include comprehensive analysis via `Vark::TestResultsSerializer` with detailed learning style descriptions, study recommendations, and career suggestions
 
 ## Service Naming Conventions
 
@@ -221,3 +229,26 @@ This is a Rails 8.0.2 API application for a web assessment platform focused on V
   - Move validations like order existence and test completion checks to controllers or dedicated validator classes
   - Avoid adding multiple validation checks directly in service methods
   - Use separate validator classes in `app/validators/` for complex validation logic
+
+## VARK Result System
+
+### Multiple Result Combinations
+- Supports 15 different VARK learning style combinations:
+  - Single-modal: V, A, R, K (4 combinations)
+  - Dual-modal: VA, VR, VK, AR, AK, RK (6 combinations)
+  - Triple-modal: VAR, VAK, VRK, ARK (4 combinations)
+  - Balanced multimodal: VARK (1 combination)
+
+### Result Analysis Features
+- **VarkResultDescription**: Comprehensive descriptions for each combination including:
+  - Detailed learning style analysis
+  - Study recommendations and strategies
+  - Career suggestions and paths
+  - Strengths and challenges identification
+- **VarkResultLevel**: Individual score analysis with percentages and dominant style identification
+- **ResultDescriptionMatcher**: Intelligent pattern matching with fallback strategies for partial matches
+
+### Seed Data
+- Complete seed data available in `db/seeds/vark_result_descriptions.rb`
+- Covers all 15 possible VARK combinations
+- Each description includes title, characteristics, study tips, career suggestions, strengths, and challenges
