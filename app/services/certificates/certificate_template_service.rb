@@ -49,9 +49,11 @@ module Certificates
     def prepare_chart_variables
       @scores = scores_array
       @percentages = percentages_array
-      @learning_style_description = formatted_learning_style_description
-      @dominant_style = get_dominant_style_info
-      @other_styles = get_other_styles_info
+      @result_data = get_result_data
+      @dominant_styles = get_dominant_styles_info
+      @learning_style_title = get_learning_style_title
+      @description = @result_data[:description]
+      @study_recommendations = @result_data[:study_recommendations]
       @background_image_path = "file://#{Rails.root}/public/background.jpg"
     end
 
@@ -122,55 +124,45 @@ module Certificates
       raw_scores.map { |score| ((score.to_f / total) * 100).round }
     end
 
-    def formatted_learning_style_description
-      category = get_dominant_category
-      return default_description unless category&.result_text.present?
-
-      description = category.result_text.strip
-      paragraphs = description.split("\n\n")
-      formatted_paragraphs = paragraphs.map { |p| "<p>#{p.strip}</p>" }
-      title = "<h3>#{category.name} Learning Style</h3>"
-
-      "#{title}\n#{formatted_paragraphs.join("\n")}"
+    def get_result_data
+      @vark_result.detailed_result_data
     end
 
-    def get_dominant_category
-      dominant_style = @vark_result.dominant_learning_styles.first
-      return nil unless dominant_style
+    def get_learning_style_title
+      dominant_styles = @vark_result.dominant_learning_styles
+      return 'Learning Style' if dominant_styles.empty?
 
-      category_code = case dominant_style
-      when 'Visual' then 'V'
-      when 'Auditory' then 'A'
-      when 'Read/Write' then 'R'
-      when 'Kinesthetic' then 'K'
-      else 'R'
+      code_part = map_styles_to_codes(dominant_styles).join('')
+      name_part = map_styles_to_display_names(dominant_styles).join(' - ')
+
+      "#{name_part} (#{code_part})"
+    end
+
+    def map_styles_to_codes(styles)
+      styles.map do |style|
+        case style
+        when 'Visual' then 'V'
+        when 'Auditory' then 'A'
+        when 'Read/Write' then 'R'
+        when 'Kinesthetic' then 'K'
+        end
+      end.compact
+    end
+
+    def map_styles_to_display_names(styles)
+      styles.map do |style|
+        case style
+        when 'Read/Write' then 'Reading'
+        else style
+        end
       end
-
-      VarkCategory.find_by(code: category_code)
     end
 
-    def get_dominant_style_info
-      dominant_style = @vark_result.dominant_learning_styles.first
-      return default_style_info unless dominant_style
+    def get_dominant_styles_info
+      dominant_styles = @vark_result.dominant_learning_styles
+      return [ default_style_info ] if dominant_styles.empty?
 
-      style = style_map[dominant_style]
-      return default_style_info unless style
-
-      {
-        name: style[:name],
-        score: style[:score].call,
-        color: style[:color],
-        chart_id: 'dominantChart',
-        chart_colors: style[:chart_colors]
-      }
-    end
-
-    def get_other_styles_info
-      dominant_style = @vark_result.dominant_learning_styles.first || 'Read/Write'
-      all_styles = %w[Visual Aural Read/Write Kinesthetic]
-      other_styles = all_styles - [ dominant_style ]
-
-      other_styles.map.with_index do |style_name, index|
+      dominant_styles.map do |style_name|
         style = style_map[style_name]
         next unless style
 
@@ -178,22 +170,31 @@ module Certificates
           name: style[:name],
           score: style[:score].call,
           color: style[:color],
-          chart_id: "otherChart#{index}",
-          chart_colors: style[:chart_colors],
-          css_class: get_css_class_for_style(style_name)
+          label: get_score_label(style_name)
         }
       end.compact
     end
 
-    def get_css_class_for_style(style_name)
+    def get_score_label(style_name)
       case style_name
-      when 'Visual' then 'visual-score-title'
-      when 'Aural' then 'auditory-score-title'
-      when 'Read/Write' then 'reading-score-title'
-      when 'Kinesthetic' then 'kinesthetic-score-title'
-      else 'visual-score-title'
+      when 'Visual' then 'Visual Score'
+      when 'Auditory' then 'Auditory Score'
+      when 'Read/Write' then 'Reading Score'
+      when 'Kinesthetic' then 'Kinesthetic Score'
+      else 'Score'
       end
     end
+
+    def get_style_class(style_name)
+      case style_name
+      when 'Visual' then 'visual'
+      when 'Auditory' then 'auditory'
+      when 'Reading' then 'reading'
+      when 'Kinesthetic' then 'kinesthetic'
+      else 'reading'
+      end
+    end
+
 
     def style_map
       {
@@ -203,7 +204,7 @@ module Certificates
           color: '#8979FF',
           chart_colors: %w[#8979FF #d3d3d3 #d3d3d3 #d3d3d3]
         },
-        'Aural' => {
+        'Auditory' => {
           name: 'Auditory',
           score: -> { format_score(@vark_result.aural_score) },
           color: '#FF928A',
@@ -229,8 +230,7 @@ module Certificates
         name: 'Reading',
         score: format_score(@vark_result.read_score),
         color: '#3CC3DF',
-        chart_id: 'dominantChart',
-        chart_colors: %w[#d3d3d3 #d3d3d3 #3CC3DF #d3d3d3]
+        label: 'Reading Score'
       }
     end
 
