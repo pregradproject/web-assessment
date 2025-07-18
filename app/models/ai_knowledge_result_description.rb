@@ -25,6 +25,28 @@ class AiKnowledgeResultDescription < ApplicationRecord
     8 => 'Balanced Multimodal'
   }.freeze
 
+  STYLE_NAME_TO_CODE_MAP = {
+    'performance expectancy' => 'PE',
+    'effort expectancy' => 'EE',
+    'social influence' => 'SI',
+    'facilitating conditions' => 'FC',
+    'hedonic motivation' => 'HM',
+    'price value' => 'PV',
+    'habit' => 'HT',
+    'behavioral intention' => 'BI'
+  }.freeze
+
+  CODE_TO_STYLE_NAME_MAP = {
+    'PE' => 'Performance Expectancy',
+    'EE' => 'Effort Expectancy',
+    'SI' => 'Social Influence',
+    'FC' => 'Facilitating Conditions',
+    'HM' => 'Hedonic Motivation',
+    'PV' => 'Price Value',
+    'HT' => 'Habit',
+    'BI' => 'Behavioral Intention'
+  }.freeze
+
   # Class method to find description by dominant learning styles array
   def self.find_by_dominant_styles(dominant_styles)
     return nil if dominant_styles.blank?
@@ -39,31 +61,11 @@ class AiKnowledgeResultDescription < ApplicationRecord
   # Class method to get all possible combination patterns
   def self.all_possible_patterns
     codes = %w[PE EE SI FC HM PV HT BI]
-    patterns = []
+    patterns = codes.dup
 
-    # Single patterns
-    patterns += codes
-
-    # Dual patterns
-    codes.combination(2).each { |combo| patterns << combo.sort.join }
-
-    # Triple patterns
-    codes.combination(3).each { |combo| patterns << combo.sort.join }
-
-    # Quadruple patterns
-    codes.combination(4).each { |combo| patterns << combo.sort.join }
-
-    # Quintuple patterns
-    codes.combination(5).each { |combo| patterns << combo.sort.join }
-
-    # Sextuple patterns
-    codes.combination(6).each { |combo| patterns << combo.sort.join }
-
-    # Septuple patterns
-    codes.combination(7).each { |combo| patterns << combo.sort.join }
-
-    # Octuple pattern
-    patterns << codes.sort.join
+    (2..8).each do |length|
+      patterns += generate_combinations(codes, length)
+    end
 
     patterns
   end
@@ -133,48 +135,20 @@ class AiKnowledgeResultDescription < ApplicationRecord
 
   # Class methods for code conversion
   def self.style_name_to_code(style_name)
-    case style_name.to_s.downcase
-    when 'performance expectancy'
-      'PE'
-    when 'effort expectancy'
-      'EE'
-    when 'social influence'
-      'SI'
-    when 'facilitating conditions'
-      'FC'
-    when 'hedonic motivation'
-      'HM'
-    when 'price value'
-      'PV'
-    when 'habit'
-      'HT'
-    when 'behavioral intention'
-      'BI'
-    end
+    STYLE_NAME_TO_CODE_MAP[style_name.to_s.downcase]
   end
 
   def self.normalize_pattern(codes)
     codes.map(&:upcase).uniq.sort.join
   end
 
+  def self.generate_combinations(codes, length)
+    return [ codes.sort.join ] if length == 8
+
+    codes.combination(length).map { |combo| combo.sort.join }
+  end
+
   def code_to_style_name(code)
-    case code
-    when 'PE'
-      'Performance Expectancy'
-    when 'EE'
-      'Effort Expectancy'
-    when 'SI'
-      'Social Influence'
-    when 'FC'
-      'Facilitating Conditions'
-    when 'HM'
-      'Hedonic Motivation'
-    when 'PV'
-      'Price Value'
-    when 'HT'
-      'Habit'
-    when 'BI'
-      'Behavioral Intention'
-    end
+    CODE_TO_STYLE_NAME_MAP[code]
   end
 end

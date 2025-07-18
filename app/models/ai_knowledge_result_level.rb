@@ -7,9 +7,9 @@ class AiKnowledgeResultLevel < ApplicationRecord
   belongs_to :user
 
   def total_score
-    (performance_expectancy_score || 0) + (effort_expectancy_score || 0) + 
-    (social_influence_score || 0) + (facilitating_conditions_score || 0) + 
-    (hedonic_motivation_score || 0) + (price_value_score || 0) + 
+    (performance_expectancy_score || 0) + (effort_expectancy_score || 0) +
+    (social_influence_score || 0) + (facilitating_conditions_score || 0) +
+    (hedonic_motivation_score || 0) + (price_value_score || 0) +
     (habit_score || 0) + (behavioral_intention_score || 0)
   end
 
