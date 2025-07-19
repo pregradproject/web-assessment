@@ -185,14 +185,22 @@ module Certificates
       return 'Learning Style' if dominant_styles.empty?
 
       if @test_type == :vark
-        code_part = map_vark_styles_to_codes(dominant_styles).join('')
-        name_part = map_vark_styles_to_display_names(dominant_styles).join(' - ')
-        "#{name_part} (#{code_part})"
-      else # ai_knowledge
-        code_part = map_ai_styles_to_codes(dominant_styles).join('')
-        name_part = map_ai_styles_to_display_names(dominant_styles).join(' - ')
-        "#{name_part} (#{code_part})"
+        build_vark_style_title(dominant_styles)
+      else
+        build_ai_knowledge_style_title(dominant_styles)
       end
+    end
+
+    def build_vark_style_title(dominant_styles)
+      code_part = map_vark_styles_to_codes(dominant_styles).join('')
+      name_part = map_vark_styles_to_display_names(dominant_styles).join(' - ')
+      "#{name_part} (#{code_part})"
+    end
+
+    def build_ai_knowledge_style_title(dominant_styles)
+      code_part = map_ai_styles_to_codes(dominant_styles).join('')
+      name_part = map_ai_styles_to_display_names(dominant_styles).join(' - ')
+      "#{name_part} (#{code_part})"
     end
 
     def map_vark_styles_to_codes(styles)
@@ -215,35 +223,34 @@ module Certificates
       end
     end
 
+    AI_STYLE_CODES = {
+      'Performance Expectancy' => 'PE',
+      'Effort Expectancy' => 'EE',
+      'Social Influence' => 'SI',
+      'Facilitating Conditions' => 'FC',
+      'Hedonic Motivation' => 'HM',
+      'Price Value' => 'PV',
+      'Habit' => 'HT',
+      'Behavioral Intention' => 'BI'
+    }.freeze
+
     def map_ai_styles_to_codes(styles)
-      styles.map do |style|
-        case style
-        when 'Performance Expectancy' then 'PE'
-        when 'Effort Expectancy' then 'EE'
-        when 'Social Influence' then 'SI'
-        when 'Facilitating Conditions' then 'FC'
-        when 'Hedonic Motivation' then 'HM'
-        when 'Price Value' then 'PV'
-        when 'Habit' then 'HT'
-        when 'Behavioral Intention' then 'BI'
-        end
-      end.compact
+      styles.map { |style| AI_STYLE_CODES[style] }.compact
     end
 
+    AI_STYLE_DISPLAY_NAMES = {
+      'Performance Expectancy' => 'Performance',
+      'Effort Expectancy' => 'Effort',
+      'Social Influence' => 'Social',
+      'Facilitating Conditions' => 'Facilitating',
+      'Hedonic Motivation' => 'Hedonic',
+      'Price Value' => 'Price',
+      'Habit' => 'Habit',
+      'Behavioral Intention' => 'Behavioral'
+    }.freeze
+
     def map_ai_styles_to_display_names(styles)
-      styles.map do |style|
-        case style
-        when 'Performance Expectancy' then 'Performance'
-        when 'Effort Expectancy' then 'Effort'
-        when 'Social Influence' then 'Social'
-        when 'Facilitating Conditions' then 'Facilitating'
-        when 'Hedonic Motivation' then 'Hedonic'
-        when 'Price Value' then 'Price'
-        when 'Habit' then 'Habit'
-        when 'Behavioral Intention' then 'Behavioral'
-        else style
-        end
-      end
+      styles.map { |style| AI_STYLE_DISPLAY_NAMES[style] || style }
     end
 
     def get_dominant_styles_info
@@ -283,18 +290,19 @@ module Certificates
       end
     end
 
+    AI_SCORE_LABELS = {
+      'Performance Expectancy' => 'Performance Score',
+      'Effort Expectancy' => 'Effort Score',
+      'Social Influence' => 'Social Score',
+      'Facilitating Conditions' => 'Facilitating Score',
+      'Hedonic Motivation' => 'Hedonic Score',
+      'Price Value' => 'Price Score',
+      'Habit' => 'Habit Score',
+      'Behavioral Intention' => 'Behavioral Score'
+    }.freeze
+
     def get_ai_knowledge_score_label(style_name)
-      case style_name
-      when 'Performance Expectancy' then 'Performance Score'
-      when 'Effort Expectancy' then 'Effort Score'
-      when 'Social Influence' then 'Social Score'
-      when 'Facilitating Conditions' then 'Facilitating Score'
-      when 'Hedonic Motivation' then 'Hedonic Score'
-      when 'Price Value' then 'Price Score'
-      when 'Habit' then 'Habit Score'
-      when 'Behavioral Intention' then 'Behavioral Score'
-      else 'Score'
-      end
+      AI_SCORE_LABELS[style_name] || 'Score'
     end
 
     def get_style_class(style_name)
