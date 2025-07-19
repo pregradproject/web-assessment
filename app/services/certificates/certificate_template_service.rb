@@ -4,14 +4,15 @@ module Certificates
 
     def initialize(order)
       @order = order
-      @vark_test = order.testable
+      @test = order.testable
       @user = order.user
-      @vark_result = @vark_test.vark_result_level
+      @test_type = determine_test_type
+      @result = get_result_level
     end
 
     def call
-      return failure_result('VarkTest not found') unless @vark_test
-      return failure_result('VarkResultLevel not found') unless @vark_result
+      return failure_result('Test not found') unless @test
+      return failure_result('Result not found') unless @result
       return failure_result('User not found') unless @user
 
       prepare_template_variables
@@ -40,10 +41,29 @@ module Certificates
     end
 
     def prepare_score_variables
-      @visual_score = format_score(@vark_result.visual_score)
-      @aural_score = format_score(@vark_result.aural_score)
-      @read_score = format_score(@vark_result.read_score)
-      @kinesthetic_score = format_score(@vark_result.kinesthetic_score)
+      if @test_type == :vark
+        prepare_vark_scores
+      elsif @test_type == :ai_knowledge
+        prepare_ai_knowledge_scores
+      end
+    end
+
+    def prepare_vark_scores
+      @visual_score = format_score(@result.visual_score)
+      @aural_score = format_score(@result.aural_score)
+      @read_score = format_score(@result.read_score)
+      @kinesthetic_score = format_score(@result.kinesthetic_score)
+    end
+
+    def prepare_ai_knowledge_scores
+      @performance_expectancy_score = format_score(@result.performance_expectancy_score)
+      @effort_expectancy_score = format_score(@result.effort_expectancy_score)
+      @social_influence_score = format_score(@result.social_influence_score)
+      @facilitating_conditions_score = format_score(@result.facilitating_conditions_score)
+      @hedonic_motivation_score = format_score(@result.hedonic_motivation_score)
+      @price_value_score = format_score(@result.price_value_score)
+      @habit_score = format_score(@result.habit_score)
+      @behavioral_intention_score = format_score(@result.behavioral_intention_score)
     end
 
     def prepare_chart_variables
@@ -81,7 +101,8 @@ module Certificates
     end
 
     def render_template
-      template_path = Rails.root.join('app', 'views', 'certificate', 'vark.html.erb')
+      template_name = @test_type == :vark ? 'vark.html.erb' : 'ai_knowledge.html.erb'
+      template_path = Rails.root.join('app', 'views', 'certificate', template_name)
       template_content = File.read(template_path)
       ERB.new(template_content).result(binding)
     end
@@ -99,46 +120,82 @@ module Certificates
     end
 
     def formatted_test_date
-      @vark_test.completed_at&.strftime('%Y-%m-%d') || Date.current.strftime('%Y-%m-%d')
+      @test.completed_at&.strftime('%Y-%m-%d') || Date.current.strftime('%Y-%m-%d')
     end
 
     def scores_array
-      [
-        format_score(@vark_result.visual_score),
-        format_score(@vark_result.aural_score),
-        format_score(@vark_result.read_score),
-        format_score(@vark_result.kinesthetic_score)
-      ]
+      if @test_type == :vark
+        [
+          format_score(@result.visual_score),
+          format_score(@result.aural_score),
+          format_score(@result.read_score),
+          format_score(@result.kinesthetic_score)
+        ]
+      else # ai_knowledge
+        [
+          format_score(@result.performance_expectancy_score),
+          format_score(@result.effort_expectancy_score),
+          format_score(@result.social_influence_score),
+          format_score(@result.facilitating_conditions_score),
+          format_score(@result.hedonic_motivation_score),
+          format_score(@result.price_value_score),
+          format_score(@result.habit_score),
+          format_score(@result.behavioral_intention_score)
+        ]
+      end
     end
 
     def percentages_array
-      raw_scores = [
-        @vark_result.visual_score || 0,
-        @vark_result.aural_score || 0,
-        @vark_result.read_score || 0,
-        @vark_result.kinesthetic_score || 0
-      ]
+      if @test_type == :vark
+        raw_scores = [
+          @result.visual_score || 0,
+          @result.aural_score || 0,
+          @result.read_score || 0,
+          @result.kinesthetic_score || 0
+        ]
+        calculate_percentages(raw_scores, 4)
+      else # ai_knowledge
+        raw_scores = [
+          @result.performance_expectancy_score || 0,
+          @result.effort_expectancy_score || 0,
+          @result.social_influence_score || 0,
+          @result.facilitating_conditions_score || 0,
+          @result.hedonic_motivation_score || 0,
+          @result.price_value_score || 0,
+          @result.habit_score || 0,
+          @result.behavioral_intention_score || 0
+        ]
+        calculate_percentages(raw_scores, 8)
+      end
+    end
+
+    def calculate_percentages(raw_scores, count)
       total = raw_scores.sum
-      return [ 0, 0, 0, 0 ] if total.zero?
+      return Array.new(count, 0) if total.zero?
 
       raw_scores.map { |score| ((score.to_f / total) * 100).round }
     end
 
     def get_result_data
-      @vark_result.detailed_result_data
+      @result.detailed_result_data
     end
 
     def get_learning_style_title
-      dominant_styles = @vark_result.dominant_learning_styles
+      dominant_styles = @result.dominant_learning_styles
       return 'Learning Style' if dominant_styles.empty?
 
-      code_part = map_styles_to_codes(dominant_styles).join('')
-      name_part = map_styles_to_display_names(dominant_styles).join(' - ')
-
-      "#{name_part} (#{code_part})"
+      if @test_type == :vark
+        code_part = map_vark_styles_to_codes(dominant_styles).join('')
+        name_part = map_vark_styles_to_display_names(dominant_styles).join(' - ')
+        "#{name_part} (#{code_part})"
+      else # ai_knowledge
+        code_part = map_ai_styles_to_codes(dominant_styles).join('')
+        name_part = map_ai_styles_to_display_names(dominant_styles).join(' - ')
+        "#{name_part} (#{code_part})"
+      end
     end
 
-    def map_styles_to_codes(styles)
+    def map_vark_styles_to_codes(styles)
       styles.map do |style|
         case style
         when 'Visual' then 'V'
@@ -149,7 +206,7 @@ module Certificates
       end.compact
     end
 
-    def map_styles_to_display_names(styles)
+    def map_vark_styles_to_display_names(styles)
       styles.map do |style|
         case style
         when 'Read/Write' then 'Reading'
@@ -158,9 +215,42 @@ module Certificates
       end
     end
 
+    def map_ai_styles_to_codes(styles)
+      styles.map do |style|
+        case style
+        when 'Performance Expectancy' then 'PE'
+        when 'Effort Expectancy' then 'EE'
+        when 'Social Influence' then 'SI'
+        when 'Facilitating Conditions' then 'FC'
+        when 'Hedonic Motivation' then 'HM'
+        when 'Price Value' then 'PV'
+        when 'Habit' then 'HT'
+        when 'Behavioral Intention' then 'BI'
+        end
+      end.compact
+    end
+
+    def map_ai_styles_to_display_names(styles)
+      styles.map do |style|
+        case style
+        when 'Performance Expectancy' then 'Performance'
+        when 'Effort Expectancy' then 'Effort'
+        when 'Social Influence' then 'Social'
+        when 'Facilitating Conditions' then 'Facilitating'
+        when 'Hedonic Motivation' then 'Hedonic'
+        when 'Price Value' then 'Price'
+        when 'Habit' then 'Habit'
+        when 'Behavioral Intention' then 'Behavioral'
+        else style
+        end
+      end
+    end
+
     def get_dominant_styles_info
-      dominant_styles = @vark_result.dominant_learning_styles
+      dominant_styles = @result.dominant_learning_styles
       return [ default_style_info ] if dominant_styles.empty?
+
+      style_map = @test_type == :vark ? vark_style_map : ai_knowledge_style_map
 
       dominant_styles.map do |style_name|
         style = style_map[style_name]
@@ -176,11 +266,33 @@ module Certificates
     end
 
     def get_score_label(style_name)
+      if @test_type == :vark
+        get_vark_score_label(style_name)
+      else
+        get_ai_knowledge_score_label(style_name)
+      end
+    end
+
+    def get_vark_score_label(style_name)
       case style_name
       when 'Visual' then 'Visual Score'
       when 'Auditory' then 'Auditory Score'
       when 'Read/Write' then 'Reading Score'
       when 'Kinesthetic' then 'Kinesthetic Score'
+      else 'Score'
+      end
+    end
+
+    def get_ai_knowledge_score_label(style_name)
+      case style_name
+      when 'Performance Expectancy' then 'Performance Score'
+      when 'Effort Expectancy' then 'Effort Score'
+      when 'Social Influence' then 'Social Score'
+      when 'Facilitating Conditions' then 'Facilitating Score'
+      when 'Hedonic Motivation' then 'Hedonic Score'
+      when 'Price Value' then 'Price Score'
+      when 'Habit' then 'Habit Score'
+      when 'Behavioral Intention' then 'Behavioral Score'
       else 'Score'
       end
     end
@@ -196,42 +308,96 @@ module Certificates
     end
 
 
-    def style_map
+    def vark_style_map
       {
         'Visual' => {
           name: 'Visual',
-          score: -> { format_score(@vark_result.visual_score) },
+          score: -> { format_score(@result.visual_score) },
           color: '#8979FF',
           chart_colors: %w[#8979FF #d3d3d3 #d3d3d3 #d3d3d3]
         },
         'Auditory' => {
           name: 'Auditory',
-          score: -> { format_score(@vark_result.aural_score) },
+          score: -> { format_score(@result.aural_score) },
           color: '#FF928A',
           chart_colors: %w[#d3d3d3 #FF928A #d3d3d3 #d3d3d3]
         },
         'Read/Write' => {
           name: 'Reading',
-          score: -> { format_score(@vark_result.read_score) },
+          score: -> { format_score(@result.read_score) },
           color: '#3CC3DF',
           chart_colors: %w[#d3d3d3 #d3d3d3 #3CC3DF #d3d3d3]
         },
         'Kinesthetic' => {
           name: 'Kinesthetic',
-          score: -> { format_score(@vark_result.kinesthetic_score) },
+          score: -> { format_score(@result.kinesthetic_score) },
           color: '#FFAE4C',
           chart_colors: %w[#d3d3d3 #d3d3d3 #d3d3d3 #FFAE4C]
         }
       }
     end
 
-    def default_style_info
+    def ai_knowledge_style_map
       {
-        name: 'Reading',
-        score: format_score(@vark_result.read_score),
-        color: '#3CC3DF',
-        label: 'Reading Score'
+        'Performance Expectancy' => {
+          name: 'Performance',
+          score: -> { format_score(@result.performance_expectancy_score) },
+          color: '#8979FF'
+        },
+        'Effort Expectancy' => {
+          name: 'Effort',
+          score: -> { format_score(@result.effort_expectancy_score) },
+          color: '#FF928A'
+        },
+        'Social Influence' => {
+          name: 'Social',
+          score: -> { format_score(@result.social_influence_score) },
+          color: '#3CC3DF'
+        },
+        'Facilitating Conditions' => {
+          name: 'Facilitating',
+          score: -> { format_score(@result.facilitating_conditions_score) },
+          color: '#FFAE4C'
+        },
+        'Hedonic Motivation' => {
+          name: 'Hedonic',
+          score: -> { format_score(@result.hedonic_motivation_score) },
+          color: '#9B59B6'
+        },
+        'Price Value' => {
+          name: 'Price',
+          score: -> { format_score(@result.price_value_score) },
+          color: '#E67E22'
+        },
+        'Habit' => {
+          name: 'Habit',
+          score: -> { format_score(@result.habit_score) },
+          color: '#2ECC71'
+        },
+        'Behavioral Intention' => {
+          name: 'Behavioral',
+          score: -> { format_score(@result.behavioral_intention_score) },
+          color: '#E74C3C'
+        }
       }
+    end
+
+    def default_style_info
+      if @test_type == :vark
+        {
+          name: 'Reading',
+          score: format_score(@result.read_score),
+          color: '#3CC3DF',
+          label: 'Reading Score'
+        }
+      else
+        {
+          name: 'Performance',
+          score: format_score(@result.performance_expectancy_score),
+          color: '#8979FF',
+          label: 'Performance Score'
+        }
+      end
     end
 
     def format_score(score)
@@ -255,6 +421,28 @@ module Certificates
 
     def failure_result(error_message)
       { success: false, error: error_message }
+    end
+
+    def determine_test_type
+      case @test.class.name
+      when 'VarkTest'
+        :vark
+      when 'AiKnowledgeTest'
+        :ai_knowledge
+      else
+        :unknown
+      end
+    end
+
+    def get_result_level
+      case @test_type
+      when :vark
+        @test.vark_result_level
+      when :ai_knowledge
+        @test.ai_knowledge_result_level
+      else
+        nil
+      end
     end
   end
 end

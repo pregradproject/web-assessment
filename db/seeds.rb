@@ -30,6 +30,7 @@ puts "Created default configs: vark_price = 30000, ai_knowledge_price = 35000"
 # Load VARK result descriptions
 load Rails.root.join('db', 'seeds', 'vark_result_descriptions.rb')
 
-# Load AI Knowledge categories and questions
+# Load AI Knowledge categories, questions, and result descriptions
 load Rails.root.join('db', 'seeds', 'ai_knowledge_categories.rb')
 load Rails.root.join('db', 'seeds', 'ai_knowledge_questions.rb')
+load Rails.root.join('db', 'seeds', 'ai_knowledge_result_descriptions.rb')

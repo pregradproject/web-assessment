@@ -5,8 +5,8 @@ module Vark
     end
 
     def call
-      midtrans_service = Midtrans::MidtransService.new
-      midtrans_service.handle_notification(@notification_data)
+      # Delegate to the generic Orders service
+      Orders::ProcessPaymentNotificationServices.call(@notification_data)
     end
   end
 end

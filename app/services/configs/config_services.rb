@@ -42,6 +42,10 @@ module Configs
       get('vark_price', 30000).to_i
     end
 
+    def ai_knowledge_price
+      get('ai_knowledge_price', 35000).to_i
+    end
+
     private
 
     def normalize_key(key)

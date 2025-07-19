@@ -1,14 +1,11 @@
 module Vark
   class PaymentTokenSerializer < ApplicationSerializer
-    attributes :id,
-               :snap_token,
-               :order_id,
-               :midtrans_order_id,
-               :status,
-               :amount,
-               :paid_at,
-               :expires_at,
-               :midtrans_transaction_id,
-               :midtrans_response
+    def initialize(object)
+      @object = object
+    end
+
+    def to_h
+      Orders::PaymentTokenSerializer.new(@object).to_h
+    end
   end
 end
