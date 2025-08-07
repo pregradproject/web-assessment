@@ -36,6 +36,7 @@ group :development, :test do
   gem 'brakeman', require: false
   gem 'rubocop-rails-omakase', require: false
   gem 'dotenv'
+  gem 'solargraph'
 end
 
 group :development do

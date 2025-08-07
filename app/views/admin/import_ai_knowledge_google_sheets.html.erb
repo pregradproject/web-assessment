@@ -1,0 +1,84 @@
+<% content_for :title, "Import AI Knowledge Questions from Google Sheets" %>
+
+<div class="panel">
+  <h3>Import from Google Sheets</h3>
+
+  <div class="panel_contents">
+    <%= form_tag process_google_sheets_import_admin_ai_knowledge_question_sets_path, method: :post do %>
+      <fieldset class="inputs">
+        <ol>
+          <li class="string input required">
+            <%= label_tag :google_sheets_url, "Google Sheets URL", class: "label" %>
+            <%= text_field_tag :google_sheets_url, "",
+                               placeholder: "https://docs.google.com/spreadsheets/d/...",
+                               class: "text_input",
+                               required: true %>
+            <p class="inline-hints">
+              Make sure the Google Sheet is publicly accessible and follows the template format.
+            </p>
+          </li>
+          <li class="number input required">
+            <%= label_tag :time_limit, "Question Set Time Limit", class: "label" %>
+            <%= number_field_tag :time_limit, 30, min: 1, class: "text_input", required: true %>
+            <p class="inline-hints">
+              Time limit in minutes (leave blank for no limit)
+            </p>
+          </li>
+        </ol>
+      </fieldset>
+
+      <fieldset class="actions">
+        <ol>
+          <li class="action input_action">
+            <%= submit_tag "Import Questions", class: "button" %>
+            <%= link_to "Cancel", admin_ai_knowledge_question_sets_path, class: "button" %>
+          </li>
+        </ol>
+      </fieldset>
+    <% end %>
+
+    <div class="template-info" style="margin-top: 20px; padding: 15px; background: #f8f9fa; border: 1px solid #dee2e6;">
+      <h4>Required Google Sheets Template Format:</h4>
+      <table style="width: 100%; border-collapse: collapse; margin-top: 10px;">
+        <thead>
+        <tr style="background: #e9ecef;">
+          <th style="border: 1px solid #dee2e6; padding: 8px;">Category</th>
+          <th style="border: 1px solid #dee2e6; padding: 8px;">Question</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+          <td style="border: 1px solid #dee2e6; padding: 8px;">PE</td>
+          <td style="border: 1px solid #dee2e6; padding: 8px;">Performance Expectancy question text here</td>
+        </tr>
+        <tr>
+          <td style="border: 1px solid #dee2e6; padding: 8px;">EE</td>
+          <td style="border: 1px solid #dee2e6; padding: 8px;">Effort Expectancy question text</td>
+        </tr>
+        <tr>
+          <td style="border: 1px solid #dee2e6; padding: 8px;">SI</td>
+          <td style="border: 1px solid #dee2e6; padding: 8px;">Social Influence question text</td>
+        </tr>
+        </tbody>
+      </table>
+      <p style="margin-top: 10px; font-size: 0.9em; color: #6c757d;">
+        <strong>Notes:</strong><br>
+        • Category must be one of: PE (Performance Expectancy), EE (Effort Expectancy), SI (Social Influence), FC (Facilitating Conditions), HM (Hedonic Motivation), PV (Price Value), HT (Habit), BI (Behavioral Intention)<br>
+        • Question text is required<br>
+        • First row should contain headers
+      </p>
+      
+      <h5 style="margin-top: 15px;">Category Descriptions:</h5>
+      <ul style="font-size: 0.9em; color: #6c757d;">
+        <li><strong>PE</strong> - Performance Expectancy: Questions about perceived usefulness and performance gains</li>
+        <li><strong>EE</strong> - Effort Expectancy: Questions about ease of use and learning difficulty</li>
+        <li><strong>SI</strong> - Social Influence: Questions about social pressure and influence from others</li>
+        <li><strong>FC</strong> - Facilitating Conditions: Questions about organizational and technical support</li>
+        <li><strong>HM</strong> - Hedonic Motivation: Questions about fun and enjoyment</li>
+        <li><strong>PV</strong> - Price Value: Questions about cost-benefit perception</li>
+        <li><strong>HT</strong> - Habit: Questions about automatic behavior and routine use</li>
+        <li><strong>BI</strong> - Behavioral Intention: Questions about intention to use technology</li>
+      </ul>
+    </div>
+  </div>
+</div>
