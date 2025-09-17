@@ -193,6 +193,14 @@ ActiveAdmin.register AiKnowledgeTest do
           row :certificate_status do |order|
             status_tag order.certificate_status
           end
+          row 'Certificate Download' do |order|
+            if order.can_download_certificate?
+              link_to 'Download Certificate', "/api/v1/ai_knowledge_tests/#{resource.id}/orders/download_certificate",
+                      class: 'button', target: '_blank', style: 'background-color: #5cb85c; color: white; padding: 5px 10px; text-decoration: none; border-radius: 3px;'
+            else
+              status_tag 'Not Available', class: 'error'
+            end
+          end
           row :expires_at
           row :created_at
         end
@@ -234,6 +242,20 @@ ActiveAdmin.register AiKnowledgeTest do
     end
   end
 
+  member_action :generate_certificate, method: :patch do
+    if resource.order&.paid?
+      result = Certificates::GenerateCertificateService.new(resource.order).call
+      if result[:success]
+        resource.order.update!(certificate_status: :generated)
+        redirect_to admin_ai_knowledge_test_path(resource), notice: 'Certificate generated successfully.'
+      else
+        redirect_to admin_ai_knowledge_test_path(resource), alert: "Certificate generation failed: #{result[:error]}"
+      end
+    else
+      redirect_to admin_ai_knowledge_test_path(resource), alert: 'Order must be paid before generating certificate.'
+    end
+  end
+
   action_item :force_complete, only: :show, if: proc { resource.in_progress? } do
     link_to 'Force Complete', force_complete_admin_ai_knowledge_test_path(resource), method: :patch,
             confirm: 'Are you sure you want to mark this test as completed?'
@@ -242,6 +264,16 @@ ActiveAdmin.register AiKnowledgeTest do
   action_item :extend_time, only: :show, if: proc { resource.in_progress? } do
     link_to 'Extend Time (+30 min)', extend_time_admin_ai_knowledge_test_path(resource), method: :patch,
             confirm: 'Are you sure you want to extend the test time by 30 minutes?'
+  end
+
+  action_item :download_certificate, only: :show, if: proc { resource.order&.can_download_certificate? } do
+    link_to 'Download Certificate', "/api/v1/ai_knowledge_tests/#{resource.id}/orders/download_certificate",
+            target: '_blank', class: 'button'
+  end
+
+  action_item :generate_certificate, only: :show, if: proc { resource.order&.paid? && !resource.order&.generated? } do
+    link_to 'Generate Certificate', generate_certificate_admin_ai_knowledge_test_path(resource),
+            method: :patch, confirm: 'Generate certificate for this test?'
   end
 
   # CSV export

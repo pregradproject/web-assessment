@@ -62,48 +62,122 @@
             text-align: center;
         }
 
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: #9ed442;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: #24348C;
+        }
+
+        .certificate-id {
+            font-size: 10px;
+            opacity: 0.9;
+        }
+
+        .main-content {
+            padding: 0;
+        }
+
+        .certificate-section {
+            background: url('<%= @background_image_path %>');
+            background-size: cover;
+            background-position: center;
+            padding: 25px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 0;
+            position: relative;
+        }
+
+        .certificate-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: #DFE4FF;
+            opacity: 0.8;
+            z-index: 1;
+        }
+
+        .certificate-section > * {
+            position: relative;
+            z-index: 2;
+        }
+
+        .certificate-info {
+            flex: 7;
+        }
+
+        .date {
+            color: #24348C;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+
+        .certificate-title {
+            font-size: 24px;
+            color: #24348C;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        .student-info {
+            font-size: 14px;
+            line-height: 1.4;
+        }
+
+        .student-info strong {
+            color: #24348C;
+        }
+
+        .score-circle {
+            width: 200px;
+            height: 200px;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            padding: 15px;
+            position: relative;
+            margin-left: 20px;
+            flex-shrink: 0;
+        }
+
+        .score-widget {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .score-title {
+            background: #9ed442;
+            color: white;
+            padding: 8px 24px;
+            border-radius: 15px;
+            font-size: 14px;
+            font-weight: bold;
+            position: absolute;
+            top: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            white-space: nowrap;
+        }
+
         .container {
             padding: 30px;
             max-width: 800px;
             margin: 0 auto;
-        }
-
-        .participant-info {
-            background: #F8F9FA;
-            border: 2px solid #E9ECEF;
-            border-radius: 12px;
-            padding: 25px;
-            margin-bottom: 30px;
-        }
-
-        .participant-info h2 {
-            font-size: 24px;
-            font-weight: 700;
-            margin-bottom: 20px;
-            text-align: center;
-        }
-
-        .info-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-        }
-
-        .info-item {
-            display: flex;
-            justify-content: space-between;
-            padding: 8px 0;
-            border-bottom: 1px solid #DEE2E6;
-        }
-
-        .info-label {
-            font-weight: 600;
-            color: #495057;
-        }
-
-        .info-value {
-            font-weight: 400;
-            color: #24348C;
         }
 
         .results-section {
@@ -153,11 +227,8 @@
         }
 
         .chart-container {
-            width: 100%;
-            height: 300px;
-            margin: 30px 0;
-            display: flex;
-            justify-content: center;
+            width: 180px;
+            height: 180px;
         }
 
         .result-description {
@@ -229,34 +300,35 @@
 <body>
     <div class="header">
         <div class="logo">
-            <div class="logo-text">CAKRAVIA</div>
+            <div class="logo-icon">b</div>
+            <div class="logo-text">logoipsum</div>
         </div>
-        <div class="report-title">AI Knowledge Assessment - Official Score Report</div>
+        <div class="report-title">
+            <h1>Cakravia Official Score Report</h1>
+            <div class="certificate-id">Certificate ID: <%= @certificate_id %></div>
+        </div>
     </div>
 
-    <div class="container">
-        <!-- Participant Information -->
-        <div class="participant-info">
-            <h2>Informasi Peserta</h2>
-            <div class="info-grid">
-                <div class="info-item">
-                    <span class="info-label">Nama:</span>
-                    <span class="info-value"><%= @user_name %></span>
+    <div class="main-content">
+        <div class="certificate-section">
+            <div class="certificate-info">
+                <div class="date"><%= @current_date %></div>
+                <h2 class="certificate-title">Certificate of Completion</h2>
+                <div class="student-info">
+                    <div><strong>Name:</strong> <%= @user_name %></div>
+                    <div><strong>Date of Birth:</strong> <%= @birth_date %></div>
+                    <div><strong>Test Date:</strong> <%= @test_date %></div>
                 </div>
-                <div class="info-item">
-                    <span class="info-label">Tanggal Lahir:</span>
-                    <span class="info-value"><%= @birth_date %></span>
-                </div>
-                <div class="info-item">
-                    <span class="info-label">Tanggal Tes:</span>
-                    <span class="info-value"><%= @test_date %></span>
-                </div>
-                <div class="info-item">
-                    <span class="info-label">ID Sertifikat:</span>
-                    <span class="info-value"><%= @certificate_id %></span>
+            </div>
+            <div class="score-circle total-score">
+                <div class="score-title">AI Knowledge Score</div>
+                <div class="score-widget">
+                    <div class="chart-container" id="aiKnowledgeChart"></div>
                 </div>
             </div>
         </div>
+
+        <div class="container">
 
         <!-- AI Knowledge Scores -->
         <div class="results-section">
@@ -330,55 +402,106 @@
             </div>
         </div>
 
-        <div class="footer">
-            <p>© 2024 Cakravia. Semua hak dilindungi undang-undang.</p>
-            <p>Sertifikat ini sah dan dapat diverifikasi melalui sistem Cakravia.</p>
+            <div class="footer">
+                <p>© 2024 Cakravia. Semua hak dilindungi undang-undang.</p>
+                <p>Sertifikat ini sah dan dapat diverifikasi melalui sistem Cakravia.</p>
+            </div>
         </div>
     </div>
 
     <script>
-        // AI Knowledge Chart
-        const aiKnowledgeOptions = {
+        // AI Knowledge Radar Chart
+        var aiKnowledgeOptions = {
+            series: [{
+                name: 'AI Knowledge Score',
+                data: <%= @scores.to_json.html_safe %>
+            }],
             chart: {
-                type: 'bar',
-                height: 300,
+                height: 180,
+                width: 180,
+                type: 'radar',
                 toolbar: { show: false },
                 animations: { enabled: false }
             },
-            series: [{
-                name: 'Score',
-                data: <%= @scores.to_json.html_safe %>
-            }],
             xaxis: {
-                categories: ['PE', 'EE', 'SI', 'FC', 'HM', 'PV', 'HT', 'BI'],
-                title: { text: 'AI Knowledge Components' }
+                categories: ['PE', 'EE', 'SI', 'FC', 'HM', 'PV', 'HT', 'BI']
             },
             yaxis: {
-                title: { text: 'Score' }
+                show: false,
+                min: 0,
+                max: function(max) {
+                    return Math.ceil(max * 1.1);
+                }
             },
-            colors: ['#8979FF', '#FF928A', '#3CC3DF', '#FFAE4C', '#9B59B6', '#E67E22', '#2ECC71', '#E74C3C'],
+            colors: ['#ABD305'],
+            fill: {
+                opacity: 0.2
+            },
+            stroke: {
+                show: true,
+                width: 2,
+                colors: ['#ABD305'],
+                dashArray: 0
+            },
+            markers: {
+                size: 4,
+                colors: ['#ABD305'],
+                strokeColor: '#ABD305',
+                strokeWidth: 2
+            },
             plotOptions: {
-                bar: {
-                    distributed: true,
-                    borderRadius: 4
+                radar: {
+                    size: 80,
+                    polygons: {
+                        strokeColors: '#e9ecef',
+                        fill: {
+                            colors: ['#f8f9fa', '#ffffff']
+                        }
+                    }
                 }
             },
             dataLabels: {
                 enabled: true,
+                background: {
+                    enabled: true,
+                    foreColor: '#fff',
+                    padding: 2,
+                    borderRadius: 2,
+                    borderWidth: 1,
+                    borderColor: '#ABD305',
+                    opacity: 0.9,
+                    dropShadow: {
+                        enabled: false
+                    }
+                },
+                style: {
+                    fontSize: '8px',
+                    colors: ['#ABD305']
+                },
                 formatter: function(val) {
                     return val.toFixed(1);
                 }
             },
             legend: { show: false },
-            title: {
-                text: 'AI Knowledge Assessment Results',
-                align: 'center',
-                style: { fontSize: '16px', fontWeight: 'bold', color: '#24348C' }
-            }
+            responsive: [{
+                breakpoint: 480,
+                options: {
+                    legend: {
+                        show: false
+                    }
+                }
+            }]
         };
 
-        const aiKnowledgeChart = new ApexCharts(document.querySelector("#aiKnowledgeChart"), aiKnowledgeOptions);
-        aiKnowledgeChart.render();
+        // Wait for DOM to be ready
+        document.addEventListener('DOMContentLoaded', function() {
+            if (typeof ApexCharts !== 'undefined') {
+                var aiKnowledgeChart = new ApexCharts(document.querySelector("#aiKnowledgeChart"), aiKnowledgeOptions);
+                aiKnowledgeChart.render();
+            } else {
+                console.log('ApexCharts not loaded');
+            }
+        });
 
         // Print-ready styling
         window.addEventListener('beforeprint', function() {
