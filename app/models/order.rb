@@ -2,17 +2,19 @@ class Order < ApplicationRecord
   include Rails.application.routes.url_helpers
 
   def self.ransackable_associations(auth_object = nil)
-    %w[certificate_pdf_attachment certificate_pdf_blob payments successful_payment testable user]
+    %w[certificate_pdf_attachment certificate_pdf_blob coupon coupon_usage payments successful_payment testable user]
   end
 
   def self.ransackable_attributes(auth_object = nil)
-    %w[amount category certificate_generated_at certificate_generation_error certificate_status created_at description expires_at id id_value order_number status testable_id testable_type updated_at user_id]
+    %w[amount category certificate_generated_at certificate_generation_error certificate_status coupon_discount_amount coupon_id created_at description expires_at id id_value order_number original_amount status testable_id testable_type updated_at user_id]
   end
 
   belongs_to :user
   belongs_to :testable, polymorphic: true
+  belongs_to :coupon, optional: true
   has_many :payments, dependent: :destroy
   has_one :successful_payment, -> { where(status: :settlement) }, class_name: 'Payment'
+  has_one :coupon_usage, dependent: :destroy
   has_one_attached :certificate_pdf
 
   enum :category, {
@@ -72,6 +74,24 @@ class Order < ApplicationRecord
 
   def certificate_url
     rails_blob_url(certificate_pdf, only_path: true)
+  end
+
+  def final_amount
+    amount
+  end
+
+  def has_coupon?
+    coupon.present?
+  end
+
+  def discount_percentage
+    return 0 unless has_coupon? && original_amount && original_amount > 0
+
+    (coupon_discount_amount / original_amount * 100).round(2)
+  end
+
+  def discount_amount
+    coupon_discount_amount || 0
   end
 
   private

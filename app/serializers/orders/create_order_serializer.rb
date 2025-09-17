@@ -7,7 +7,9 @@ module Orders
       :status,
       :expires_at,
       :created_at,
-      :description
+      :description,
+      :original_amount,
+      :coupon_discount_amount
     )
 
     attribute :test_type do |object|
@@ -37,6 +39,24 @@ module Orders
 
     attribute :can_download_certificate do |object|
       object.can_download_certificate?
+    end
+
+    attribute :coupon do |object|
+      if object.has_coupon?
+        {
+          code: object.coupon.code,
+          discount_type: object.coupon.discount_type,
+          display_discount: object.coupon.display_discount
+        }
+      end
+    end
+
+    attribute :pricing do |object|
+      {
+        final_amount: object.final_amount,
+        has_discount: object.has_coupon?,
+        discount_percentage: object.discount_percentage
+      }
     end
   end
 end

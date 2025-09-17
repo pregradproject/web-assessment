@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_07_18_170343) do
+ActiveRecord::Schema[8.0].define(version: 2025_09_17_153117) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -177,6 +177,38 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_18_170343) do
     t.index ["key"], name: "index_configs_on_key", unique: true
   end
 
+  create_table "coupon_usages", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "user_id", null: false
+    t.uuid "coupon_id", null: false
+    t.uuid "order_id", null: false
+    t.datetime "used_at", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.decimal "discount_amount", precision: 10, scale: 2, default: "0.0", null: false
+    t.index ["coupon_id", "used_at"], name: "index_coupon_usages_on_coupon_id_and_used_at"
+    t.index ["coupon_id"], name: "index_coupon_usages_on_coupon_id"
+    t.index ["order_id"], name: "index_coupon_usages_on_order_id", unique: true
+    t.index ["user_id", "coupon_id"], name: "index_coupon_usages_on_user_id_and_coupon_id"
+    t.index ["user_id"], name: "index_coupon_usages_on_user_id"
+  end
+
+  create_table "coupons", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.string "code", null: false
+    t.string "name", null: false
+    t.text "description"
+    t.integer "discount_type", null: false
+    t.decimal "discount_value", precision: 10, scale: 2, null: false
+    t.datetime "expiry_date"
+    t.integer "max_uses_per_user", default: 1, null: false
+    t.boolean "active", default: true, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["active", "expiry_date"], name: "index_coupons_on_active_and_expiry_date"
+    t.index ["active"], name: "index_coupons_on_active"
+    t.index ["code"], name: "index_coupons_on_code", unique: true
+    t.index ["expiry_date"], name: "index_coupons_on_expiry_date"
+  end
+
   create_table "orders", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.uuid "user_id", null: false
     t.string "testable_type", null: false
@@ -192,7 +224,12 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_18_170343) do
     t.datetime "certificate_generated_at"
     t.integer "certificate_status", default: 0
     t.text "certificate_generation_error"
+    t.decimal "coupon_discount_amount", precision: 10, scale: 2, default: "0.0"
+    t.decimal "original_amount", precision: 10, scale: 2
+    t.decimal "final_amount", precision: 10, scale: 2
+    t.uuid "coupon_id"
     t.index ["certificate_status"], name: "index_orders_on_certificate_status"
+    t.index ["coupon_id"], name: "index_orders_on_coupon_id"
     t.index ["order_number"], name: "index_orders_on_order_number", unique: true
     t.index ["status"], name: "index_orders_on_status"
     t.index ["testable_type", "testable_id"], name: "index_orders_on_testable"
@@ -463,6 +500,10 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_18_170343) do
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "coupon_usages", "coupons"
+  add_foreign_key "coupon_usages", "orders"
+  add_foreign_key "coupon_usages", "users"
+  add_foreign_key "orders", "coupons"
   add_foreign_key "orders", "users"
   add_foreign_key "payments", "orders"
   add_foreign_key "solid_queue_blocked_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade

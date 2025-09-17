@@ -135,7 +135,7 @@
     <orderEntry type="library" scope="PROVIDED" name="pp (v0.6.2, mise: 3.4.2) [gem]" level="application" />
     <orderEntry type="library" scope="PROVIDED" name="prettyprint (v0.2.0, mise: 3.4.2) [gem]" level="application" />
     <orderEntry type="library" scope="PROVIDED" name="prism (v1.4.0, mise: 3.4.2) [gem]" level="application" />
-    <orderEntry type="library" scope="PROVIDED" name="psych (v5.2.3, mise: 3.4.2) [gem]" level="application" />
+    <orderEntry type="library" scope="PROVIDED" name="psych (v5.2.6, mise: 3.4.2) [gem]" level="application" />
     <orderEntry type="library" scope="PROVIDED" name="public_suffix (v6.0.1, mise: 3.4.2) [gem]" level="application" />
     <orderEntry type="library" scope="PROVIDED" name="puma (v6.6.0, mise: 3.4.2) [gem]" level="application" />
     <orderEntry type="library" scope="PROVIDED" name="pundit (v2.5.0, mise: 3.4.2) [gem]" level="application" />

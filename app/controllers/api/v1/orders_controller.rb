@@ -15,7 +15,7 @@ module Api
         validate = Orders::CreateOrderValidator.new(@test)
         raise CkvExceptions::UnprocessableEntityError, validate.errors unless validate.valid?
 
-        result = Orders::CreateOrderServices.call(@test)
+        result = Orders::CreateOrderServices.call(@test, nil, params[:coupon_code])
         json_response(Orders::CreateOrderSerializer.new(result).to_h, :created, false)
       end
 

@@ -50,6 +50,13 @@ namespace :api do
       end
     end
 
+    # Coupon validation endpoint
+    resource :coupons, only: [] do
+      collection do
+        post :validate, to: 'coupons#validate'
+      end
+    end
+
     # Midtrans webhook endpoint (no authentication needed)
     post 'payments/webhook', to: 'orders#webhook'
   end
