@@ -1,4 +1,12 @@
 class BehavioralLearningTestAnswer < ApplicationRecord
+  def self.ransackable_attributes(auth_object = nil)
+    %w[id point answered_at created_at updated_at]
+  end
+
+  def self.ransackable_associations(auth_object = nil)
+    %w[behavioral_learning_test behavioral_learning_question behavioral_learning_category]
+  end
+
   belongs_to :behavioral_learning_test
   belongs_to :behavioral_learning_question
   belongs_to :behavioral_learning_category

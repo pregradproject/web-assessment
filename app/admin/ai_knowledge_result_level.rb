@@ -39,7 +39,7 @@ ActiveAdmin.register AiKnowledgeResultLevel do
     end
   end
 
-  filter :user, as: :select, collection: -> { User.joins(:ai_knowledge_result_level).distinct.order(:name) }
+  filter :user, as: :select, collection: -> { User.joins(:ai_knowledge_result_levels).distinct.order(:name) }
   filter :ai_knowledge_test, as: :select, collection: -> { AiKnowledgeTest.joins(:ai_knowledge_result_level).distinct.order(:created_at) }
   filter :performance_expectancy_score
   filter :effort_expectancy_score

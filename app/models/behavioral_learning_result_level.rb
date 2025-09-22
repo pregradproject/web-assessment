@@ -3,6 +3,10 @@ class BehavioralLearningResultLevel < ApplicationRecord
     %w[id total_score total_questions average_score level_label level_message created_at updated_at]
   end
 
+  def self.ransackable_associations(auth_object = nil)
+    %w[behavioral_learning_test user]
+  end
+
   belongs_to :behavioral_learning_test
   belongs_to :user
 

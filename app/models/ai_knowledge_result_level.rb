@@ -3,6 +3,10 @@ class AiKnowledgeResultLevel < ApplicationRecord
     %w[id min_score max_score performance_expectancy_score effort_expectancy_score social_influence_score facilitating_conditions_score hedonic_motivation_score price_value_score habit_score behavioral_intention_score created_at updated_at]
   end
 
+  def self.ransackable_associations(auth_object = nil)
+    %w[ai_knowledge_test user]
+  end
+
   belongs_to :ai_knowledge_test
   belongs_to :user
 

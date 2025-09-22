@@ -66,18 +66,27 @@ ActiveAdmin.register BehavioralLearningResultLevel do
     end
 
     panel 'Category Breakdown' do
-      table_for resource.category_breakdown do
-        column 'Category Code' do |code, score|
-          code
+      category_data = resource.category_breakdown.map do |code, total_score|
+        {
+          code: code,
+          total_score: total_score,
+          average_score: resource.category_average(code),
+          name: BehavioralLearningCategory.find_by(code: code)&.name
+        }
+      end
+
+      table_for category_data do
+        column 'Category Code' do |category|
+          category[:code]
         end
-        column 'Total Score' do |code, score|
-          score
+        column 'Total Score' do |category|
+          category[:total_score]
         end
-        column 'Average Score' do |code, score|
-          resource.category_average(code)
+        column 'Average Score' do |category|
+          category[:average_score]
         end
-        column 'Category Name' do |code, score|
-          BehavioralLearningCategory.find_by(code: code)&.name
+        column 'Category Name' do |category|
+          category[:name]
         end
       end
     end
