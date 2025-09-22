@@ -34,3 +34,6 @@ load Rails.root.join('db', 'seeds', 'vark_result_descriptions.rb')
 load Rails.root.join('db', 'seeds', 'ai_knowledge_categories.rb')
 load Rails.root.join('db', 'seeds', 'ai_knowledge_questions.rb')
 load Rails.root.join('db', 'seeds', 'ai_knowledge_result_descriptions.rb')
+
+# Load Behavioral Learning data
+load Rails.root.join('db', 'seeds', 'behavioral_learning_data.rb')

@@ -46,6 +46,10 @@ module Configs
       get('ai_knowledge_price', 35000).to_i
     end
 
+    def behavioral_learning_price
+      get('behavioral_learning_price', 40000).to_i
+    end
+
     private
 
     def normalize_key(key)

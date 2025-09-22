@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_09_17_153117) do
+ActiveRecord::Schema[8.0].define(version: 2025_09_22_143054) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -165,6 +165,103 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_17_153117) do
     t.datetime "updated_at", null: false
     t.index ["ai_knowledge_question_set_id"], name: "index_ai_knowledge_tests_on_ai_knowledge_question_set_id"
     t.index ["user_id"], name: "index_ai_knowledge_tests_on_user_id"
+  end
+
+  create_table "behavioral_learning_categories", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.string "code", limit: 1, null: false
+    t.string "name", null: false
+    t.text "description"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["code"], name: "index_behavioral_learning_categories_on_code", unique: true
+  end
+
+  create_table "behavioral_learning_question_set_categories", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "behavioral_learning_question_set_id", null: false
+    t.uuid "behavioral_learning_category_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["behavioral_learning_category_id"], name: "idx_on_behavioral_learning_category_id_07ba891428"
+    t.index ["behavioral_learning_question_set_id", "behavioral_learning_category_id"], name: "index_bl_question_set_categories_on_set_and_category", unique: true
+    t.index ["behavioral_learning_question_set_id"], name: "idx_on_behavioral_learning_question_set_id_4b8b562ad5"
+  end
+
+  create_table "behavioral_learning_question_sets", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.string "name", null: false
+    t.string "version", null: false
+    t.boolean "active", default: false
+    t.integer "time_limit", default: 1800
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["active"], name: "index_behavioral_learning_question_sets_on_active"
+  end
+
+  create_table "behavioral_learning_questions", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "behavioral_learning_question_set_id", null: false
+    t.uuid "behavioral_learning_category_id", null: false
+    t.text "body", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["behavioral_learning_category_id"], name: "idx_on_behavioral_learning_category_id_7a15636cb9"
+    t.index ["behavioral_learning_question_set_id"], name: "idx_on_behavioral_learning_question_set_id_fe386e2b40"
+  end
+
+  create_table "behavioral_learning_result_levels", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "behavioral_learning_test_id", null: false
+    t.uuid "user_id", null: false
+    t.integer "total_score", null: false
+    t.integer "total_questions", null: false
+    t.decimal "average_score", precision: 5, scale: 2, null: false
+    t.string "level_label", null: false
+    t.text "level_message", null: false
+    t.decimal "threshold_min", precision: 5, scale: 2, null: false
+    t.decimal "threshold_max", precision: 5, scale: 2, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["behavioral_learning_test_id"], name: "idx_on_behavioral_learning_test_id_bc00cfbe1a", unique: true
+    t.index ["user_id"], name: "index_behavioral_learning_result_levels_on_user_id"
+  end
+
+  create_table "behavioral_learning_test_answers", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "behavioral_learning_test_id", null: false
+    t.uuid "behavioral_learning_question_id", null: false
+    t.uuid "behavioral_learning_category_id", null: false
+    t.integer "point", null: false
+    t.datetime "answered_at", precision: nil, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["behavioral_learning_category_id"], name: "idx_on_behavioral_learning_category_id_f8cd56b199"
+    t.index ["behavioral_learning_question_id"], name: "idx_on_behavioral_learning_question_id_0ebd6f0b95"
+    t.index ["behavioral_learning_test_id", "behavioral_learning_question_id"], name: "index_bl_test_answers_on_test_and_question", unique: true
+    t.index ["behavioral_learning_test_id"], name: "idx_on_behavioral_learning_test_id_e14b4f7bf9"
+    t.check_constraint "point >= 1 AND point <= 5", name: "bl_point_range_check"
+  end
+
+  create_table "behavioral_learning_tests", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "user_id", null: false
+    t.uuid "behavioral_learning_question_set_id", null: false
+    t.integer "status", default: 0
+    t.datetime "started_at", precision: nil
+    t.datetime "completed_at", precision: nil
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["behavioral_learning_question_set_id"], name: "idx_on_behavioral_learning_question_set_id_eb0c9740b9"
+    t.index ["status"], name: "index_behavioral_learning_tests_on_status"
+    t.index ["user_id", "created_at"], name: "index_behavioral_learning_tests_on_user_id_and_created_at"
+    t.index ["user_id"], name: "index_behavioral_learning_tests_on_user_id"
+  end
+
+  create_table "behavioral_learning_threshold_levels", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.string "label", null: false
+    t.text "message", null: false
+    t.decimal "min_threshold", precision: 5, scale: 2, null: false
+    t.decimal "max_threshold", precision: 5, scale: 2, null: false
+    t.integer "priority", null: false
+    t.boolean "active", default: true
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["active"], name: "index_behavioral_learning_threshold_levels_on_active"
+    t.index ["priority"], name: "index_behavioral_learning_threshold_levels_on_priority", unique: true
   end
 
   create_table "configs", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -500,6 +597,17 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_17_153117) do
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "behavioral_learning_question_set_categories", "behavioral_learning_categories"
+  add_foreign_key "behavioral_learning_question_set_categories", "behavioral_learning_question_sets"
+  add_foreign_key "behavioral_learning_questions", "behavioral_learning_categories"
+  add_foreign_key "behavioral_learning_questions", "behavioral_learning_question_sets"
+  add_foreign_key "behavioral_learning_result_levels", "behavioral_learning_tests"
+  add_foreign_key "behavioral_learning_result_levels", "users"
+  add_foreign_key "behavioral_learning_test_answers", "behavioral_learning_categories"
+  add_foreign_key "behavioral_learning_test_answers", "behavioral_learning_questions"
+  add_foreign_key "behavioral_learning_test_answers", "behavioral_learning_tests"
+  add_foreign_key "behavioral_learning_tests", "behavioral_learning_question_sets"
+  add_foreign_key "behavioral_learning_tests", "users"
   add_foreign_key "coupon_usages", "coupons"
   add_foreign_key "coupon_usages", "orders"
   add_foreign_key "coupon_usages", "users"
