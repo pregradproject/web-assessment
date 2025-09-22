@@ -47,6 +47,7 @@ class Order < ApplicationRecord
   scope :active, -> { where(status: [ :pending, :paid ]) }
   scope :for_user, ->(user) { where(user: user) }
   scope :for_testable, ->(testable) { where(testable: testable) }
+  scope :recent, -> { order(created_at: :desc) }
 
   def paid?
     status == 'paid'

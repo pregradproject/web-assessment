@@ -1,0 +1,80 @@
+<% content_for :title, "Import Behavioral Learning Questions from Google Sheets" %>
+
+<div class="panel">
+  <h3>Import from Google Sheets</h3>
+
+  <div class="panel_contents">
+    <%= form_tag process_google_sheets_import_admin_behavioral_learning_question_sets_path, method: :post do %>
+      <fieldset class="inputs">
+        <ol>
+          <li class="string input required">
+            <%= label_tag :google_sheets_url, "Google Sheets URL", class: "label" %>
+            <%= text_field_tag :google_sheets_url, "",
+                               placeholder: "https://docs.google.com/spreadsheets/d/...",
+                               class: "text_input",
+                               required: true %>
+            <p class="inline-hints">
+              Make sure the Google Sheet is publicly accessible and follows the template format.
+            </p>
+          </li>
+          <li class="number input required">
+            <%= label_tag :time_limit, "Question Set Time Limit (minutes)", class: "label" %>
+            <%= number_field_tag :time_limit, 60, min: 1, class: "text_input", required: true %>
+          </li>
+        </ol>
+      </fieldset>
+
+      <fieldset class="actions">
+        <ol>
+          <li class="action input_action">
+            <%= submit_tag "Import Questions", class: "button" %>
+            <%= link_to "Cancel", admin_behavioral_learning_question_sets_path, class: "button" %>
+          </li>
+        </ol>
+      </fieldset>
+    <% end %>
+
+    <div class="template-info" style="margin-top: 20px; padding: 15px; background: #f8f9fa; border: 1px solid #dee2e6;">
+      <h4>Required Google Sheets Template Format:</h4>
+      <table style="width: 100%; border-collapse: collapse; margin-top: 10px;">
+        <thead>
+        <tr style="background: #e9ecef;">
+          <th style="border: 1px solid #dee2e6; padding: 8px;">Category</th>
+          <th style="border: 1px solid #dee2e6; padding: 8px;">Question</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+          <td style="border: 1px solid #dee2e6; padding: 8px;">M</td>
+          <td style="border: 1px solid #dee2e6; padding: 8px;">I set clear learning goals for myself</td>
+        </tr>
+        <tr>
+          <td style="border: 1px solid #dee2e6; padding: 8px;">A</td>
+          <td style="border: 1px solid #dee2e6; padding: 8px;">I actively participate in class discussions</td>
+        </tr>
+        <tr>
+          <td style="border: 1px solid #dee2e6; padding: 8px;">H</td>
+          <td style="border: 1px solid #dee2e6; padding: 8px;">I have a regular study schedule</td>
+        </tr>
+        <tr>
+          <td style="border: 1px solid #dee2e6; padding: 8px;">R</td>
+          <td style="border: 1px solid #dee2e6; padding: 8px;">I monitor my learning progress regularly</td>
+        </tr>
+        </tbody>
+      </table>
+      <p style="margin-top: 10px; font-size: 0.9em; color: #6c757d;">
+        <strong>Category Descriptions:</strong><br>
+        • <strong>M</strong> - Motivation: Questions about learning drive and goal-setting<br>
+        • <strong>A</strong> - Engagement: Questions about active participation and involvement<br>
+        • <strong>H</strong> - Learning Habits: Questions about study routines and practices<br>
+        • <strong>R</strong> - Self-Regulation: Questions about monitoring and adjusting learning<br>
+        <br>
+        <strong>Format Requirements:</strong><br>
+        • Category must be one of: M, A, H, R<br>
+        • Question text is required and should be a statement to rate on 1-5 scale<br>
+        • First row should contain headers (Category, Question)<br>
+        • Questions should be written as first-person statements for Likert scale rating
+      </p>
+    </div>
+  </div>
+</div>
