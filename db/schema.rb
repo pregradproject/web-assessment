@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_09_22_143054) do
+ActiveRecord::Schema[8.0].define(version: 2025_09_23_013927) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -262,6 +262,102 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_22_143054) do
     t.datetime "updated_at", null: false
     t.index ["active"], name: "index_behavioral_learning_threshold_levels_on_active"
     t.index ["priority"], name: "index_behavioral_learning_threshold_levels_on_priority", unique: true
+  end
+
+  create_table "comprehensive_assessment_categories", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.string "code", null: false
+    t.string "name", null: false
+    t.text "description"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["code"], name: "index_comprehensive_assessment_categories_on_code", unique: true
+  end
+
+  create_table "comprehensive_assessment_question_set_categories", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "comprehensive_assessment_question_set_id", null: false
+    t.uuid "comprehensive_assessment_category_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["comprehensive_assessment_category_id"], name: "idx_on_comprehensive_assessment_category_id_cbe73967b4"
+    t.index ["comprehensive_assessment_question_set_id", "comprehensive_assessment_category_id"], name: "idx_ca_qset_categories_unique", unique: true
+    t.index ["comprehensive_assessment_question_set_id"], name: "idx_on_comprehensive_assessment_question_set_id_d52bc3730e"
+  end
+
+  create_table "comprehensive_assessment_question_sets", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.integer "version", null: false
+    t.string "name", null: false
+    t.boolean "active", default: false, null: false
+    t.integer "time_limit", default: 0, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["active"], name: "index_comprehensive_assessment_question_sets_on_active"
+    t.index ["version"], name: "index_comprehensive_assessment_question_sets_on_version", unique: true
+  end
+
+  create_table "comprehensive_assessment_questions", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.text "body", null: false
+    t.uuid "comprehensive_assessment_question_set_id", null: false
+    t.uuid "comprehensive_assessment_category_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["comprehensive_assessment_category_id"], name: "idx_on_comprehensive_assessment_category_id_3f1031df47"
+    t.index ["comprehensive_assessment_question_set_id", "comprehensive_assessment_category_id"], name: "idx_ca_questions_on_set_and_category"
+    t.index ["comprehensive_assessment_question_set_id"], name: "idx_on_comprehensive_assessment_question_set_id_0a7de10852"
+  end
+
+  create_table "comprehensive_assessment_result_levels", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "comprehensive_assessment_test_id", null: false
+    t.uuid "user_id", null: false
+    t.integer "total_score"
+    t.integer "total_questions"
+    t.decimal "average_score", precision: 5, scale: 2
+    t.string "level_label"
+    t.text "level_message"
+    t.integer "threshold_min"
+    t.integer "threshold_max"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["comprehensive_assessment_test_id"], name: "idx_ca_result_levels_test_id_unique", unique: true
+    t.index ["comprehensive_assessment_test_id"], name: "idx_on_comprehensive_assessment_test_id_c9c15900ad"
+    t.index ["user_id"], name: "index_comprehensive_assessment_result_levels_on_user_id"
+  end
+
+  create_table "comprehensive_assessment_test_answers", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "comprehensive_assessment_test_id", null: false
+    t.uuid "comprehensive_assessment_question_id", null: false
+    t.uuid "comprehensive_assessment_category_id", null: false
+    t.integer "point", null: false
+    t.datetime "answered_at", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["comprehensive_assessment_category_id"], name: "idx_on_comprehensive_assessment_category_id_501cbc0961"
+    t.index ["comprehensive_assessment_question_id"], name: "idx_on_comprehensive_assessment_question_id_2a848120ca"
+    t.index ["comprehensive_assessment_test_id", "comprehensive_assessment_question_id"], name: "idx_ca_test_answers_unique", unique: true
+    t.index ["comprehensive_assessment_test_id"], name: "idx_on_comprehensive_assessment_test_id_08181c3b6c"
+  end
+
+  create_table "comprehensive_assessment_tests", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "user_id", null: false
+    t.uuid "comprehensive_assessment_question_set_id", null: false
+    t.datetime "started_at"
+    t.datetime "completed_at"
+    t.integer "status", default: 0, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["comprehensive_assessment_question_set_id"], name: "idx_on_comprehensive_assessment_question_set_id_07d32118bb"
+    t.index ["created_at"], name: "index_comprehensive_assessment_tests_on_created_at"
+    t.index ["status"], name: "index_comprehensive_assessment_tests_on_status"
+    t.index ["user_id"], name: "index_comprehensive_assessment_tests_on_user_id"
+  end
+
+  create_table "comprehensive_assessment_threshold_levels", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.string "level_label", null: false
+    t.text "level_message"
+    t.integer "threshold_min", null: false
+    t.integer "threshold_max", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["threshold_min", "threshold_max"], name: "idx_on_threshold_min_threshold_max_86b630d892", unique: true
   end
 
   create_table "configs", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -608,6 +704,17 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_22_143054) do
   add_foreign_key "behavioral_learning_test_answers", "behavioral_learning_tests"
   add_foreign_key "behavioral_learning_tests", "behavioral_learning_question_sets"
   add_foreign_key "behavioral_learning_tests", "users"
+  add_foreign_key "comprehensive_assessment_question_set_categories", "comprehensive_assessment_categories"
+  add_foreign_key "comprehensive_assessment_question_set_categories", "comprehensive_assessment_question_sets"
+  add_foreign_key "comprehensive_assessment_questions", "comprehensive_assessment_categories"
+  add_foreign_key "comprehensive_assessment_questions", "comprehensive_assessment_question_sets"
+  add_foreign_key "comprehensive_assessment_result_levels", "comprehensive_assessment_tests"
+  add_foreign_key "comprehensive_assessment_result_levels", "users"
+  add_foreign_key "comprehensive_assessment_test_answers", "comprehensive_assessment_categories"
+  add_foreign_key "comprehensive_assessment_test_answers", "comprehensive_assessment_questions"
+  add_foreign_key "comprehensive_assessment_test_answers", "comprehensive_assessment_tests"
+  add_foreign_key "comprehensive_assessment_tests", "comprehensive_assessment_question_sets"
+  add_foreign_key "comprehensive_assessment_tests", "users"
   add_foreign_key "coupon_usages", "coupons"
   add_foreign_key "coupon_usages", "orders"
   add_foreign_key "coupon_usages", "users"

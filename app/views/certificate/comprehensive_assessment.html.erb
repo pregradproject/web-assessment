@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cakravia Official Score Report</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/apexcharts/4.7.0/apexcharts.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Merriweather+Sans:wght@300;400;700;800&display=swap');
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        @page {
+            margin: 0;
+            padding: 0;
+            size: A4;
+        }
+
+        html, body {
+            font-family: 'Merriweather Sans', 'Open Sans', 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            color: #24348C;
+            width: 100%;
+            height: 100%;
+            box-sizing: border-box;
+        }
+
+        *, h1, h2, h3, h4, h5, h6, p, div, span {
+            font-family: 'Merriweather Sans', 'Open Sans', 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif !important;
+            color: #24348C !important;
+        }
+
+        .header {
+            background: #ABD305;
+            color: #24348C;
+            padding: 18px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: #9ed442;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: #24348C;
+        }
+
+        .logo-text {
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .report-title {
+            text-align: right;
+        }
+
+        .report-title h1 {
+            font-size: 18px;
+            margin-bottom: 3px;
+        }
+
+        .certificate-id {
+            font-size: 10px;
+            opacity: 0.9;
+        }
+
+        .main-content {
+            padding: 0;
+        }
+
+        .certificate-section {
+            background: url('<%= @background_image_path %>');
+            background-size: cover;
+            background-position: center;
+            padding: 25px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 0;
+            position: relative;
+        }
+
+        .certificate-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: #DFE4FF;
+            opacity: 0.8;
+            z-index: 1;
+        }
+
+        .certificate-section > * {
+            position: relative;
+            z-index: 2;
+        }
+
+        .certificate-info {
+            flex: 7;
+        }
+
+        .date {
+            color: #24348C;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+
+        .certificate-title {
+            font-size: 24px;
+            color: #24348C;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        .student-info {
+            font-size: 14px;
+            line-height: 1.4;
+        }
+
+        .student-info strong {
+            color: #24348C;
+        }
+
+        .score-circle {
+            width: 200px;
+            height: 200px;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            padding: 15px;
+            position: relative;
+            margin-left: 20px;
+            flex-shrink: 0;
+        }
+
+        .score-widget {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .chart-container {
+            width: 180px;
+            height: 180px;
+        }
+
+        .score-title {
+            background: #9ed442;
+            color: white;
+            padding: 8px 24px;
+            border-radius: 15px;
+            font-size: 14px;
+            font-weight: bold;
+            position: absolute;
+            top: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            white-space: nowrap;
+        }
+
+        /* New Layout Styles */
+        .learning-results-section {
+            padding: 10px 30px;
+            background: white;
+            text-align: center;
+        }
+
+        .learning-style-header {
+            margin-bottom: 30px;
+        }
+
+        .learning-style-main-title {
+            font-size: 18px;
+            color: #24348C;
+            margin-bottom: 10px;
+            font-weight: normal;
+        }
+
+        .learning-style-title {
+            font-size: 22px;
+            color: #24348C;
+            font-weight: bold;
+            margin-bottom: 30px;
+        }
+
+        .scores-container {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 40px;
+            flex-wrap: wrap;
+        }
+
+        .score-box {
+            background-color: white;
+            border: 2px solid;
+            border-radius: 12px;
+            padding: 18px 12px;
+            text-align: center;
+            min-width: 110px;
+            max-width: 130px;
+            position: relative;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .score-box.cf {
+            border-color: #8979FF;
+        }
+
+        .score-box.r {
+            border-color: #FF928A;
+        }
+
+        .score-box.e {
+            border-color: #3CC3DF;
+        }
+
+        .score-box.ag {
+            border-color: #FFAE4C;
+        }
+
+        .score-box.ma {
+            border-color: #FF6B9D;
+        }
+
+        .score-label {
+            font-size: 11px;
+            color: white;
+            font-weight: bold;
+            padding: 4px 8px;
+            border-radius: 8px;
+            position: absolute;
+            top: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            white-space: nowrap;
+        }
+
+        .score-label.cf {
+            background-color: #8979FF;
+        }
+
+        .score-label.r {
+            background-color: #FF928A;
+        }
+
+        .score-label.e {
+            background-color: #3CC3DF;
+        }
+
+        .score-label.ag {
+            background-color: #FFAE4C;
+        }
+
+        .score-label.ma {
+            background-color: #FF6B9D;
+        }
+
+        .score-value {
+            font-size: 28px;
+            font-weight: bold;
+            color: #24348C;
+            margin-top: 10px;
+        }
+
+        .description-section {
+            margin-bottom: 30px;
+            text-align: left;
+        }
+
+        .section-title {
+            font-size: 16px;
+            color: #24348C;
+            font-weight: bold;
+            margin-bottom: 15px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #24348C;
+        }
+
+        .section-content {
+            line-height: 1.6;
+            font-size: 13px;
+            color: #24348C;
+            text-align: justify;
+        }
+
+        .recommendation-section {
+            background-color: #e8f0ff;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: left;
+        }
+
+        .recommendation-title {
+            color: #24348C;
+            font-size: 15px;
+            font-weight: bold;
+            margin-bottom: 12px;
+        }
+
+        .recommendation-content {
+            font-size: 13px;
+            line-height: 1.6;
+            color: #24348C;
+            text-align: justify;
+        }
+
+        .signature-section {
+            text-align: center;
+            padding: 8px 30px 5px 30px;
+            border-top: 1px solid #e9ecef;
+            background: white;
+        }
+
+        .validation-text {
+            font-size: 11px;
+            color: #24348C;
+            margin-bottom: 15px;
+        }
+
+        .signature {
+            font-size: 20px;
+            font-style: italic;
+            color: #24348C;
+            margin-bottom: 8px;
+        }
+
+        .signature-image {
+            margin-bottom: 8px;
+        }
+
+        .signature-image img {
+            max-width: 120px;
+            max-height: 35px;
+            object-fit: contain;
+        }
+
+        .signature-name {
+            font-weight: bold;
+            color: #24348C;
+        }
+
+        .signature-title {
+            font-size: 11px;
+            color: #24348C;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="logo">
+            <div class="logo-icon">b</div>
+            <div class="logo-text">logoipsum</div>
+        </div>
+        <div class="report-title">
+            <h1>Cakravia Official Score Report</h1>
+            <div class="certificate-id">Certificate ID: <%= @certificate_id %></div>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <div class="certificate-section">
+            <div class="certificate-info">
+                <div class="date"><%= @current_date %></div>
+                <h2 class="certificate-title">Certificate of Completion</h2>
+                <div class="student-info">
+                    <div><strong>Name:</strong> <%= @user_name %></div>
+                    <div><strong>Date of Birth:</strong> <%= @birth_date %></div>
+                    <div><strong>Test Date:</strong> <%= @test_date %></div>
+                </div>
+            </div>
+            <div class="score-circle total-score">
+                <div class="score-title">Total Assessment Score</div>
+                <div class="score-widget">
+                    <div class="chart-container" id="totalChart"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="learning-results-section">
+            <div class="learning-style-header">
+                <div class="learning-style-main-title">Your Comprehensive Assessment Results</div>
+                <div class="learning-style-title"><%= @assessment_title %></div>
+            </div>
+
+            <div class="scores-container">
+                <!-- Show all five comprehensive assessment scores -->
+                <div class="score-box cf">
+                    <div class="score-label cf">Cognitive Flexibility</div>
+                    <div class="score-value"><%= @cf_score %></div>
+                </div>
+                <div class="score-box r">
+                    <div class="score-label r">Resilience</div>
+                    <div class="score-value"><%= @resilience_score %></div>
+                </div>
+                <div class="score-box e">
+                    <div class="score-label e">Self-Esteem</div>
+                    <div class="score-value"><%= @e_score %></div>
+                </div>
+                <div class="score-box ag">
+                    <div class="score-label ag">Academic Grit</div>
+                    <div class="score-value"><%= @ag_score %></div>
+                </div>
+                <div class="score-box ma">
+                    <div class="score-label ma">Metacognitive Awareness</div>
+                    <div class="score-value"><%= @ma_score %></div>
+                </div>
+            </div>
+
+            <div class="description-section">
+                <div class="section-title">Assessment Description</div>
+                <div class="section-content">
+                    <% if @description %>
+                        <%= @description %>
+                    <% else %>
+                        <p>Your comprehensive assessment results show your capabilities across five key areas: Cognitive Flexibility (CF), Resilience (R), Self-Esteem (E), Academic Grit (AG), and Metacognitive Awareness (MA). Each category reflects important aspects of your learning and development potential.</p>
+                    <% end %>
+                </div>
+            </div>
+
+            <div class="recommendation-section">
+                <div class="recommendation-title">Development Recommendations</div>
+                <div class="recommendation-content">
+                    <% if @study_recommendations %>
+                        <%= @study_recommendations %>
+                    <% else %>
+                        <p>Based on your assessment results, focus on leveraging your strongest areas while developing the areas that need improvement. Use your strengths to support growth in challenging areas and create a balanced development approach.</p>
+                    <% end %>
+                </div>
+            </div>
+        </div>
+
+        <div class="signature-section">
+            <div class="validation-text">Validated and approved</div>
+            <% if @has_signature_image %>
+            <div class="signature-image">
+                <img src="<%= @signature_image_path %>" alt="Signature" style="max-width: 120px; max-height: 35px;">
+            </div>
+            <% else %>
+            <div class="signature"><%= @signature_name %></div>
+            <% end %>
+            <div class="signature-name"><%= @signature_name %></div>
+            <div class="signature-title"><%= @signature_title %></div>
+        </div>
+    </div>
+
+<script>
+    // Total Assessment Score Chart
+    var totalOptions = {
+        series: <%= @percentages.to_json %>,
+        chart: {
+            height: 180,
+            width: 180,
+            type: 'radialBar',
+        },
+        plotOptions: {
+            radialBar: {
+                offsetY: 0,
+                startAngle: 0,
+                endAngle: 270,
+                hollow: {
+                    margin: 5,
+                    size: '30%',
+                    background: 'transparent',
+                    image: undefined,
+                },
+                dataLabels: {
+                    name: {
+                        show: false,
+                    },
+                    value: {
+                        show: false,
+                    }
+                },
+                barLabels: {
+                    enabled: true,
+                    useSeriesColors: true,
+                    offsetX: -8,
+                    fontSize: '9px',
+                    formatter: function(seriesName, opts) {
+                        var actualScores = <%= @scores.to_json %>;
+                        return seriesName + ": " + actualScores[opts.seriesIndex];
+                    },
+                },
+            }
+        },
+        colors: ['#8979FF', '#FF928A', '#3CC3DF', '#FFAE4C', '#FF6B9D'],
+        labels: ['Cognitive Flexibility', 'Resilience', 'Self-Esteem', 'Academic Grit', 'Metacognitive Awareness'],
+        responsive: [{
+            breakpoint: 480,
+            options: {
+                legend: {
+                    show: false
+                }
+            }
+        }]
+    };
+
+    // Wait for DOM to be ready
+    document.addEventListener('DOMContentLoaded', function() {
+        if (typeof ApexCharts !== 'undefined') {
+            var totalChart = new ApexCharts(document.querySelector("#totalChart"), totalOptions);
+            totalChart.render();
+        } else {
+            console.log('ApexCharts not loaded');
+        }
+    });
+</script>
+</body>
+</html>

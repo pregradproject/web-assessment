@@ -39,32 +39,58 @@ module Orders
     end
 
     def get_test_config(test)
-      case test.class.name
-      when 'VarkTest'
-        {
-          category: 'vark_certificate',
-          name: 'VARK Learning Style Assessment',
-          default_amount: Configs::ConfigServices.vark_price
-        }
-      when 'AiKnowledgeTest'
-        {
-          category: 'ai_knowledge_certificate',
-          name: 'AI Knowledge Assessment',
-          default_amount: Configs::ConfigServices.ai_knowledge_price
-        }
-      when 'BehavioralLearningTest'
-        {
-          category: 'behavioral_learning_certificate',
-          name: 'Behavioral Learning Assessment',
-          default_amount: Configs::ConfigServices.behavioral_learning_price
-        }
-      else
-        {
-          category: 'general_certificate',
-          name: 'Assessment',
-          default_amount: Configs::ConfigServices.get('general_price', 50000)
-        }
-      end
+      test_configs[test.class.name] || default_test_config
+    end
+
+    private
+
+    def test_configs
+      {
+        'VarkTest' => vark_config,
+        'AiKnowledgeTest' => ai_knowledge_config,
+        'BehavioralLearningTest' => behavioral_learning_config,
+        'ComprehensiveAssessmentTest' => comprehensive_assessment_config
+      }
+    end
+
+    def vark_config
+      {
+        category: 'vark_certificate',
+        name: 'VARK Learning Style Assessment',
+        default_amount: Configs::ConfigServices.vark_price
+      }
+    end
+
+    def ai_knowledge_config
+      {
+        category: 'ai_knowledge_certificate',
+        name: 'AI Knowledge Assessment',
+        default_amount: Configs::ConfigServices.ai_knowledge_price
+      }
+    end
+
+    def behavioral_learning_config
+      {
+        category: 'behavioral_learning_certificate',
+        name: 'Behavioral Learning Assessment',
+        default_amount: Configs::ConfigServices.behavioral_learning_price
+      }
+    end
+
+    def comprehensive_assessment_config
+      {
+        category: 'comprehensive_assessment_certificate',
+        name: 'Comprehensive Assessment',
+        default_amount: Configs::ConfigServices.comprehensive_assessment_price
+      }
+    end
+
+    def default_test_config
+      {
+        category: 'general_certificate',
+        name: 'Assessment',
+        default_amount: Configs::ConfigServices.get('general_price', 50000)
+      }
     end
   end
 end

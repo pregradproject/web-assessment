@@ -47,6 +47,8 @@ module Certificates
         prepare_ai_knowledge_scores
       elsif @test_type == :behavioral_learning
         prepare_behavioral_learning_scores
+      elsif @test_type == :comprehensive_assessment
+        prepare_comprehensive_assessment_scores
       end
     end
 
@@ -75,12 +77,21 @@ module Certificates
       @r_score = format_score(@result.category_average('R'))
     end
 
+    def prepare_comprehensive_assessment_scores
+      @cf_score = format_score(@result.category_average('CF'))
+      @resilience_score = format_score(@result.category_average('R'))
+      @e_score = format_score(@result.category_average('E'))
+      @ag_score = format_score(@result.category_average('AG'))
+      @ma_score = format_score(@result.category_average('MA'))
+    end
+
     def prepare_chart_variables
       @scores = scores_array
       @percentages = percentages_array
       @result_data = get_result_data
       @dominant_styles = get_dominant_styles_info
       @learning_style_title = get_learning_style_title
+      @assessment_title = @learning_style_title # For comprehensive assessment compatibility
       @description = @result_data[:description]
       @study_recommendations = @result_data[:study_recommendations]
       @background_image_path = "file://#{Rails.root}/public/background.jpg"
@@ -122,6 +133,8 @@ module Certificates
         'vark.html.erb'
       when :behavioral_learning
         'behavioral_learning.html.erb'
+      when :comprehensive_assessment
+        'comprehensive_assessment.html.erb'
       else
         'ai_knowledge.html.erb'
       end
@@ -158,6 +171,14 @@ module Certificates
           format_score(@result.category_average('H')),
           format_score(@result.category_average('R'))
         ]
+      elsif @test_type == :comprehensive_assessment
+        [
+          format_score(@result.category_average('CF')),
+          format_score(@result.category_average('R')),
+          format_score(@result.category_average('E')),
+          format_score(@result.category_average('AG')),
+          format_score(@result.category_average('MA'))
+        ]
       else # ai_knowledge
         [
           format_score(@result.performance_expectancy_score),
@@ -173,35 +194,63 @@ module Certificates
     end
 
     def percentages_array
-      if @test_type == :vark
-        raw_scores = [
-          @result.visual_score || 0,
-          @result.aural_score || 0,
-          @result.read_score || 0,
-          @result.kinesthetic_score || 0
-        ]
-        calculate_percentages(raw_scores, 4)
-      elsif @test_type == :behavioral_learning
-        raw_scores = [
-          @result.category_average('M') || 0,
-          @result.category_average('A') || 0,
-          @result.category_average('H') || 0,
-          @result.category_average('R') || 0
-        ]
-        calculate_percentages(raw_scores, 4)
+      case @test_type
+      when :vark
+        calculate_vark_percentages
+      when :behavioral_learning
+        calculate_behavioral_learning_percentages
+      when :comprehensive_assessment
+        calculate_comprehensive_assessment_percentages
       else # ai_knowledge
-        raw_scores = [
-          @result.performance_expectancy_score || 0,
-          @result.effort_expectancy_score || 0,
-          @result.social_influence_score || 0,
-          @result.facilitating_conditions_score || 0,
-          @result.hedonic_motivation_score || 0,
-          @result.price_value_score || 0,
-          @result.habit_score || 0,
-          @result.behavioral_intention_score || 0
-        ]
-        calculate_percentages(raw_scores, 8)
+        calculate_ai_knowledge_percentages
       end
+    end
+
+    private
+
+    def calculate_vark_percentages
+      raw_scores = [
+        @result.visual_score || 0,
+        @result.aural_score || 0,
+        @result.read_score || 0,
+        @result.kinesthetic_score || 0
+      ]
+      calculate_percentages(raw_scores, 4)
+    end
+
+    def calculate_behavioral_learning_percentages
+      raw_scores = [
+        @result.category_average('M') || 0,
+        @result.category_average('A') || 0,
+        @result.category_average('H') || 0,
+        @result.category_average('R') || 0
+      ]
+      calculate_percentages(raw_scores, 4)
+    end
+
+    def calculate_comprehensive_assessment_percentages
+      raw_scores = [
+        @result.category_average('CF') || 0,
+        @result.category_average('R') || 0,
+        @result.category_average('E') || 0,
+        @result.category_average('AG') || 0,
+        @result.category_average('MA') || 0
+      ]
+      calculate_percentages(raw_scores, 5)
+    end
+
+    def calculate_ai_knowledge_percentages
+      raw_scores = [
+        @result.performance_expectancy_score || 0,
+        @result.effort_expectancy_score || 0,
+        @result.social_influence_score || 0,
+        @result.facilitating_conditions_score || 0,
+        @result.hedonic_motivation_score || 0,
+        @result.price_value_score || 0,
+        @result.habit_score || 0,
+        @result.behavioral_intention_score || 0
+      ]
+      calculate_percentages(raw_scores, 8)
     end
 
     def calculate_percentages(raw_scores, count)
@@ -221,6 +270,8 @@ module Certificates
         build_behavioral_learning_style_title
       when :vark
         build_vark_learning_style_title
+      when :comprehensive_assessment
+        build_comprehensive_assessment_style_title
       else
         build_ai_knowledge_learning_style_title
       end
@@ -245,6 +296,13 @@ module Certificates
       return 'Learning Style' if dominant_styles.empty?
 
       build_ai_knowledge_style_title(dominant_styles)
+    end
+
+    def build_comprehensive_assessment_style_title
+      strongest_categories = @result.strongest_categories
+      return 'Comprehensive Assessment Profile' if strongest_categories.empty?
+
+      strongest_categories.join(' - ')
     end
 
     def build_vark_style_title(dominant_styles)
@@ -580,29 +638,29 @@ module Certificates
     end
 
     def determine_test_type
-      case @test.class.name
-      when 'VarkTest'
-        :vark
-      when 'AiKnowledgeTest'
-        :ai_knowledge
-      when 'BehavioralLearningTest'
-        :behavioral_learning
-      else
-        :unknown
-      end
+      test_type_mapping[@test.class.name] || :unknown
     end
 
     def get_result_level
-      case @test_type
-      when :vark
-        @test.vark_result_level
-      when :ai_knowledge
-        @test.ai_knowledge_result_level
-      when :behavioral_learning
-        @test.behavioral_learning_result_level
-      else
-        nil
-      end
+      result_level_mapping[@test_type]
+    end
+
+    def test_type_mapping
+      {
+        'VarkTest' => :vark,
+        'AiKnowledgeTest' => :ai_knowledge,
+        'BehavioralLearningTest' => :behavioral_learning,
+        'ComprehensiveAssessmentTest' => :comprehensive_assessment
+      }
+    end
+
+    def result_level_mapping
+      {
+        vark: @test.vark_result_level,
+        ai_knowledge: @test.ai_knowledge_result_level,
+        behavioral_learning: @test.behavioral_learning_result_level,
+        comprehensive_assessment: @test.comprehensive_assessment_result_level
+      }
     end
   end
 end

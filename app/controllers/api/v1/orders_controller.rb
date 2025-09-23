@@ -70,15 +70,18 @@ module Api
       private
 
       def set_test
-        if params[:vark_test_id].present?
-          @test = current_user.vark_tests.find(params[:vark_test_id])
-        elsif params[:ai_knowledge_test_id].present?
-          @test = current_user.ai_knowledge_tests.find(params[:ai_knowledge_test_id])
-        elsif params[:behavioral_learning_test_id].present?
-          @test = current_user.behavioral_learning_tests.find(params[:behavioral_learning_test_id])
-        else
-          raise CkvExceptions::NotFoundError, 'Test not found'
-        end
+        @test = find_test_by_type || raise_test_not_found
+      end
+
+      def find_test_by_type
+        return current_user.vark_tests.find(params[:vark_test_id]) if params[:vark_test_id].present?
+        return current_user.ai_knowledge_tests.find(params[:ai_knowledge_test_id]) if params[:ai_knowledge_test_id].present?
+        return current_user.behavioral_learning_tests.find(params[:behavioral_learning_test_id]) if params[:behavioral_learning_test_id].present?
+        current_user.comprehensive_assessment_tests.find(params[:comprehensive_assessment_test_id]) if params[:comprehensive_assessment_test_id].present?
+      end
+
+      def raise_test_not_found
+        raise CkvExceptions::NotFoundError, 'Test not found'
       end
     end
   end

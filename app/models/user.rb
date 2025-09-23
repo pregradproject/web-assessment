@@ -20,6 +20,8 @@ class User < ApplicationRecord
   has_many :ai_knowledge_result_levels, dependent: :destroy
   has_many :behavioral_learning_tests, dependent: :destroy
   has_many :behavioral_learning_result_levels, dependent: :destroy
+  has_many :comprehensive_assessment_tests, dependent: :destroy
+  has_many :comprehensive_assessment_result_levels, dependent: :destroy
   has_many :orders, dependent: :destroy
   has_many :payments, through: :orders
 

@@ -50,6 +50,10 @@ module Configs
       get('behavioral_learning_price', 40000).to_i
     end
 
+    def comprehensive_assessment_price
+      get('comprehensive_assessment_price', 45000).to_i
+    end
+
     private
 
     def normalize_key(key)

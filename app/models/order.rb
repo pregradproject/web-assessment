@@ -20,7 +20,9 @@ class Order < ApplicationRecord
   enum :category, {
     vark_certificate: 0,
     general_certificate: 1,
-    ai_knowledge_certificate: 2
+    ai_knowledge_certificate: 2,
+    behavioral_learning_certificate: 3,
+    comprehensive_assessment_certificate: 4
   }
 
   enum :status, {
