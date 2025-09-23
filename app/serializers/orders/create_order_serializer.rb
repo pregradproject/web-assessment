@@ -9,7 +9,8 @@ module Orders
       :created_at,
       :description,
       :original_amount,
-      :coupon_discount_amount
+      :coupon_discount_amount,
+      :certificate_status
     )
 
     attribute :test_type do |object|

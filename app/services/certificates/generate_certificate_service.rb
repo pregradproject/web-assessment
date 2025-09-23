@@ -79,6 +79,7 @@ module Certificates
           content_type: 'application/pdf'
         )
       end
+      order.update!(certificate_status: :generated)
     end
   end
 end

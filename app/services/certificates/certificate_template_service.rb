@@ -642,7 +642,8 @@ module Certificates
     end
 
     def get_result_level
-      result_level_mapping[@test_type]
+      mapping = result_level_mapping[@test_type]
+      mapping&.call
     end
 
     def test_type_mapping
@@ -656,10 +657,10 @@ module Certificates
 
     def result_level_mapping
       {
-        vark: @test.vark_result_level,
-        ai_knowledge: @test.ai_knowledge_result_level,
-        behavioral_learning: @test.behavioral_learning_result_level,
-        comprehensive_assessment: @test.comprehensive_assessment_result_level
+        vark: -> { @test.vark_result_level },
+        ai_knowledge: -> { @test.ai_knowledge_result_level },
+        behavioral_learning: -> { @test.behavioral_learning_result_level },
+        comprehensive_assessment: -> { @test.comprehensive_assessment_result_level }
       }
     end
   end
