@@ -66,4 +66,15 @@ class BehavioralLearningResultLevel < ApplicationRecord
       BehavioralLearningCategory.find_by(code: code)&.name
     end.compact
   end
+
+  def detailed_result_data
+    {
+      description: '<h3>Behavioral Learning Analysis</h3><p>Your behavioral learning assessment shows your preferences across Monitoring, Action, Happening, and Reflection categories. These categories help identify how you approach learning and problem-solving in different situations.</p>',
+      study_recommendations: '<p>Focus on leveraging your strongest behavioral learning categories while developing skills in areas that need improvement. Consider learning strategies that align with your dominant behavioral patterns.</p>'
+    }
+  end
+
+  def dominant_learning_styles
+    strongest_categories
+  end
 end

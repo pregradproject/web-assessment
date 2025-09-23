@@ -52,6 +52,12 @@ module Orders
           name: 'AI Knowledge Assessment',
           default_amount: Configs::ConfigServices.ai_knowledge_price
         }
+      when 'BehavioralLearningTest'
+        {
+          category: 'behavioral_learning_certificate',
+          name: 'Behavioral Learning Assessment',
+          default_amount: Configs::ConfigServices.behavioral_learning_price
+        }
       else
         {
           category: 'general_certificate',

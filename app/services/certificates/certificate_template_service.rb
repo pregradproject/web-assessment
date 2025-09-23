@@ -45,6 +45,8 @@ module Certificates
         prepare_vark_scores
       elsif @test_type == :ai_knowledge
         prepare_ai_knowledge_scores
+      elsif @test_type == :behavioral_learning
+        prepare_behavioral_learning_scores
       end
     end
 
@@ -64,6 +66,13 @@ module Certificates
       @price_value_score = format_score(@result.price_value_score)
       @habit_score = format_score(@result.habit_score)
       @behavioral_intention_score = format_score(@result.behavioral_intention_score)
+    end
+
+    def prepare_behavioral_learning_scores
+      @m_score = format_score(@result.category_average('M'))
+      @a_score = format_score(@result.category_average('A'))
+      @h_score = format_score(@result.category_average('H'))
+      @r_score = format_score(@result.category_average('R'))
     end
 
     def prepare_chart_variables
@@ -101,10 +110,21 @@ module Certificates
     end
 
     def render_template
-      template_name = @test_type == :vark ? 'vark.html.erb' : 'ai_knowledge.html.erb'
+      template_name = get_template_name
       template_path = Rails.root.join('app', 'views', 'certificate', template_name)
       template_content = File.read(template_path)
       ERB.new(template_content).result(binding)
+    end
+
+    def get_template_name
+      case @test_type
+      when :vark
+        'vark.html.erb'
+      when :behavioral_learning
+        'behavioral_learning.html.erb'
+      else
+        'ai_knowledge.html.erb'
+      end
     end
 
     def certificate_id
@@ -131,6 +151,13 @@ module Certificates
           format_score(@result.read_score),
           format_score(@result.kinesthetic_score)
         ]
+      elsif @test_type == :behavioral_learning
+        [
+          format_score(@result.category_average('M')),
+          format_score(@result.category_average('A')),
+          format_score(@result.category_average('H')),
+          format_score(@result.category_average('R'))
+        ]
       else # ai_knowledge
         [
           format_score(@result.performance_expectancy_score),
@@ -152,6 +179,14 @@ module Certificates
           @result.aural_score || 0,
           @result.read_score || 0,
           @result.kinesthetic_score || 0
+        ]
+        calculate_percentages(raw_scores, 4)
+      elsif @test_type == :behavioral_learning
+        raw_scores = [
+          @result.category_average('M') || 0,
+          @result.category_average('A') || 0,
+          @result.category_average('H') || 0,
+          @result.category_average('R') || 0
         ]
         calculate_percentages(raw_scores, 4)
       else # ai_knowledge
@@ -181,14 +216,35 @@ module Certificates
     end
 
     def get_learning_style_title
+      case @test_type
+      when :behavioral_learning
+        build_behavioral_learning_style_title
+      when :vark
+        build_vark_learning_style_title
+      else
+        build_ai_knowledge_learning_style_title
+      end
+    end
+
+    def build_behavioral_learning_style_title
+      strongest_categories = @result.strongest_categories
+      return 'Behavioral Learning Style' if strongest_categories.empty?
+
+      strongest_categories.join(' - ')
+    end
+
+    def build_vark_learning_style_title
       dominant_styles = @result.dominant_learning_styles
       return 'Learning Style' if dominant_styles.empty?
 
-      if @test_type == :vark
-        build_vark_style_title(dominant_styles)
-      else
-        build_ai_knowledge_style_title(dominant_styles)
-      end
+      build_vark_style_title(dominant_styles)
+    end
+
+    def build_ai_knowledge_learning_style_title
+      dominant_styles = @result.dominant_learning_styles
+      return 'Learning Style' if dominant_styles.empty?
+
+      build_ai_knowledge_style_title(dominant_styles)
     end
 
     def build_vark_style_title(dominant_styles)
@@ -254,27 +310,66 @@ module Certificates
     end
 
     def get_dominant_styles_info
+      case @test_type
+      when :behavioral_learning
+        build_behavioral_learning_styles_info
+      else
+        build_standard_styles_info
+      end
+    end
+
+    def build_behavioral_learning_styles_info
+      strongest_categories = @result.strongest_categories
+      return [ default_style_info ] if strongest_categories.empty?
+
+      behavioral_style_map = behavioral_learning_style_map
+      strongest_categories.map do |category_name|
+        build_behavioral_style_info(category_name, behavioral_style_map)
+      end.compact
+    end
+
+    def build_behavioral_style_info(category_name, style_map)
+      category_code = map_category_name_to_code(category_name)
+      return unless category_code
+
+      style = style_map[category_code]
+      return unless style
+
+      {
+        name: style[:name],
+        score: style[:score].call,
+        color: style[:color],
+        label: get_score_label(category_name)
+      }
+    end
+
+    def build_standard_styles_info
       dominant_styles = @result.dominant_learning_styles
       return [ default_style_info ] if dominant_styles.empty?
 
       style_map = @test_type == :vark ? vark_style_map : ai_knowledge_style_map
-
       dominant_styles.map do |style_name|
-        style = style_map[style_name]
-        next unless style
-
-        {
-          name: style[:name],
-          score: style[:score].call,
-          color: style[:color],
-          label: get_score_label(style_name)
-        }
+        build_standard_style_info(style_name, style_map)
       end.compact
+    end
+
+    def build_standard_style_info(style_name, style_map)
+      style = style_map[style_name]
+      return unless style
+
+      {
+        name: style[:name],
+        score: style[:score].call,
+        color: style[:color],
+        label: get_score_label(style_name)
+      }
     end
 
     def get_score_label(style_name)
       if @test_type == :vark
         get_vark_score_label(style_name)
+      elsif @test_type == :behavioral_learning
+        get_behavioral_learning_score_label(style_name)
       else
         get_ai_knowledge_score_label(style_name)
       end
@@ -303,6 +398,17 @@ module Certificates
 
     def get_ai_knowledge_score_label(style_name)
       AI_SCORE_LABELS[style_name] || 'Score'
+    end
+
+    BEHAVIORAL_LEARNING_SCORE_LABELS = {
+      'Monitoring' => 'Monitoring Score',
+      'Action' => 'Action Score',
+      'Happening' => 'Happening Score',
+      'Reflection' => 'Reflection Score'
+    }.freeze
+
+    def get_behavioral_learning_score_label(style_name)
+      BEHAVIORAL_LEARNING_SCORE_LABELS[style_name] || 'Score'
     end
 
     def get_style_class(style_name)
@@ -390,6 +496,41 @@ module Certificates
       }
     end
 
+    def behavioral_learning_style_map
+      {
+        'M' => {
+          name: 'Monitoring',
+          score: -> { format_score(@result.category_average('M')) },
+          color: '#8979FF'
+        },
+        'A' => {
+          name: 'Action',
+          score: -> { format_score(@result.category_average('A')) },
+          color: '#FF928A'
+        },
+        'H' => {
+          name: 'Happening',
+          score: -> { format_score(@result.category_average('H')) },
+          color: '#3CC3DF'
+        },
+        'R' => {
+          name: 'Reflection',
+          score: -> { format_score(@result.category_average('R')) },
+          color: '#FFAE4C'
+        }
+      }
+    end
+
+    def map_category_name_to_code(category_name)
+      case category_name&.downcase
+      when 'monitoring' then 'M'
+      when 'action' then 'A'
+      when 'happening' then 'H'
+      when 'reflection' then 'R'
+      else nil
+      end
+    end
+
     def default_style_info
       if @test_type == :vark
         {
@@ -397,6 +538,13 @@ module Certificates
           score: format_score(@result.read_score),
           color: '#3CC3DF',
           label: 'Reading Score'
+        }
+      elsif @test_type == :behavioral_learning
+        {
+          name: 'Monitoring',
+          score: format_score(@result.category_average('M')),
+          color: '#8979FF',
+          label: 'Monitoring Score'
         }
       else
         {
@@ -437,6 +585,8 @@ module Certificates
         :vark
       when 'AiKnowledgeTest'
         :ai_knowledge
+      when 'BehavioralLearningTest'
+        :behavioral_learning
       else
         :unknown
       end
@@ -448,6 +598,8 @@ module Certificates
         @test.vark_result_level
       when :ai_knowledge
         @test.ai_knowledge_result_level
+      when :behavioral_learning
+        @test.behavioral_learning_result_level
       else
         nil
       end

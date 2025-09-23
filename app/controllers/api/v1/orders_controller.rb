@@ -74,6 +74,8 @@ module Api
           @test = current_user.vark_tests.find(params[:vark_test_id])
         elsif params[:ai_knowledge_test_id].present?
           @test = current_user.ai_knowledge_tests.find(params[:ai_knowledge_test_id])
+        elsif params[:behavioral_learning_test_id].present?
+          @test = current_user.behavioral_learning_tests.find(params[:behavioral_learning_test_id])
         else
           raise CkvExceptions::NotFoundError, 'Test not found'
         end
