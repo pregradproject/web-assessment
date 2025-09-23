@@ -1,0 +1,78 @@
+<% content_for :title, "Import Comprehensive Assessment Questions from Google Sheets" %>
+
+<div class="panel">
+  <h3>Import from Google Sheets</h3>
+
+  <div class="panel_contents">
+    <%= form_tag process_google_sheets_import_admin_comprehensive_assessment_question_sets_path, method: :post do %>
+      <fieldset class="inputs">
+        <ol>
+          <li class="string input required">
+            <%= label_tag :google_sheets_url, "Google Sheets URL", class: "label" %>
+            <%= text_field_tag :google_sheets_url, "",
+                               placeholder: "https://docs.google.com/spreadsheets/d/...",
+                               class: "text_input",
+                               required: true %>
+            <p class="inline-hints">
+              Make sure the Google Sheet is publicly accessible and follows the template format.
+            </p>
+          </li>
+          <li class="number input required">
+            <%= label_tag :time_limit, "Question Set Time Limit", class: "label" %>
+            <%= number_field_tag :time_limit, 30, min: 1, class: "text_input", required: true %>
+          </li>
+        </ol>
+      </fieldset>
+
+      <fieldset class="actions">
+        <ol>
+          <li class="action input_action">
+            <%= submit_tag "Import Questions", class: "button" %>
+            <%= link_to "Cancel", admin_comprehensive_assessment_question_sets_path, class: "button" %>
+          </li>
+        </ol>
+      </fieldset>
+    <% end %>
+
+    <div class="template-info" style="margin-top: 20px; padding: 15px; background: #f8f9fa; border: 1px solid #dee2e6;">
+      <h4>Required Google Sheets Template Format:</h4>
+      <table style="width: 100%; border-collapse: collapse; margin-top: 10px;">
+        <thead>
+        <tr style="background: #e9ecef;">
+          <th style="border: 1px solid #dee2e6; padding: 8px;">Category</th>
+          <th style="border: 1px solid #dee2e6; padding: 8px;">Question</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+          <td style="border: 1px solid #dee2e6; padding: 8px;">CF</td>
+          <td style="border: 1px solid #dee2e6; padding: 8px;">Your cognitive flexibility question text here</td>
+        </tr>
+        <tr>
+          <td style="border: 1px solid #dee2e6; padding: 8px;">R</td>
+          <td style="border: 1px solid #dee2e6; padding: 8px;">Your resilience question text here</td>
+        </tr>
+        <tr>
+          <td style="border: 1px solid #dee2e6; padding: 8px;">E</td>
+          <td style="border: 1px solid #dee2e6; padding: 8px;">Your self-esteem question text here</td>
+        </tr>
+        <tr>
+          <td style="border: 1px solid #dee2e6; padding: 8px;">AG</td>
+          <td style="border: 1px solid #dee2e6; padding: 8px;">Your academic grit question text here</td>
+        </tr>
+        <tr>
+          <td style="border: 1px solid #dee2e6; padding: 8px;">MA</td>
+          <td style="border: 1px solid #dee2e6; padding: 8px;">Your metacognitive awareness question text here</td>
+        </tr>
+        </tbody>
+      </table>
+      <p style="margin-top: 10px; font-size: 0.9em; color: #6c757d;">
+        <strong>Notes:</strong><br>
+        • Category must be one of: CF (Cognitive Flexibility), R (Resilience), E (Self-esteem), AG (Academic Grit), MA (Metacognitive Awareness)<br>
+        • Question text is required<br>
+        • First row should contain headers: "Category" and "Question"<br>
+        • Make sure the Google Sheet is publicly accessible
+      </p>
+    </div>
+  </div>
+</div>

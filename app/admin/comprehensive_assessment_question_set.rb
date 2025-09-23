@@ -4,7 +4,7 @@ ActiveAdmin.register ComprehensiveAssessmentQuestionSet do
   config.clear_action_items!
 
   collection_action :import_from_google_sheets, method: :get do
-    render 'admin/import_google_sheets'
+    render 'admin/import_google_sheets_comprehensive_assessment'
   end
 
   collection_action :process_google_sheets_import, method: :post do
