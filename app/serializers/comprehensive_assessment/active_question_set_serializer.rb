@@ -1,6 +1,5 @@
 module ComprehensiveAssessment
   class ActiveQuestionSetSerializer < ApplicationSerializer
-    include QuestionListSerializer
     attributes(
       :id,
       :name,
@@ -10,7 +9,17 @@ module ComprehensiveAssessment
     )
 
     attribute :questions do |object|
-      question_list(object.comprehensive_assessment_questions)
+      object.comprehensive_assessment_questions.map do |question|
+        {
+          id: question.id,
+          body: question.body,
+          category: {
+            id: question.comprehensive_assessment_category.id,
+            code: question.comprehensive_assessment_category.code,
+            name: question.comprehensive_assessment_category.name
+          }
+        }
+      end
     end
 
     attribute :categories do |object|

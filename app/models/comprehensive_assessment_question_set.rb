@@ -13,7 +13,10 @@ class ComprehensiveAssessmentQuestionSet < ApplicationRecord
   has_many :comprehensive_assessment_categories, through: :comprehensive_assessment_question_set_categories
 
   scope :active, -> { where(active: true).order(created_at: :desc) }
-  scope :current_active, -> { where(active: true).order(created_at: :desc).first }
+
+  def self.current_active
+    where(active: true).order(created_at: :desc).first
+  end
 
   def total_questions
     comprehensive_assessment_questions.count
