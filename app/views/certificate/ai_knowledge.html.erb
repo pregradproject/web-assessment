@@ -50,16 +50,17 @@
         }
 
         .logo-text {
-            font-size: 20px;
-            font-weight: 800;
-            text-transform: uppercase;
-            letter-spacing: 1px;
+            font-size: 16px;
+            font-weight: bold;
         }
 
         .report-title {
+            text-align: right;
+        }
+
+        .report-title h1 {
             font-size: 18px;
-            font-weight: 400;
-            text-align: center;
+            margin-bottom: 3px;
         }
 
         .logo-icon {
@@ -160,6 +161,11 @@
             justify-content: center;
         }
 
+        .chart-container {
+            width: 180px;
+            height: 180px;
+        }
+
         .score-title {
             background: #9ed442;
             color: white;
@@ -174,126 +180,215 @@
             white-space: nowrap;
         }
 
-        .container {
-            padding: 30px;
-            max-width: 800px;
-            margin: 0 auto;
-        }
-
-        .results-section {
-            margin: 30px 0;
-        }
-
-        .section-title {
-            font-size: 22px;
-            font-weight: 700;
-            margin-bottom: 20px;
+        /* New Layout Styles */
+        .learning-results-section {
+            padding: 10px 30px;
+            background: white;
             text-align: center;
-            color: #24348C;
         }
 
-        .scores-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 15px;
+        .learning-style-header {
             margin-bottom: 30px;
         }
 
-        .score-card {
-            background: white;
-            border: 2px solid #E9ECEF;
-            border-radius: 8px;
-            padding: 15px;
-            text-align: center;
-            transition: all 0.3s ease;
+        .learning-style-main-title {
+            font-size: 18px;
+            color: #24348C;
+            margin-bottom: 10px;
+            font-weight: normal;
         }
 
-        .score-card.dominant {
-            border-color: #ABD305;
-            background: #F8FDE7;
+        .learning-style-title {
+            font-size: 22px;
+            color: #24348C;
+            font-weight: bold;
+            margin-bottom: 30px;
+        }
+
+        .scores-container {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 40px;
+            flex-wrap: wrap;
+        }
+
+        .score-box {
+            background-color: white;
+            border: 2px solid;
+            border-radius: 12px;
+            padding: 15px 10px;
+            text-align: center;
+            min-width: 100px;
+            max-width: 110px;
+            position: relative;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .score-box.pe {
+            border-color: #8979FF;
+        }
+
+        .score-box.ee {
+            border-color: #FF928A;
+        }
+
+        .score-box.si {
+            border-color: #3CC3DF;
+        }
+
+        .score-box.fc {
+            border-color: #FFAE4C;
+        }
+
+        .score-box.hm {
+            border-color: #FF6B9D;
+        }
+
+        .score-box.pv {
+            border-color: #4ECDC4;
+        }
+
+        .score-box.ht {
+            border-color: #A8E6CF;
+        }
+
+        .score-box.bi {
+            border-color: #FFD93D;
         }
 
         .score-label {
-            font-size: 12px;
-            font-weight: 600;
-            color: #6C757D;
-            margin-bottom: 5px;
+            font-size: 10px;
+            color: white;
+            font-weight: bold;
+            padding: 3px 6px;
+            border-radius: 8px;
+            position: absolute;
+            top: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            white-space: nowrap;
+        }
+
+        .score-label.pe {
+            background-color: #8979FF;
+        }
+
+        .score-label.ee {
+            background-color: #FF928A;
+        }
+
+        .score-label.si {
+            background-color: #3CC3DF;
+        }
+
+        .score-label.fc {
+            background-color: #FFAE4C;
+        }
+
+        .score-label.hm {
+            background-color: #FF6B9D;
+        }
+
+        .score-label.pv {
+            background-color: #4ECDC4;
+        }
+
+        .score-label.ht {
+            background-color: #A8E6CF;
+        }
+
+        .score-label.bi {
+            background-color: #FFD93D;
         }
 
         .score-value {
-            font-size: 20px;
-            font-weight: 800;
+            font-size: 24px;
+            font-weight: bold;
             color: #24348C;
+            margin-top: 10px;
         }
 
-        .chart-container {
-            width: 180px;
-            height: 180px;
-        }
-
-        .result-description {
-            background: #F8F9FA;
-            border-left: 4px solid #ABD305;
-            padding: 25px;
-            margin: 30px 0;
-            border-radius: 0 8px 8px 0;
-        }
-
-        .result-title {
-            font-size: 20px;
-            font-weight: 700;
-            margin-bottom: 15px;
-            color: #24348C;
-        }
-
-        .result-content {
-            font-size: 14px;
-            line-height: 1.6;
-            color: #495057;
-        }
-
-        .signature-section {
-            margin-top: 50px;
-            display: flex;
-            justify-content: space-between;
-            align-items: end;
-        }
-
-        .signature-left {
+        .description-section {
+            margin-bottom: 30px;
             text-align: left;
         }
 
-        .signature-right {
+        .section-title {
+            font-size: 16px;
+            color: #24348C;
+            font-weight: bold;
+            margin-bottom: 15px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #24348C;
+        }
+
+        .section-content {
+            line-height: 1.6;
+            font-size: 13px;
+            color: #24348C;
+            text-align: justify;
+        }
+
+        .recommendation-section {
+            background-color: #e8f0ff;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: left;
+        }
+
+        .recommendation-title {
+            color: #24348C;
+            font-size: 15px;
+            font-weight: bold;
+            margin-bottom: 12px;
+        }
+
+        .recommendation-content {
+            font-size: 13px;
+            line-height: 1.6;
+            color: #24348C;
+            text-align: justify;
+        }
+
+        .signature-section {
             text-align: center;
+            padding: 8px 30px 5px 30px;
+            border-top: 1px solid #e9ecef;
+            background: white;
+        }
+
+        .validation-text {
+            font-size: 11px;
+            color: #24348C;
+            margin-bottom: 15px;
+        }
+
+        .signature {
+            font-size: 20px;
+            font-style: italic;
+            color: #24348C;
+            margin-bottom: 8px;
         }
 
         .signature-image {
+            margin-bottom: 8px;
+        }
+
+        .signature-image img {
             max-width: 120px;
-            max-height: 60px;
-            margin-bottom: 10px;
+            max-height: 35px;
+            object-fit: contain;
         }
 
         .signature-name {
-            font-weight: 700;
-            font-size: 14px;
-            border-top: 1px solid #24348C;
-            padding-top: 5px;
-            margin-top: 20px;
+            font-weight: bold;
+            color: #24348C;
         }
 
         .signature-title {
-            font-size: 12px;
-            color: #6C757D;
-            margin-top: 2px;
-        }
-
-        .footer {
-            margin-top: 40px;
-            text-align: center;
-            font-size: 12px;
-            color: #6C757D;
-            border-top: 1px solid #E9ECEF;
-            padding-top: 15px;
+            font-size: 11px;
+            color: #24348C;
         }
     </style>
 </head>
@@ -323,89 +418,87 @@
             <div class="score-circle total-score">
                 <div class="score-title">AI Knowledge Score</div>
                 <div class="score-widget">
-                    <div class="chart-container" id="aiKnowledgeChart"></div>
+                    <div class="chart-container" id="totalChart"></div>
                 </div>
             </div>
         </div>
 
-        <div class="container">
+        <div class="learning-results-section">
+            <div class="learning-style-header">
+                <div class="learning-style-main-title">Your AI Knowledge Assessment Results</div>
+                <div class="learning-style-title"><%= @learning_style_title %></div>
+            </div>
 
-        <!-- AI Knowledge Scores -->
-        <div class="results-section">
-            <h3 class="section-title">Hasil AI Knowledge Assessment</h3>
-            <div class="scores-grid">
-                <div class="score-card">
-                    <div class="score-label">Performance Expectancy</div>
+            <div class="scores-container">
+                <!-- Show all eight AI knowledge scores -->
+                <div class="score-box pe">
+                    <div class="score-label pe">Performance Expectancy</div>
                     <div class="score-value"><%= @performance_expectancy_score %></div>
                 </div>
-                <div class="score-card">
-                    <div class="score-label">Effort Expectancy</div>
+                <div class="score-box ee">
+                    <div class="score-label ee">Effort Expectancy</div>
                     <div class="score-value"><%= @effort_expectancy_score %></div>
                 </div>
-                <div class="score-card">
-                    <div class="score-label">Social Influence</div>
+                <div class="score-box si">
+                    <div class="score-label si">Social Influence</div>
                     <div class="score-value"><%= @social_influence_score %></div>
                 </div>
-                <div class="score-card">
-                    <div class="score-label">Facilitating Conditions</div>
+                <div class="score-box fc">
+                    <div class="score-label fc">Facilitating Conditions</div>
                     <div class="score-value"><%= @facilitating_conditions_score %></div>
                 </div>
-                <div class="score-card">
-                    <div class="score-label">Hedonic Motivation</div>
+                <div class="score-box hm">
+                    <div class="score-label hm">Hedonic Motivation</div>
                     <div class="score-value"><%= @hedonic_motivation_score %></div>
                 </div>
-                <div class="score-card">
-                    <div class="score-label">Price Value</div>
+                <div class="score-box pv">
+                    <div class="score-label pv">Price Value</div>
                     <div class="score-value"><%= @price_value_score %></div>
                 </div>
-                <div class="score-card">
-                    <div class="score-label">Habit</div>
+                <div class="score-box ht">
+                    <div class="score-label ht">Habit</div>
                     <div class="score-value"><%= @habit_score %></div>
                 </div>
-                <div class="score-card">
-                    <div class="score-label">Behavioral Intention</div>
+                <div class="score-box bi">
+                    <div class="score-label bi">Behavioral Intention</div>
                     <div class="score-value"><%= @behavioral_intention_score %></div>
                 </div>
             </div>
 
-            <!-- Chart Container -->
-            <div class="chart-container">
-                <div id="aiKnowledgeChart"></div>
-            </div>
-        </div>
-
-        <!-- Result Description -->
-        <div class="result-description">
-            <div class="result-title"><%= @learning_style_title %></div>
-            <div class="result-content">
-                <p><strong>Deskripsi:</strong> <%= @description %></p>
-                <% if @study_recommendations %>
-                <p><strong>Rekomendasi:</strong> <%= @study_recommendations %></p>
-                <% end %>
-            </div>
-        </div>
-
-        <!-- Signature Section -->
-        <div class="signature-section">
-            <div class="signature-left">
-                <div style="font-size: 12px; color: #6C757D;">
-                    Tanggal Terbit: <%= @current_date %><br>
-                    Sertifikat ini dihasilkan secara otomatis oleh sistem Cakravia
+            <div class="description-section">
+                <div class="section-title">Assessment Description</div>
+                <div class="section-content">
+                    <% if @description %>
+                        <%= @description %>
+                    <% else %>
+                        <p>Your AI Knowledge assessment results show your understanding and attitudes towards artificial intelligence across eight key dimensions: Performance Expectancy (PE), Effort Expectancy (EE), Social Influence (SI), Facilitating Conditions (FC), Hedonic Motivation (HM), Price Value (PV), Habit (HT), and Behavioral Intention (BI).</p>
+                    <% end %>
                 </div>
             </div>
-            <div class="signature-right">
-                <% if @has_signature_image %>
-                    <img src="<%= @signature_image_path %>" alt="Signature" class="signature-image">
-                <% end %>
-                <div class="signature-name"><%= @signature_name %></div>
-                <div class="signature-title"><%= @signature_title %></div>
+
+            <div class="recommendation-section">
+                <div class="recommendation-title">Development Recommendations</div>
+                <div class="recommendation-content">
+                    <% if @study_recommendations %>
+                        <%= @study_recommendations %>
+                    <% else %>
+                        <p>Based on your assessment results, focus on strengthening areas with lower scores while leveraging your strengths in AI knowledge and application. Consider additional training or resources to enhance your understanding and confidence in using AI technologies.</p>
+                    <% end %>
+                </div>
             </div>
         </div>
 
-            <div class="footer">
-                <p>© 2024 Cakravia. Semua hak dilindungi undang-undang.</p>
-                <p>Sertifikat ini sah dan dapat diverifikasi melalui sistem Cakravia.</p>
+        <div class="signature-section">
+            <div class="validation-text">Validated and approved</div>
+            <% if @has_signature_image %>
+            <div class="signature-image">
+                <img src="<%= @signature_image_path %>" alt="Signature" style="max-width: 120px; max-height: 35px;">
             </div>
+            <% else %>
+            <div class="signature"><%= @signature_name %></div>
+            <% end %>
+            <div class="signature-name"><%= @signature_name %></div>
+            <div class="signature-title"><%= @signature_title %></div>
         </div>
     </div>
 
@@ -496,16 +589,11 @@
         // Wait for DOM to be ready
         document.addEventListener('DOMContentLoaded', function() {
             if (typeof ApexCharts !== 'undefined') {
-                var aiKnowledgeChart = new ApexCharts(document.querySelector("#aiKnowledgeChart"), aiKnowledgeOptions);
+                var aiKnowledgeChart = new ApexCharts(document.querySelector("#totalChart"), aiKnowledgeOptions);
                 aiKnowledgeChart.render();
             } else {
                 console.log('ApexCharts not loaded');
             }
-        });
-
-        // Print-ready styling
-        window.addEventListener('beforeprint', function() {
-            document.body.style.background = 'white';
         });
     </script>
 </body>
