@@ -9,6 +9,14 @@ class TpaQuestionSet < ApplicationRecord
   scope :active_set, -> { where(active: true) }
   scope :by_version, ->(version) { where(version: version) }
 
+  def self.ransackable_attributes(auth_object = nil)
+    %w[active created_at id name time_limit updated_at version]
+  end
+
+  def self.ransackable_associations(auth_object = nil)
+    %w[tpa_questions tpa_tests]
+  end
+
   before_save :ensure_single_active
 
   def questions_by_category

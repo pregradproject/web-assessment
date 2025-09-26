@@ -1,4 +1,5 @@
 ActiveAdmin.register TpaCategory do
+  menu parent: 'TPA Management', priority: 1
   permit_params :name, :code, :description
 
   index do

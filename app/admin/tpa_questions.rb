@@ -1,4 +1,5 @@
 ActiveAdmin.register TpaQuestion do
+  menu parent: 'TPA Management', priority: 3
   permit_params :tpa_category_id, :tpa_question_set_id, :question_text,
                 :option_a, :option_b, :option_c, :option_d, :option_e,
                 :correct_answer, :explanation, :difficulty_level, :image
@@ -24,16 +25,16 @@ ActiveAdmin.register TpaQuestion do
     actions
   end
 
-  filter :tpa_category, as: :select, collection: -> { TpaCategory.all.map { |c| [c.name, c.id] } }
-  filter :tpa_question_set, as: :select, collection: -> { TpaQuestionSet.all.map { |qs| [qs.name, qs.id] } }
+  filter :tpa_category, as: :select, collection: -> { TpaCategory.all.map { |c| [ c.name, c.id ] } }
+  filter :tpa_question_set, as: :select, collection: -> { TpaQuestionSet.all.map { |qs| [ qs.name, qs.id ] } }
   filter :difficulty_level
   filter :correct_answer, as: :select, collection: %w[A B C D E]
   filter :created_at
 
   form do |f|
     f.inputs do
-      f.input :tpa_category, as: :select, collection: TpaCategory.all.map { |c| [c.name, c.id] }
-      f.input :tpa_question_set, as: :select, collection: TpaQuestionSet.all.map { |qs| [qs.name, qs.id] }
+      f.input :tpa_category, as: :select, collection: TpaCategory.all.map { |c| [ c.name, c.id ] }
+      f.input :tpa_question_set, as: :select, collection: TpaQuestionSet.all.map { |qs| [ qs.name, qs.id ] }
       f.input :question_text, as: :text
       f.input :option_a
       f.input :option_b

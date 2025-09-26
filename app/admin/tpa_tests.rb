@@ -1,4 +1,5 @@
 ActiveAdmin.register TpaTest do
+  menu parent: 'TPA Management', priority: 4
   permit_params :user_id, :tpa_question_set_id, :status
 
   index do
@@ -10,10 +11,7 @@ ActiveAdmin.register TpaTest do
     column :question_set do |test|
       test.tpa_question_set.name
     end
-    column :status do |test|
-      status_tag test.status.humanize,
-                 test.completed? ? :ok : (test.in_progress? ? :warning : :error)
-    end
+    column :status
     column :started_at
     column :completed_at
     column :completion_percentage do |test|
@@ -31,18 +29,18 @@ ActiveAdmin.register TpaTest do
     actions
   end
 
-  filter :user, as: :select, collection: -> { User.all.map { |u| [u.email, u.id] } }
-  filter :tpa_question_set, as: :select, collection: -> { TpaQuestionSet.all.map { |qs| [qs.name, qs.id] } }
-  filter :status, as: :select, collection: TpaTest.statuses.keys.map { |s| [s.humanize, s] }
+  filter :user, as: :select, collection: -> { User.all.map { |u| [ u.email, u.id ] } }
+  filter :tpa_question_set, as: :select, collection: -> { TpaQuestionSet.all.map { |qs| [ qs.name, qs.id ] } }
+  filter :status, as: :select, collection: TpaTest.statuses.keys.map { |s| [ s.humanize, s ] }
   filter :started_at
   filter :completed_at
   filter :created_at
 
   form do |f|
     f.inputs do
-      f.input :user, as: :select, collection: User.all.map { |u| [u.email, u.id] }
-      f.input :tpa_question_set, as: :select, collection: TpaQuestionSet.all.map { |qs| [qs.name, qs.id] }
-      f.input :status, as: :select, collection: TpaTest.statuses.keys.map { |s| [s.humanize, s] }
+      f.input :user, as: :select, collection: User.all.map { |u| [ u.email, u.id ] }
+      f.input :tpa_question_set, as: :select, collection: TpaQuestionSet.all.map { |qs| [ qs.name, qs.id ] }
+      f.input :status, as: :select, collection: TpaTest.statuses.keys.map { |s| [ s.humanize, s ] }
     end
     f.actions
   end

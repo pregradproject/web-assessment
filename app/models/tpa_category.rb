@@ -7,6 +7,14 @@ class TpaCategory < ApplicationRecord
 
   scope :by_code, ->(code) { where(code: code) }
 
+  def self.ransackable_attributes(auth_object = nil)
+    %w[code created_at description id name updated_at]
+  end
+
+  def self.ransackable_associations(auth_object = nil)
+    %w[tpa_questions]
+  end
+
   def self.default_categories
     [
       { name: 'Verbal', code: 'V', description: 'Verbal reasoning and comprehension' },

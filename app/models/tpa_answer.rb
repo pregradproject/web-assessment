@@ -14,6 +14,14 @@ class TpaAnswer < ApplicationRecord
       .where(tpa_categories: { code: category_code })
   end
 
+  def self.ransackable_attributes(auth_object = nil)
+    %w[answered_at created_at id is_correct selected_option tpa_question_id tpa_test_id updated_at]
+  end
+
+  def self.ransackable_associations(auth_object = nil)
+    %w[tpa_question tpa_test]
+  end
+
   before_validation :set_answered_at, :check_correctness
 
   def selected_option_text

@@ -7,6 +7,14 @@ class TpaResultLevel < ApplicationRecord
   validates :level_label, presence: true
   validates :level_message, presence: true
 
+  def self.ransackable_attributes(auth_object = nil)
+    %w[analytic_score average_score created_at id level_label level_message quantitative_score spatial_score total_questions total_score tpa_test_id updated_at verbal_score]
+  end
+
+  def self.ransackable_associations(auth_object = nil)
+    %w[tpa_test]
+  end
+
   before_validation :calculate_scores, :determine_level
 
   def category_scores
@@ -75,22 +83,18 @@ class TpaResultLevel < ApplicationRecord
   end
 
   def determine_level
-    case average_score
-    when 90..100
-      self.level_label = 'Excellent'
-      self.level_message = 'Outstanding performance across all areas'
-    when 80..89
-      self.level_label = 'Very Good'
-      self.level_message = 'Strong performance with room for minor improvements'
-    when 70..79
-      self.level_label = 'Good'
-      self.level_message = 'Solid performance with some areas for development'
-    when 60..69
-      self.level_label = 'Fair'
-      self.level_message = 'Adequate performance with significant room for improvement'
-    else
-      self.level_label = 'Needs Improvement'
-      self.level_message = 'Consider additional preparation and practice'
+    label, message = level_for_score(average_score)
+    self.level_label = label
+    self.level_message = message
+  end
+
+  def level_for_score(score)
+    case score
+    when 90..100 then [ 'Excellent', 'Outstanding performance across all areas' ]
+    when 80..89 then [ 'Very Good', 'Strong performance with room for minor improvements' ]
+    when 70..79 then [ 'Good', 'Solid performance with some areas for development' ]
+    when 60..69 then [ 'Fair', 'Adequate performance with significant room for improvement' ]
+    else [ 'Needs Improvement', 'Consider additional preparation and practice' ]
     end
   end
 
@@ -109,33 +113,31 @@ class TpaResultLevel < ApplicationRecord
   end
 
   def overall_assessment
-    case level_label
-    when 'Excellent'
-      'Exceptional academic potential with strong reasoning across all domains'
-    when 'Very Good'
-      'Strong academic potential with well-developed reasoning skills'
-    when 'Good'
-      'Good academic foundation with potential for further development'
-    when 'Fair'
-      'Basic academic skills present, additional preparation recommended'
-    else
-      'Foundational skills need strengthening before advanced academic work'
-    end
+    assessment_messages[level_label] || assessment_messages['default']
+  end
+
+  def assessment_messages
+    {
+      'Excellent' => 'Exceptional academic potential with strong reasoning across all domains',
+      'Very Good' => 'Strong academic potential with well-developed reasoning skills',
+      'Good' => 'Good academic foundation with potential for further development',
+      'Fair' => 'Basic academic skills present, additional preparation recommended',
+      'default' => 'Foundational skills need strengthening before advanced academic work'
+    }
   end
 
   def recommendations
-    case level_label
-    when 'Excellent'
-      [ 'Continue challenging yourself with advanced problems', 'Consider tutoring others to reinforce knowledge' ]
-    when 'Very Good'
-      [ 'Focus on weaker categories while maintaining strengths', 'Practice timed problem-solving' ]
-    when 'Good'
-      [ 'Regular practice in identified weak areas', 'Seek additional resources for improvement' ]
-    when 'Fair'
-      [ 'Systematic review of fundamental concepts', 'Consider structured preparation program' ]
-    else
-      [ 'Basic skill building in all areas', 'Seek personalized tutoring or remedial support' ]
-    end
+    recommendation_lists[level_label] || recommendation_lists['default']
+  end
+
+  def recommendation_lists
+    {
+      'Excellent' => [ 'Continue challenging yourself with advanced problems', 'Consider tutoring others to reinforce knowledge' ],
+      'Very Good' => [ 'Focus on weaker categories while maintaining strengths', 'Practice timed problem-solving' ],
+      'Good' => [ 'Regular practice in identified weak areas', 'Seek additional resources for improvement' ],
+      'Fair' => [ 'Systematic review of fundamental concepts', 'Consider structured preparation program' ],
+      'default' => [ 'Basic skill building in all areas', 'Seek personalized tutoring or remedial support' ]
+    }
   end
 
   def time_taken_minutes

@@ -1,4 +1,5 @@
 ActiveAdmin.register TpaQuestionSet do
+  menu parent: 'TPA Management', priority: 2
   permit_params :name, :version, :active, :time_limit
 
   index do
@@ -7,8 +8,7 @@ ActiveAdmin.register TpaQuestionSet do
     column :name
     column :version
     column :active do |question_set|
-      status_tag question_set.active? ? 'Active' : 'Inactive',
-                 question_set.active? ? :ok : :error
+      question_set.active? ? 'Active' : 'Inactive'
     end
     column :time_limit do |question_set|
       "#{question_set.time_limit} minutes"

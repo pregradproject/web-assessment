@@ -42,20 +42,27 @@ module Tpa
       return if answers.blank?
 
       answers.each_with_index do |answer, index|
-        unless answer.is_a?(Hash) || answer.respond_to?(:to_h)
-          errors.add(:answers, "Answer at position #{index} must be a hash")
-          next
-        end
+        validate_answer_format(answer, index)
+      end
+    end
 
-        answer_hash = answer.respond_to?(:to_h) ? answer.to_h : answer
+    def validate_answer_format(answer, index)
+      unless answer.is_a?(Hash) || answer.respond_to?(:to_h)
+        errors.add(:answers, "Answer at position #{index} must be a hash")
+        return
+      end
 
-        unless answer_hash.key?(:tpa_question_id) || answer_hash.key?('tpa_question_id')
-          errors.add(:answers, "Answer at position #{index} must include tpa_question_id")
-        end
+      answer_hash = answer.respond_to?(:to_h) ? answer.to_h : answer
+      validate_required_keys(answer_hash, index)
+    end
 
-        unless answer_hash.key?(:selected_option) || answer_hash.key?('selected_option')
-          errors.add(:answers, "Answer at position #{index} must include selected_option")
-        end
+    def validate_required_keys(answer_hash, index)
+      unless answer_hash.key?(:tpa_question_id) || answer_hash.key?('tpa_question_id')
+        errors.add(:answers, "Answer at position #{index} must include tpa_question_id")
+      end
+
+      unless answer_hash.key?(:selected_option) || answer_hash.key?('selected_option')
+        errors.add(:answers, "Answer at position #{index} must include selected_option")
       end
     end
 

@@ -14,6 +14,14 @@ class TpaTest < ApplicationRecord
   scope :recent, -> { order(created_at: :desc) }
   scope :active, -> { where(status: :in_progress) }
 
+  def self.ransackable_attributes(auth_object = nil)
+    %w[completed_at created_at id started_at status tpa_question_set_id updated_at user_id]
+  end
+
+  def self.ransackable_associations(auth_object = nil)
+    %w[order tpa_answers tpa_question_set tpa_result_level user]
+  end
+
   before_create :set_started_at
 
   def time_remaining

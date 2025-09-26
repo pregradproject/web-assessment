@@ -19,6 +19,14 @@ class TpaQuestion < ApplicationRecord
   scope :by_difficulty, ->(level) { where(difficulty_level: level) }
   scope :random_order, -> { order('RANDOM()') }
 
+  def self.ransackable_attributes(auth_object = nil)
+    %w[correct_answer created_at difficulty_level explanation id option_a option_b option_c option_d option_e question_text tpa_category_id tpa_question_set_id updated_at]
+  end
+
+  def self.ransackable_associations(auth_object = nil)
+    %w[image_attachment image_blob tpa_answers tpa_category tpa_question_set]
+  end
+
   def options
     {
       'A' => option_a,
