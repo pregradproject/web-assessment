@@ -1,0 +1,19 @@
+verbal:
+  name: "Verbal"
+  code: "V"
+  description: "Verbal reasoning and comprehension"
+
+quantitative:
+  name: "Quantitative"
+  code: "Q"
+  description: "Mathematical and numerical reasoning"
+
+analytic:
+  name: "Analytic"
+  code: "A"
+  description: "Logical and analytical thinking"
+
+spatial:
+  name: "Spatial"
+  code: "S"
+  description: "Spatial and visual reasoning"

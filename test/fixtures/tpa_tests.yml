@@ -1,0 +1,24 @@
+user_test:
+  user: one
+  tpa_question_set: active
+  status: 0  # in_progress
+  started_at: <%= 30.minutes.ago %>
+  created_at: <%= 30.minutes.ago %>
+  updated_at: <%= 10.minutes.ago %>
+
+in_progress:
+  user: one
+  tpa_question_set: active
+  status: 0  # in_progress
+  started_at: <%= 45.minutes.ago %>
+  created_at: <%= 45.minutes.ago %>
+  updated_at: <%= 15.minutes.ago %>
+
+completed:
+  user: one
+  tpa_question_set: active
+  status: 1  # completed
+  started_at: <%= 2.hours.ago %>
+  completed_at: <%= 1.hour.ago %>
+  created_at: <%= 2.hours.ago %>
+  updated_at: <%= 1.hour.ago %>

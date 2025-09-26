@@ -1,0 +1,38 @@
+sample_question:
+  tpa_category: verbal
+  tpa_question_set: active
+  question_text: "Choose the best synonym for 'abundant'"
+  option_a: "Scarce"
+  option_b: "Plentiful"
+  option_c: "Limited"
+  option_d: "Insufficient"
+  option_e: "Minimal"
+  correct_answer: "B"
+  explanation: "Abundant means existing in large quantities; plentiful."
+  difficulty_level: 2
+
+verbal_question:
+  tpa_category: verbal
+  tpa_question_set: active
+  question_text: "What is the meaning of 'comprehend'?"
+  option_a: "To forget"
+  option_b: "To ignore"
+  option_c: "To understand"
+  option_d: "To reject"
+  option_e: "To postpone"
+  correct_answer: "C"
+  explanation: "Comprehend means to understand fully."
+  difficulty_level: 1
+
+quantitative_question:
+  tpa_category: quantitative
+  tpa_question_set: active
+  question_text: "If x + 5 = 12, what is the value of x?"
+  option_a: "5"
+  option_b: "6"
+  option_c: "7"
+  option_d: "8"
+  option_e: "9"
+  correct_answer: "C"
+  explanation: "x + 5 = 12, therefore x = 12 - 5 = 7"
+  difficulty_level: 1

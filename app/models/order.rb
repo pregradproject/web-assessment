@@ -22,7 +22,8 @@ class Order < ApplicationRecord
     general_certificate: 1,
     ai_knowledge_certificate: 2,
     behavioral_learning_certificate: 3,
-    comprehensive_assessment_certificate: 4
+    comprehensive_assessment_certificate: 4,
+    tpa_certificate: 5
   }
 
   enum :status, {
