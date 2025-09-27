@@ -8,6 +8,7 @@ module Tpa
     def call
       ActiveRecord::Base.transaction do
         process_answers
+        mark_test_as_completed
         @tpa_test.reload
       end
 
@@ -29,6 +30,10 @@ module Tpa
           answer.answered_at = Time.current
         end
       end
+    end
+
+    def mark_test_as_completed
+      @tpa_test.complete_test!
     end
   end
 end
