@@ -77,7 +77,7 @@ module Tpa
 
         next unless question_id
 
-        unless test_question_ids.include?(question_id.to_i)
+        unless test_question_ids.include?(question_id.to_s)
           errors.add(:answers, "Question at position #{index} does not belong to this test")
         end
       end

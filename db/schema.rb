@@ -577,9 +577,9 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_26_142254) do
     t.index ["key"], name: "index_solid_queue_semaphores_on_key", unique: true
   end
 
-  create_table "tpa_answers", force: :cascade do |t|
-    t.bigint "tpa_test_id", null: false
-    t.bigint "tpa_question_id", null: false
+  create_table "tpa_answers", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "tpa_test_id", null: false
+    t.uuid "tpa_question_id", null: false
     t.string "selected_option", limit: 1, null: false
     t.boolean "is_correct", null: false
     t.datetime "answered_at", null: false
@@ -591,7 +591,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_26_142254) do
     t.index ["tpa_test_id"], name: "index_tpa_answers_on_tpa_test_id"
   end
 
-  create_table "tpa_categories", force: :cascade do |t|
+  create_table "tpa_categories", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.string "name", null: false
     t.string "code", limit: 2, null: false
     t.text "description"
@@ -601,7 +601,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_26_142254) do
     t.index ["name"], name: "index_tpa_categories_on_name", unique: true
   end
 
-  create_table "tpa_question_sets", force: :cascade do |t|
+  create_table "tpa_question_sets", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.string "name", limit: 100, null: false
     t.string "version", null: false
     t.boolean "active", default: false, null: false
@@ -612,9 +612,9 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_26_142254) do
     t.index ["name", "version"], name: "index_tpa_question_sets_on_name_and_version", unique: true
   end
 
-  create_table "tpa_questions", force: :cascade do |t|
-    t.bigint "tpa_category_id", null: false
-    t.bigint "tpa_question_set_id", null: false
+  create_table "tpa_questions", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "tpa_category_id", null: false
+    t.uuid "tpa_question_set_id", null: false
     t.text "question_text", null: false
     t.text "option_a", null: false
     t.text "option_b", null: false
@@ -632,8 +632,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_26_142254) do
     t.index ["tpa_question_set_id"], name: "index_tpa_questions_on_tpa_question_set_id"
   end
 
-  create_table "tpa_result_levels", force: :cascade do |t|
-    t.bigint "tpa_test_id", null: false
+  create_table "tpa_result_levels", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "tpa_test_id", null: false
     t.integer "total_score", default: 0, null: false
     t.integer "total_questions", null: false
     t.decimal "average_score", precision: 5, scale: 2, null: false
@@ -650,9 +650,9 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_26_142254) do
     t.index ["tpa_test_id"], name: "index_tpa_result_levels_on_tpa_test_id", unique: true
   end
 
-  create_table "tpa_tests", force: :cascade do |t|
+  create_table "tpa_tests", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.uuid "user_id", null: false
-    t.bigint "tpa_question_set_id", null: false
+    t.uuid "tpa_question_set_id", null: false
     t.integer "status", default: 0, null: false
     t.datetime "started_at"
     t.datetime "completed_at"

@@ -25,6 +25,27 @@ ActiveAdmin.register TpaTest do
         '-'
       end
     end
+    column :order_status do |test|
+      if test.order
+        status_tag test.order.status.humanize,
+                   class: test.order.paid? ? 'ok' : (test.order.pending? ? 'warning' : 'error')
+      else
+        'No Order'
+      end
+    end
+    column :certificate_status do |test|
+      if test.order&.certificate_pdf&.attached?
+        status_tag 'Generated', class: 'ok'
+      elsif test.order&.certificate_status == 'generating'
+        status_tag 'Generating', class: 'warning'
+      elsif test.order&.certificate_status == 'generation_failed'
+        status_tag 'Failed', class: 'error'
+      elsif test.order&.paid?
+        status_tag 'Ready', class: 'warning'
+      else
+        '-'
+      end
+    end
     column :created_at
     actions
   end
@@ -56,7 +77,7 @@ ActiveAdmin.register TpaTest do
       end
       row :status do |test|
         status_tag test.status.humanize,
-                   test.completed? ? :ok : (test.in_progress? ? :warning : :error)
+                   class: test.completed? ? 'ok' : (test.in_progress? ? 'warning' : 'error')
       end
       row :started_at
       row :completed_at
@@ -107,7 +128,7 @@ ActiveAdmin.register TpaTest do
           end
           column :is_correct do |answer|
             status_tag answer.is_correct? ? 'Correct' : 'Incorrect',
-                       answer.is_correct? ? :ok : :error
+                       class: answer.is_correct? ? 'ok' : 'error'
           end
           column :answered_at
         end
@@ -126,7 +147,7 @@ ActiveAdmin.register TpaTest do
             "#{r.average_score}%"
           end
           row :level_label do |r|
-            status_tag r.level_label, :ok
+            status_tag r.level_label, class: 'ok'
           end
           row :level_message
           row :verbal_score
@@ -138,11 +159,59 @@ ActiveAdmin.register TpaTest do
         div 'Results not calculated yet'
       end
     end
+
+    panel 'Order & Certificate Information' do
+      if tpa_test.order
+        order = tpa_test.order
+        attributes_table_for order do
+          row :order_number
+          row :status do |o|
+            status_tag o.status.humanize,
+                       class: o.paid? ? 'ok' : (o.pending? ? 'warning' : 'error')
+          end
+          row :amount do |o|
+            number_to_currency(o.amount, unit: 'Rp ', delimiter: '.', precision: 0)
+          end
+          row :certificate_status do |o|
+            status_tag o.certificate_status.humanize,
+                       class: o.generated? ? 'ok' : (o.generating? ? 'warning' : 'error')
+          end
+          row :certificate_generated_at
+          row :created_at
+        end
+
+        if order.certificate_pdf.attached?
+          div class: 'certificate-download' do
+            link_to 'Download Certificate', rails_blob_path(order.certificate_pdf, disposition: 'attachment'),
+                    class: 'button',
+                    target: '_blank'
+          end
+        elsif order.paid? && !order.certificate_pdf.attached?
+          div class: 'certificate-generation' do
+            span 'Certificate ready for generation'
+          end
+        end
+      else
+        div 'No order created yet'
+      end
+    end
   end
 
   action_item :calculate_results, only: :show do
     if tpa_test.completed? && !tpa_test.tpa_result_level
       link_to 'Calculate Results', calculate_results_admin_tpa_test_path(tpa_test), method: :post
+    end
+  end
+
+  action_item :create_order, only: :show do
+    if tpa_test.completed? && !tpa_test.order
+      link_to 'Create Order', create_order_admin_tpa_test_path(tpa_test), method: :post
+    end
+  end
+
+  action_item :generate_certificate, only: :show do
+    if tpa_test.order&.paid? && !tpa_test.order.certificate_pdf.attached?
+      link_to 'Generate Certificate', generate_certificate_admin_tpa_test_path(tpa_test), method: :post
     end
   end
 
@@ -153,6 +222,26 @@ ActiveAdmin.register TpaTest do
       redirect_to admin_tpa_test_path(test), notice: 'Results calculated successfully!'
     else
       redirect_to admin_tpa_test_path(test), alert: 'Cannot calculate results for this test.'
+    end
+  end
+
+  member_action :create_order, method: :post do
+    test = TpaTest.find(params[:id])
+    if test.completed? && !test.order
+      Orders::CreateOrderServices.call(test)
+      redirect_to admin_tpa_test_path(test), notice: 'Order created successfully!'
+    else
+      redirect_to admin_tpa_test_path(test), alert: 'Cannot create order for this test.'
+    end
+  end
+
+  member_action :generate_certificate, method: :post do
+    test = TpaTest.find(params[:id])
+    if test.order&.paid? && !test.order.certificate_pdf.attached?
+      GenerateCertificateJob.perform_later(test.order.id)
+      redirect_to admin_tpa_test_path(test), notice: 'Certificate generation started!'
+    else
+      redirect_to admin_tpa_test_path(test), alert: 'Cannot generate certificate for this test.'
     end
   end
 end

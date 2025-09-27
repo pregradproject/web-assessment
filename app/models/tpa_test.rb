@@ -3,7 +3,7 @@ class TpaTest < ApplicationRecord
   belongs_to :tpa_question_set
   has_many :tpa_answers, dependent: :destroy
   has_one :tpa_result_level, dependent: :destroy
-  has_one :order, as: :orderable, dependent: :destroy
+  has_one :order, as: :testable, dependent: :destroy
 
   enum :status, { in_progress: 0, completed: 1, expired: 2 }
 

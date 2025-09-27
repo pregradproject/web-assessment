@@ -49,7 +49,8 @@ module Orders
         'VarkTest' => vark_config,
         'AiKnowledgeTest' => ai_knowledge_config,
         'BehavioralLearningTest' => behavioral_learning_config,
-        'ComprehensiveAssessmentTest' => comprehensive_assessment_config
+        'ComprehensiveAssessmentTest' => comprehensive_assessment_config,
+        'TpaTest' => tpa_config
       }
     end
 
@@ -82,6 +83,14 @@ module Orders
         category: 'comprehensive_assessment_certificate',
         name: 'Comprehensive Assessment',
         default_amount: Configs::ConfigServices.comprehensive_assessment_price
+      }
+    end
+
+    def tpa_config
+      {
+        category: 'tpa_certificate',
+        name: 'TPA Assessment',
+        default_amount: Configs::ConfigServices.tpa_price
       }
     end
 

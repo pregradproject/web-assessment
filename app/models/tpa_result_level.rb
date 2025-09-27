@@ -63,6 +63,36 @@ class TpaResultLevel < ApplicationRecord
     }
   end
 
+  def dominant_learning_styles
+    strongest_categories.map { |category| category.humanize }
+  end
+
+  def overall_assessment
+    assessment_messages[level_label] || assessment_messages['default']
+  end
+
+  def recommendations
+    recommendation_lists[level_label] || recommendation_lists['default']
+  end
+
+  def detailed_result_data
+    {
+      description: level_message,
+      study_recommendations: recommendations,
+      overall_assessment: overall_assessment,
+      strongest_categories: strongest_categories,
+      weakest_categories: weakest_categories,
+      analysis_strengths: analysis_strengths,
+      analysis_improvements: analysis_improvements
+    }
+  end
+
+  def time_taken_minutes
+    return 0 unless tpa_test.started_at && tpa_test.completed_at
+
+    ((tpa_test.completed_at - tpa_test.started_at) / 60).round(0)
+  end
+
   private
 
   def calculate_scores
@@ -112,10 +142,6 @@ class TpaResultLevel < ApplicationRecord
     weakest.map { |cat| "Focus on improving #{cat.humanize.downcase} reasoning skills" }
   end
 
-  def overall_assessment
-    assessment_messages[level_label] || assessment_messages['default']
-  end
-
   def assessment_messages
     {
       'Excellent' => 'Exceptional academic potential with strong reasoning across all domains',
@@ -126,10 +152,6 @@ class TpaResultLevel < ApplicationRecord
     }
   end
 
-  def recommendations
-    recommendation_lists[level_label] || recommendation_lists['default']
-  end
-
   def recommendation_lists
     {
       'Excellent' => [ 'Continue challenging yourself with advanced problems', 'Consider tutoring others to reinforce knowledge' ],
@@ -138,11 +160,5 @@ class TpaResultLevel < ApplicationRecord
       'Fair' => [ 'Systematic review of fundamental concepts', 'Consider structured preparation program' ],
       'default' => [ 'Basic skill building in all areas', 'Seek personalized tutoring or remedial support' ]
     }
-  end
-
-  def time_taken_minutes
-    return 0 unless tpa_test.started_at && tpa_test.completed_at
-
-    ((tpa_test.completed_at - tpa_test.started_at) / 60).round(0)
   end
 end

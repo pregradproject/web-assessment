@@ -1,8 +1,8 @@
 class CreateTpaTests < ActiveRecord::Migration[8.0]
   def change
-    create_table :tpa_tests do |t|
+    create_table :tpa_tests, id: :uuid do |t|
       t.references :user, null: false, foreign_key: true, type: :uuid
-      t.references :tpa_question_set, null: false, foreign_key: true
+      t.references :tpa_question_set, null: false, foreign_key: true, type: :uuid
       t.integer :status, null: false, default: 0
       t.datetime :started_at
       t.datetime :completed_at
