@@ -20,7 +20,7 @@ module Api
       end
 
       def active_question_set
-        question_set = AiKnowledgeQuestionSet.active
+        question_set = AiKnowledgeQuestionSet.current_active
 
         json_response(AiKnowledge::ActiveQuestionSetSerializer.new(question_set).to_h, :ok, false)
       end
