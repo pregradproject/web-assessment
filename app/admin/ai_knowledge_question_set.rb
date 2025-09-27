@@ -47,7 +47,7 @@ ActiveAdmin.register AiKnowledgeQuestionSet do
     end
     column :time_limit do |question_set|
       if question_set.time_limit.present?
-        "#{question_set.time_limit} minutes"
+        question_set.time_limit
       else
         '-'
       end
@@ -147,7 +147,7 @@ ActiveAdmin.register AiKnowledgeQuestionSet do
     f.inputs 'Question Set Details' do
       f.input :version
       f.input :name
-      f.input :time_limit, hint: 'Time limit in minutes (leave blank for no limit)'
+      f.input :time_limit, hint: 'Time limit (leave blank for no limit)'
       f.input :active
     end
     f.actions
