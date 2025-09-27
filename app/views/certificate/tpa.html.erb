@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cakravia Official Score Report</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/apexcharts/4.7.0/apexcharts.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Merriweather+Sans:wght@300;400;700;800&display=swap');
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        @page {
+            margin: 0;
+            padding: 0;
+            size: A4;
+        }
+
+        html, body {
+            font-family: 'Merriweather Sans', 'Open Sans', 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            color: #24348C;
+            width: 100%;
+            height: 100%;
+            box-sizing: border-box;
+        }
+
+        *, h1, h2, h3, h4, h5, h6, p, div, span {
+            font-family: 'Merriweather Sans', 'Open Sans', 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif !important;
+            color: #24348C !important;
+        }
+
+        .header {
+            background: #ABD305;
+            color: #24348C;
+            padding: 18px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo img {
+            height: 40px;
+        }
+
+        .logo-text {
+            font-weight: 800;
+            font-size: 18px;
+        }
+
+        .certificate-id {
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .main-content {
+            padding: 30px;
+            background: linear-gradient(135deg, rgba(171,211,5,0.1) 0%, rgba(36,52,140,0.05) 100%);
+            min-height: calc(100% - 80px);
+        }
+
+        .title-section {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .main-title {
+            font-size: 28px;
+            font-weight: 800;
+            color: #24348C;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            font-size: 18px;
+            font-weight: 400;
+            color: #666;
+        }
+
+        .user-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .user-details {
+            flex: 1;
+        }
+
+        .user-name {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .user-meta {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .test-info {
+            text-align: right;
+            flex: 1;
+        }
+
+        .test-date {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        .test-type {
+            font-size: 16px;
+            font-weight: 600;
+            color: #24348C;
+        }
+
+        .results-section {
+            margin-bottom: 30px;
+        }
+
+        .section-title {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 15px;
+            color: #24348C;
+            text-align: center;
+        }
+
+        .scores-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .score-card {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .score-label {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+
+        .score-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: #24348C;
+        }
+
+        .chart-container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            height: 300px;
+        }
+
+        .analysis-section {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+
+        .analysis-title {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 15px;
+            color: #24348C;
+        }
+
+        .analysis-content {
+            font-size: 14px;
+            line-height: 1.6;
+            color: #333;
+        }
+
+        .recommendations {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+        }
+
+        .recommendations-title {
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #24348C;
+        }
+
+        .recommendations-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .recommendations-list li {
+            padding: 5px 0;
+            padding-left: 20px;
+            position: relative;
+        }
+
+        .recommendations-list li:before {
+            content: "•";
+            position: absolute;
+            left: 0;
+            color: #ABD305;
+            font-weight: bold;
+        }
+
+        .footer {
+            background: #24348C;
+            color: white;
+            padding: 20px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: auto;
+        }
+
+        .signature-section {
+            text-align: center;
+        }
+
+        .signature-name {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .signature-title {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        .signature-image {
+            max-width: 150px;
+            max-height: 60px;
+            margin-bottom: 5px;
+        }
+
+        .certificate-info {
+            text-align: right;
+            font-size: 12px;
+            opacity: 0.8;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="logo">
+            <div class="logo-text">CAKRAVIA</div>
+        </div>
+        <div class="certificate-id"><%= @certificate_id %></div>
+    </div>
+
+    <div class="main-content">
+        <div class="title-section">
+            <h1 class="main-title">TPA Assessment Certificate</h1>
+            <div class="subtitle">Test of Psychological Abilities - Official Score Report</div>
+        </div>
+
+        <div class="user-info">
+            <div class="user-details">
+                <div class="user-name"><%= @user_name %></div>
+                <div class="user-meta">
+                    <div>Date of Birth: <%= @birth_date %></div>
+                    <div>Test Completed: <%= @test_date %></div>
+                </div>
+            </div>
+            <div class="test-info">
+                <div class="test-type"><%= @learning_style_title %></div>
+                <div class="test-date">Certificate ID: <%= @certificate_id %></div>
+            </div>
+        </div>
+
+        <div class="results-section">
+            <h2 class="section-title">Assessment Results</h2>
+
+            <div class="scores-grid">
+                <div class="score-card">
+                    <div class="score-label">Verbal Reasoning</div>
+                    <div class="score-value"><%= @verbal_score %></div>
+                </div>
+                <div class="score-card">
+                    <div class="score-label">Quantitative Reasoning</div>
+                    <div class="score-value"><%= @quantitative_score %></div>
+                </div>
+                <div class="score-card">
+                    <div class="score-label">Analytic Reasoning</div>
+                    <div class="score-value"><%= @analytic_score %></div>
+                </div>
+                <div class="score-card">
+                    <div class="score-label">Spatial Reasoning</div>
+                    <div class="score-value"><%= @spatial_score %></div>
+                </div>
+            </div>
+
+            <div class="chart-container">
+                <div id="scoresChart"></div>
+            </div>
+        </div>
+
+        <div class="analysis-section">
+            <h3 class="analysis-title">Performance Analysis</h3>
+            <div class="analysis-content">
+                <p><strong>Overall Performance:</strong> <%= @result.level_label %></p>
+                <p><strong>Total Score:</strong> <%= @result.total_score %> out of <%= @result.total_questions %> questions (<%= @result.average_score %>%)</p>
+
+                <% if @result.strongest_categories.any? %>
+                <p><strong>Strongest Areas:</strong> <%= @result.strongest_categories.map { |cat| cat.humanize }.join(', ') %></p>
+                <% end %>
+
+                <% if @result.weakest_categories.any? && @result.weakest_categories != @result.strongest_categories %>
+                <p><strong>Areas for Improvement:</strong> <%= @result.weakest_categories.map { |cat| cat.humanize }.join(', ') %></p>
+                <% end %>
+
+                <p><strong>Assessment:</strong> <%= @result.overall_assessment %></p>
+
+                <div class="recommendations">
+                    <div class="recommendations-title">Recommendations:</div>
+                    <ul class="recommendations-list">
+                        <% @result.recommendations.each do |rec| %>
+                            <li><%= rec %></li>
+                        <% end %>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <div class="signature-section">
+            <% if @has_signature_image %>
+                <img src="<%= @signature_image_path %>" alt="Signature" class="signature-image">
+            <% end %>
+            <div class="signature-name"><%= @signature_name %></div>
+            <div class="signature-title"><%= @signature_title %></div>
+        </div>
+        <div class="certificate-info">
+            <div>Generated on <%= @current_date %></div>
+            <div>This certificate is valid and authentic</div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const categories = ['Verbal', 'Quantitative', 'Analytic', 'Spatial'];
+            const scores = [<%= @verbal_score %>, <%= @quantitative_score %>, <%= @analytic_score %>, <%= @spatial_score %>];
+            const percentages = [<%= @percentages[0] %>, <%= @percentages[1] %>, <%= @percentages[2] %>, <%= @percentages[3] %>];
+            const colors = ['#8979FF', '#FF928A', '#3CC3DF', '#FFAE4C'];
+
+            const options = {
+                series: [{
+                    name: 'Scores',
+                    data: scores
+                }],
+                chart: {
+                    type: 'bar',
+                    height: 250,
+                    toolbar: {
+                        show: false
+                    }
+                },
+                plotOptions: {
+                    bar: {
+                        borderRadius: 4,
+                        horizontal: false,
+                        columnWidth: '60%'
+                    }
+                },
+                dataLabels: {
+                    enabled: true,
+                    formatter: function(val) {
+                        return val;
+                    },
+                    style: {
+                        colors: ['#24348C'],
+                        fontSize: '12px',
+                        fontWeight: '600'
+                    }
+                },
+                xaxis: {
+                    categories: categories,
+                    labels: {
+                        style: {
+                            colors: '#24348C',
+                            fontSize: '12px'
+                        }
+                    }
+                },
+                yaxis: {
+                    labels: {
+                        style: {
+                            colors: '#24348C',
+                            fontSize: '12px'
+                        }
+                    }
+                },
+                colors: colors,
+                grid: {
+                    borderColor: '#e0e0e0',
+                    strokeDashArray: 4
+                },
+                tooltip: {
+                    y: {
+                        formatter: function(val) {
+                            return val + ' points (' + percentages[scores.indexOf(val)] + '%)';
+                        }
+                    }
+                }
+            };
+
+            const chart = new ApexCharts(document.querySelector("#scoresChart"), options);
+            chart.render();
+        });
+    </script>
+</body>
+</html>

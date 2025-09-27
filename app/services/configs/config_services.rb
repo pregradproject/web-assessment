@@ -54,6 +54,10 @@ module Configs
       get('comprehensive_assessment_price', 45000).to_i
     end
 
+    def tpa_price
+      get('tpa_price', 50000).to_i
+    end
+
     private
 
     def normalize_key(key)

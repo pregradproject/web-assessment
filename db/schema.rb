@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_09_25_155409) do
+ActiveRecord::Schema[8.0].define(version: 2025_09_26_142254) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -577,6 +577,94 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_25_155409) do
     t.index ["key"], name: "index_solid_queue_semaphores_on_key", unique: true
   end
 
+  create_table "tpa_answers", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "tpa_test_id", null: false
+    t.uuid "tpa_question_id", null: false
+    t.string "selected_option", limit: 1, null: false
+    t.boolean "is_correct", null: false
+    t.datetime "answered_at", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["answered_at"], name: "index_tpa_answers_on_answered_at"
+    t.index ["tpa_question_id"], name: "index_tpa_answers_on_tpa_question_id"
+    t.index ["tpa_test_id", "tpa_question_id"], name: "index_tpa_answers_on_tpa_test_id_and_tpa_question_id", unique: true
+    t.index ["tpa_test_id"], name: "index_tpa_answers_on_tpa_test_id"
+  end
+
+  create_table "tpa_categories", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.string "name", null: false
+    t.string "code", limit: 2, null: false
+    t.text "description"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["code"], name: "index_tpa_categories_on_code", unique: true
+    t.index ["name"], name: "index_tpa_categories_on_name", unique: true
+  end
+
+  create_table "tpa_question_sets", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.string "name", limit: 100, null: false
+    t.string "version", null: false
+    t.boolean "active", default: false, null: false
+    t.integer "time_limit", default: 3600, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["active"], name: "index_tpa_question_sets_on_active"
+    t.index ["name", "version"], name: "index_tpa_question_sets_on_name_and_version", unique: true
+  end
+
+  create_table "tpa_questions", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "tpa_category_id", null: false
+    t.uuid "tpa_question_set_id", null: false
+    t.text "question_text", null: false
+    t.text "option_a", null: false
+    t.text "option_b", null: false
+    t.text "option_c", null: false
+    t.text "option_d", null: false
+    t.text "option_e", null: false
+    t.string "correct_answer", limit: 1, null: false
+    t.text "explanation"
+    t.integer "difficulty_level", default: 1
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["difficulty_level"], name: "index_tpa_questions_on_difficulty_level"
+    t.index ["tpa_category_id"], name: "index_tpa_questions_on_tpa_category_id"
+    t.index ["tpa_question_set_id", "tpa_category_id"], name: "index_tpa_questions_on_tpa_question_set_id_and_tpa_category_id"
+    t.index ["tpa_question_set_id"], name: "index_tpa_questions_on_tpa_question_set_id"
+  end
+
+  create_table "tpa_result_levels", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "tpa_test_id", null: false
+    t.integer "total_score", default: 0, null: false
+    t.integer "total_questions", null: false
+    t.decimal "average_score", precision: 5, scale: 2, null: false
+    t.string "level_label", null: false
+    t.text "level_message", null: false
+    t.integer "verbal_score", default: 0
+    t.integer "quantitative_score", default: 0
+    t.integer "analytic_score", default: 0
+    t.integer "spatial_score", default: 0
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["average_score"], name: "index_tpa_result_levels_on_average_score"
+    t.index ["level_label"], name: "index_tpa_result_levels_on_level_label"
+    t.index ["tpa_test_id"], name: "index_tpa_result_levels_on_tpa_test_id", unique: true
+  end
+
+  create_table "tpa_tests", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "user_id", null: false
+    t.uuid "tpa_question_set_id", null: false
+    t.integer "status", default: 0, null: false
+    t.datetime "started_at"
+    t.datetime "completed_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["created_at"], name: "index_tpa_tests_on_created_at"
+    t.index ["status"], name: "index_tpa_tests_on_status"
+    t.index ["tpa_question_set_id"], name: "index_tpa_tests_on_tpa_question_set_id"
+    t.index ["user_id", "status"], name: "index_tpa_tests_on_user_id_and_status"
+    t.index ["user_id"], name: "index_tpa_tests_on_user_id"
+  end
+
   create_table "users", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.string "name"
     t.string "email"
@@ -727,4 +815,11 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_25_155409) do
   add_foreign_key "solid_queue_ready_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
   add_foreign_key "solid_queue_recurring_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
   add_foreign_key "solid_queue_scheduled_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
+  add_foreign_key "tpa_answers", "tpa_questions"
+  add_foreign_key "tpa_answers", "tpa_tests"
+  add_foreign_key "tpa_questions", "tpa_categories"
+  add_foreign_key "tpa_questions", "tpa_question_sets"
+  add_foreign_key "tpa_result_levels", "tpa_tests"
+  add_foreign_key "tpa_tests", "tpa_question_sets"
+  add_foreign_key "tpa_tests", "users"
 end

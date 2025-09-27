@@ -1,0 +1,449 @@
+openapi: 3.0.3
+info:
+  title: TPA Test Module API
+  description: API endpoints for TPA (Tes Potensi Akademik) test functionality
+  version: 1.0.0
+
+servers:
+  - url: /api/v1
+    description: API v1 base path
+
+paths:
+  /tpa_tests:
+    get:
+      summary: List user's TPA tests
+      description: Get all TPA tests for the authenticated user
+      tags:
+        - TPA Tests
+      security:
+        - bearerAuth: []
+      responses:
+        200:
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/TpaTestListItem'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+
+    post:
+      summary: Create new TPA test
+      description: Create a new TPA test instance for the authenticated user
+      tags:
+        - TPA Tests
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                tpa_question_set_id:
+                  type: integer
+                  description: ID of the question set to use
+              required:
+                - tpa_question_set_id
+      responses:
+        200:
+          description: Test created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/TpaTest'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        422:
+          $ref: '#/components/responses/UnprocessableEntity'
+
+  /tpa_tests/active_question_set:
+    get:
+      summary: Get active question set
+      description: Get the currently active TPA question set
+      tags:
+        - TPA Tests
+      security:
+        - bearerAuth: []
+      responses:
+        200:
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/TpaQuestionSet'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+
+  /tpa_tests/{id}:
+    get:
+      summary: Get TPA test details
+      description: Get detailed information about a specific TPA test
+      tags:
+        - TPA Tests
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: TPA test ID
+      responses:
+        200:
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/TpaTest'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        404:
+          $ref: '#/components/responses/NotFound'
+
+  /tpa_tests/{id}/submit_answers:
+    post:
+      summary: Submit test answers
+      description: Submit answers for a TPA test
+      tags:
+        - TPA Tests
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: TPA test ID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                answers:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      tpa_question_id:
+                        type: integer
+                      selected_option:
+                        type: string
+                        enum: [A, B, C, D, E]
+                    required:
+                      - tpa_question_id
+                      - selected_option
+              required:
+                - answers
+      responses:
+        200:
+          description: Answers submitted successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: string
+                    example: "ok"
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/Forbidden'
+        422:
+          $ref: '#/components/responses/UnprocessableEntity'
+
+  /tpa_tests/{id}/results:
+    get:
+      summary: Get test results
+      description: Get comprehensive results for a completed TPA test
+      tags:
+        - TPA Tests
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: TPA test ID
+      responses:
+        200:
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/TpaTestResults'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/Forbidden'
+        404:
+          $ref: '#/components/responses/NotFound'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    TpaTestListItem:
+      type: object
+      properties:
+        id:
+          type: integer
+        status:
+          type: string
+          enum: [in_progress, completed, expired]
+        created_at:
+          type: string
+          format: date-time
+        completed_at:
+          type: string
+          format: date-time
+          nullable: true
+        question_set:
+          type: object
+          properties:
+            id:
+              type: integer
+            name:
+              type: string
+            version:
+              type: string
+        order:
+          type: object
+          properties:
+            id:
+              type: integer
+            order_number:
+              type: string
+            status:
+              type: string
+              enum: [pending, paid, cancelled, expired]
+
+    TpaTest:
+      type: object
+      properties:
+        id:
+          type: integer
+        status:
+          type: string
+          enum: [in_progress, completed, expired]
+        started_at:
+          type: string
+          format: date-time
+          nullable: true
+        time_remaining:
+          type: integer
+          description: Remaining time in seconds
+        questions:
+          type: array
+          items:
+            $ref: '#/components/schemas/TpaQuestion'
+        question_set:
+          $ref: '#/components/schemas/TpaQuestionSetInfo'
+
+    TpaQuestion:
+      type: object
+      properties:
+        id:
+          type: integer
+        question_text:
+          type: string
+        option_a:
+          type: string
+        option_b:
+          type: string
+        option_c:
+          type: string
+        option_d:
+          type: string
+        option_e:
+          type: string
+        image_url:
+          type: string
+          nullable: true
+        category:
+          type: object
+          properties:
+            code:
+              type: string
+            name:
+              type: string
+
+    TpaQuestionSet:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        version:
+          type: string
+        time_limit:
+          type: integer
+          description: Time limit in seconds
+        total_questions:
+          type: integer
+        questions_by_category:
+          type: object
+          additionalProperties:
+            type: integer
+
+    TpaQuestionSetInfo:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        version:
+          type: string
+        time_limit:
+          type: integer
+
+    TpaTestResults:
+      type: object
+      properties:
+        id:
+          type: integer
+        total_score:
+          type: integer
+        total_questions:
+          type: integer
+        average_score:
+          type: number
+          format: float
+        level_label:
+          type: string
+        level_message:
+          type: string
+        category_scores:
+          type: object
+          properties:
+            verbal:
+              type: integer
+            quantitative:
+              type: integer
+            analytic:
+              type: integer
+            spatial:
+              type: integer
+        category_breakdown:
+          type: object
+          additionalProperties:
+            type: object
+            properties:
+              score:
+                type: integer
+              total:
+                type: integer
+              percentage:
+                type: number
+        strongest_categories:
+          type: array
+          items:
+            type: string
+        weakest_categories:
+          type: array
+          items:
+            type: string
+        detailed_analysis:
+          type: object
+          properties:
+            strengths:
+              type: array
+              items:
+                type: string
+            areas_for_improvement:
+              type: array
+              items:
+                type: string
+            overall_assessment:
+              type: string
+            recommendations:
+              type: array
+              items:
+                type: string
+        test_info:
+          type: object
+          properties:
+            id:
+              type: integer
+            completed_at:
+              type: string
+              format: date-time
+            question_set:
+              $ref: '#/components/schemas/TpaQuestionSetInfo'
+
+  responses:
+    Unauthorized:
+      description: Authentication required
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+                example: "Unauthorized"
+
+    Forbidden:
+      description: Access forbidden
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+                example: "Test is already completed"
+
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+                example: "Not found"
+
+    UnprocessableEntity:
+      description: Validation errors
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              errors:
+                type: array
+                items:
+                  type: string

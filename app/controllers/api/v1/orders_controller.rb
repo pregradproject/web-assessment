@@ -43,7 +43,7 @@ module Api
         order = @test.order
         raise CkvExceptions::NotFoundError, 'Order not found' unless order
 
-        validate = Orders::CertificateDownloadValidator.new(order)
+        validate = Orders::CertificateGenerationValidator.new(order)
         raise CkvExceptions::UnprocessableEntityError, validate.errors unless validate.valid?
 
         result = Certificates::GenerateCertificateService.call(order)
@@ -77,7 +77,8 @@ module Api
         return current_user.vark_tests.find(params[:vark_test_id]) if params[:vark_test_id].present?
         return current_user.ai_knowledge_tests.find(params[:ai_knowledge_test_id]) if params[:ai_knowledge_test_id].present?
         return current_user.behavioral_learning_tests.find(params[:behavioral_learning_test_id]) if params[:behavioral_learning_test_id].present?
-        current_user.comprehensive_assessment_tests.find(params[:comprehensive_assessment_test_id]) if params[:comprehensive_assessment_test_id].present?
+        return current_user.comprehensive_assessment_tests.find(params[:comprehensive_assessment_test_id]) if params[:comprehensive_assessment_test_id].present?
+        current_user.tpa_tests.find(params[:tpa_test_id]) if params[:tpa_test_id].present?
       end
 
       def raise_test_not_found
