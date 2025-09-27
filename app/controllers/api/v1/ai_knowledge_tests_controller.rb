@@ -63,7 +63,7 @@ module Api
       def test_expired?
         return false unless @ai_knowledge_test.started_at && @ai_knowledge_test.ai_knowledge_question_set.time_limit.positive?
 
-        Time.current > @ai_knowledge_test.started_at + @ai_knowledge_test.ai_knowledge_question_set.time_limit.seconds
+        Time.current > @ai_knowledge_test.started_at + @ai_knowledge_test.ai_knowledge_question_set.time_limit.minutes
       end
     end
   end

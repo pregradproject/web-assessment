@@ -25,13 +25,13 @@ class AiKnowledgeTest < ApplicationRecord
     return 0 unless started_at && ai_knowledge_question_set.time_limit.positive?
 
     elapsed = Time.current - started_at
-    remaining = ai_knowledge_question_set.time_limit - elapsed.to_i
+    remaining = ai_knowledge_question_set.time_limit.minutes - elapsed.to_i
     [ remaining, 0 ].max
   end
 
   def expired?
     return false unless started_at && ai_knowledge_question_set.time_limit.positive?
 
-    Time.current > started_at + ai_knowledge_question_set.time_limit.seconds
+    Time.current > started_at + ai_knowledge_question_set.time_limit.minutes
   end
 end
