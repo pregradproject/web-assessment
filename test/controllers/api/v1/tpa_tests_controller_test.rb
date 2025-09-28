@@ -28,12 +28,25 @@ class Api::V1::TpaTestsControllerTest < ActionDispatch::IntegrationTest
     end
   end
 
-  # T012: Contract test POST /api/v1/tpa_tests
-  test 'should create tpa test contract' do
+  # T012: Contract test POST /api/v1/tpa_tests (with payment)
+  test 'should create tpa test with payment' do
     question_set = tpa_question_sets(:active)
 
+    # Create a paid order first (simulate payment)
+    order = Order.create!(
+      user: @user,
+      amount: 50000,
+      original_amount: 50000,
+      category: :tpa_certificate,
+      description: "TPA Assessment Certificate for #{@user.name}",
+      status: :paid
+    )
+
     post api_v1_user_tpa_tests_path,
-         params: { tpa_question_set_id: question_set.id }.to_json,
+         params: {
+           tpa_question_set_id: question_set.id,
+           order_id: order.id
+         }.to_json,
          headers: @headers.merge({ 'Content-Type' => 'application/json' })
 
     assert_response :success
@@ -42,7 +55,7 @@ class Api::V1::TpaTestsControllerTest < ActionDispatch::IntegrationTest
     assert_includes json_response, 'data'
     test_data = json_response['data']
 
-    required_fields = %w[id status started_at time_remaining questions question_set]
+    required_fields = %w[id status started_at time_remaining questions question_set order]
     required_fields.each do |field|
       assert_includes test_data, field, "Missing required field: #{field}"
     end
@@ -50,6 +63,45 @@ class Api::V1::TpaTestsControllerTest < ActionDispatch::IntegrationTest
     assert_equal 'in_progress', test_data['status']
     assert_kind_of Array, test_data['questions']
     assert_kind_of Integer, test_data['time_remaining']
+    assert_not_nil test_data['order']
+    assert_equal order.id, test_data['order']['id']
+  end
+
+  # T012a: Contract test POST /api/v1/tpa_tests (without payment - should fail)
+  test 'should not create tpa test without payment' do
+    question_set = tpa_question_sets(:active)
+
+    post api_v1_user_tpa_tests_path,
+         params: { tpa_question_set_id: question_set.id }.to_json,
+         headers: @headers.merge({ 'Content-Type' => 'application/json' })
+
+    assert_response :unprocessable_entity
+    json_response = JSON.parse(response.body)
+
+    assert_includes json_response, 'errors'
+    assert_kind_of Array, json_response['errors']
+    assert_includes json_response['errors'], 'No valid TPA order found. Please purchase a TPA assessment first.'
+  end
+
+  # T012b: Contract test POST /api/v1/tpa_tests/order
+  test 'should create tpa order' do
+    post order_api_v1_user_tpa_tests_path,
+         headers: @headers.merge({ 'Content-Type' => 'application/json' })
+
+    assert_response :created
+    json_response = JSON.parse(response.body)
+
+    assert_includes json_response, 'data'
+    order_data = json_response['data']
+
+    required_fields = %w[id order_number amount status category description]
+    required_fields.each do |field|
+      assert_includes order_data, field, "Missing required field: #{field}"
+    end
+
+    assert_equal 'pending', order_data['status']
+    assert_equal 'tpa_certificate', order_data['category']
+    assert_kind_of Integer, order_data['amount']
   end
 
   # T013: Contract test GET /api/v1/tpa_tests/active_question_set

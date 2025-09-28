@@ -18,11 +18,19 @@ module Orders
     end
 
     attribute :testable do |object|
-      {
-        id: object.testable.id,
-        type: object.testable_type,
-        status: object.testable.status
-      }
+      if object.testable.present?
+        {
+          id: object.testable.id,
+          type: object.testable_type,
+          status: object.testable.status
+        }
+      else
+        {
+          id: nil,
+          type: object.testable_type,
+          status: nil
+        }
+      end
     end
 
     attribute :payment do |object|

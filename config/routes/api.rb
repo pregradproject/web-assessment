@@ -95,6 +95,7 @@ namespace :api do
 
         collection do
           get :active_question_set, to: 'tpa_tests#active_question_set'
+          post :order, to: 'tpa_tests#create_order'
         end
 
         resource :orders, only: %i[show create] do

@@ -12,19 +12,22 @@ class Api::V1::TpaTestsController < ApiController
     json_response({ data: tests_data }, :ok, false)
   end
 
+  # POST /api/v1/user/tpa_tests/order
+  def create_order
+    @order = Tpa::CreateOrderServices.new(current_user, params[:coupon_code]).call
+
+    order_data = Orders::CreateOrderSerializer.new(@order).to_h
+
+    json_response({ data: order_data }, :created, false)
+  end
+
   # POST /api/v1/user/tpa_tests
   def create
-    begin
-      @tpa_test = Tpa::CreateServices.new(current_user, tpa_test_params[:tpa_question_set_id]).call
-
-      test_data = Tpa::TestSerializer.new(@tpa_test, include_questions: true).to_h
-
-      json_response({ data: test_data }, :ok, false)
-    rescue ActiveRecord::RecordNotFound
-      raise CkvExceptions::NotFoundError, 'Question set not found'
-    rescue ActiveRecord::RecordInvalid => e
-      raise CkvExceptions::UnprocessableEntityError, e.record.errors.full_messages
-    end
+    create_tpa_test
+  rescue ActiveRecord::RecordNotFound
+    raise CkvExceptions::NotFoundError, 'Question set not found'
+  rescue ActiveRecord::RecordInvalid => e
+    raise CkvExceptions::UnprocessableEntityError, e.record.errors.full_messages
   end
 
   # GET /api/v1/user/tpa_tests/active_question_set
@@ -80,10 +83,22 @@ class Api::V1::TpaTestsController < ApiController
   end
 
   def tpa_test_params
-    params.permit(:tpa_question_set_id)
+    params.permit(:tpa_question_set_id, :order_id)
   end
 
   def submit_answers_params
     params.permit(answers: [ :tpa_question_id, :selected_option ])
+  end
+
+  def create_tpa_test
+    @tpa_test = Tpa::CreateServices.new(
+      current_user,
+      tpa_test_params[:tpa_question_set_id],
+      tpa_test_params[:order_id]
+    ).call
+
+    test_data = Tpa::TestSerializer.new(@tpa_test, include_questions: true).to_h
+
+    json_response({ data: test_data }, :ok, false)
   end
 end

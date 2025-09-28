@@ -10,7 +10,7 @@ class Order < ApplicationRecord
   end
 
   belongs_to :user
-  belongs_to :testable, polymorphic: true
+  belongs_to :testable, polymorphic: true, optional: true
   belongs_to :coupon, optional: true
   has_many :payments, dependent: :destroy
   has_one :successful_payment, -> { where(status: :settlement) }, class_name: 'Payment'
@@ -73,6 +73,7 @@ class Order < ApplicationRecord
   end
 
   def test_type
+    return 'TPA Assessment' if testable_type.blank?
     testable_type.underscore.gsub('_', ' ').titleize
   end
 

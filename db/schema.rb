@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_09_26_142254) do
+ActiveRecord::Schema[8.0].define(version: 2025_09_28_052506) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -404,8 +404,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_26_142254) do
 
   create_table "orders", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.uuid "user_id", null: false
-    t.string "testable_type", null: false
-    t.uuid "testable_id", null: false
+    t.string "testable_type"
+    t.uuid "testable_id"
     t.string "order_number", null: false
     t.integer "category", default: 0, null: false
     t.decimal "amount", precision: 10, scale: 2, null: false

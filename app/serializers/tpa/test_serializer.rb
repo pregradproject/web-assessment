@@ -16,6 +16,7 @@ module Tpa
         time_remaining: @tpa_test.time_remaining,
         question_set: question_set_data,
         questions: questions_data,
+        order: order_data,
         created_at: @tpa_test.created_at
       }.compact
     end
@@ -47,6 +48,19 @@ module Tpa
           difficulty_level: question.difficulty_level
         }
       end
+    end
+
+    def order_data
+      return nil unless @tpa_test.order.present?
+
+      {
+        id: @tpa_test.order.id,
+        order_number: @tpa_test.order.order_number,
+        amount: @tpa_test.order.amount,
+        status: @tpa_test.order.status,
+        category: @tpa_test.order.category,
+        created_at: @tpa_test.order.created_at
+      }
     end
   end
 end
