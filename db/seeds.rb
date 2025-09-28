@@ -37,3 +37,6 @@ load Rails.root.join('db', 'seeds', 'ai_knowledge_result_descriptions.rb')
 
 # Load Behavioral Learning data
 load Rails.root.join('db', 'seeds', 'behavioral_learning_data.rb')
+
+# Load TPA score levels configuration
+load Rails.root.join('db', 'seeds', 'tpa_score_levels.rb')

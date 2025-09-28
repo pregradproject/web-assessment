@@ -58,6 +58,10 @@ module Configs
       get('tpa_price', 50000).to_i
     end
 
+    def tpa_score_levels
+      get_tpa_score_levels
+    end
+
     private
 
     def normalize_key(key)
@@ -66,6 +70,54 @@ module Configs
 
     def build_cache_key(key)
       "#{CACHE_NAMESPACE}:#{key}"
+    end
+
+    def get_tpa_score_levels
+      # Get score levels from config or use defaults
+      levels_json = get('tpa_score_levels', nil)
+
+      if levels_json.present?
+        begin
+          JSON.parse(levels_json)
+        rescue JSON::ParserError
+          default_tpa_score_levels
+        end
+      else
+        default_tpa_score_levels
+      end
+    end
+
+    def set_tpa_score_levels(levels)
+      levels_json = levels.to_json
+      set('tpa_score_levels', levels_json,
+          description: 'TPA score level configuration',
+          value_type: 'string')
+    end
+
+    def default_tpa_score_levels
+      {
+        'low' => {
+          'name' => 'Kategori Rendah',
+          'min_score' => 200,
+          'max_score' => 449,
+          'label' => 'Kategori Rendah',
+          'message' => 'Performa rendah, perlu bimbingan dan persiapan lebih intensif'
+        },
+        'average' => {
+          'name' => 'Kategori Rata-Rata',
+          'min_score' => 450,
+          'max_score' => 549,
+          'label' => 'Kategori Rata-Rata',
+          'message' => 'Performa rata-rata, masih ada ruang untuk peningkatan'
+        },
+        'high' => {
+          'name' => 'Kategori Tinggi',
+          'min_score' => 550,
+          'max_score' => 800,
+          'label' => 'Kategori Tinggi',
+          'message' => 'Performa tinggi, potensi akademik yang baik'
+        }
+      }
     end
   end
 

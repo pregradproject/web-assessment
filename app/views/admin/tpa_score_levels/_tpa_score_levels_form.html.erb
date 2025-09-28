@@ -1,0 +1,212 @@
+<div class="tpa-score-levels-config">
+  <div class="panel">
+    <h3>TPA Score Level Configuration</h3>
+    <p>Configure the score ranges and labels for TPA (Tes Potensi Akademik) result categories.</p>
+    
+    <%= form_tag admin_tpa_score_levels_update_path, method: :post do %>
+      <div class="score-levels-container">
+        <!-- Low Category -->
+        <div class="score-level-card">
+          <h4>Low Category (Rendah)</h4>
+          <div class="form-group">
+            <%= label_tag :low_name, "Category Name" %>
+            <%= text_field_tag :low_name, @current_levels.dig('low', 'name'), class: "form-control" %>
+          </div>
+          
+          <div class="form-row">
+            <div class="form-group col-md-6">
+              <%= label_tag :low_min_score, "Minimum Score" %>
+              <%= number_field_tag :low_min_score, @current_levels.dig('low', 'min_score'), class: "form-control" %>
+            </div>
+            <div class="form-group col-md-6">
+              <%= label_tag :low_max_score, "Maximum Score" %>
+              <%= number_field_tag :low_max_score, @current_levels.dig('low', 'max_score'), class: "form-control" %>
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <%= label_tag :low_label, "Result Label" %>
+            <%= text_field_tag :low_label, @current_levels.dig('low', 'label'), class: "form-control" %>
+          </div>
+          
+          <div class="form-group">
+            <%= label_tag :low_message, "Result Message" %>
+            <%= text_area_tag :low_message, @current_levels.dig('low', 'message'), class: "form-control", rows: 3 %>
+          </div>
+        </div>
+
+        <!-- Average Category -->
+        <div class="score-level-card">
+          <h4>Average Category (Rata-Rata)</h4>
+          <div class="form-group">
+            <%= label_tag :average_name, "Category Name" %>
+            <%= text_field_tag :average_name, @current_levels.dig('average', 'name'), class: "form-control" %>
+          </div>
+          
+          <div class="form-row">
+            <div class="form-group col-md-6">
+              <%= label_tag :average_min_score, "Minimum Score" %>
+              <%= number_field_tag :average_min_score, @current_levels.dig('average', 'min_score'), class: "form-control" %>
+            </div>
+            <div class="form-group col-md-6">
+              <%= label_tag :average_max_score, "Maximum Score" %>
+              <%= number_field_tag :average_max_score, @current_levels.dig('average', 'max_score'), class: "form-control" %>
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <%= label_tag :average_label, "Result Label" %>
+            <%= text_field_tag :average_label, @current_levels.dig('average', 'label'), class: "form-control" %>
+          </div>
+          
+          <div class="form-group">
+            <%= label_tag :average_message, "Result Message" %>
+            <%= text_area_tag :average_message, @current_levels.dig('average', 'message'), class: "form-control", rows: 3 %>
+          </div>
+        </div>
+
+        <!-- High Category -->
+        <div class="score-level-card">
+          <h4>High Category (Tinggi)</h4>
+          <div class="form-group">
+            <%= label_tag :high_name, "Category Name" %>
+            <%= text_field_tag :high_name, @current_levels.dig('high', 'name'), class: "form-control" %>
+          </div>
+          
+          <div class="form-row">
+            <div class="form-group col-md-6">
+              <%= label_tag :high_min_score, "Minimum Score" %>
+              <%= number_field_tag :high_min_score, @current_levels.dig('high', 'min_score'), class: "form-control" %>
+            </div>
+            <div class="form-group col-md-6">
+              <%= label_tag :high_max_score, "Maximum Score" %>
+              <%= number_field_tag :high_max_score, @current_levels.dig('high', 'max_score'), class: "form-control" %>
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <%= label_tag :high_label, "Result Label" %>
+            <%= text_field_tag :high_label, @current_levels.dig('high', 'label'), class: "form-control" %>
+          </div>
+          
+          <div class="form-group">
+            <%= label_tag :high_message, "Result Message" %>
+            <%= text_area_tag :high_message, @current_levels.dig('high', 'message'), class: "form-control", rows: 3 %>
+          </div>
+        </div>
+      </div>
+
+      <div class="actions">
+        <%= submit_tag "Update Score Levels", class: "button primary" %>
+        
+        <%= form_tag admin_tpa_score_levels_reset_path, method: :post, style: "display: inline;" do %>
+          <%= submit_tag "Reset to Defaults", class: "button", style: "background-color: #dc3545;", 
+                        onclick: "return confirm('Are you sure you want to reset to default values?')" %>
+        <% end %>
+      </div>
+    <% end %>
+  </div>
+
+  <div class="panel">
+    <h4>Current Configuration</h4>
+    <table class="index_table">
+      <thead>
+        <tr>
+          <th>Category</th>
+          <th>Score Range</th>
+          <th>Label</th>
+          <th>Message</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @current_levels.each do |level_key, level_config| %>
+          <tr>
+            <td><%= level_config['name'] %></td>
+            <td><%= level_config['min_score'] %> - <%= level_config['max_score'] %></td>
+            <td><%= level_config['label'] %></td>
+            <td><%= level_config['message'] %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<style>
+.score-levels-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  gap: 20px;
+  margin-bottom: 30px;
+}
+
+.score-level-card {
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  padding: 20px;
+  background: #f9f9f9;
+}
+
+.score-level-card h4 {
+  margin-top: 0;
+  color: #333;
+  border-bottom: 1px solid #ddd;
+  padding-bottom: 10px;
+}
+
+.form-row {
+  display: flex;
+  gap: 15px;
+}
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+.form-group label {
+  display: block;
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.form-control {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.actions {
+  margin-top: 20px;
+  text-align: center;
+}
+
+.actions .button {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  margin: 0 10px;
+}
+
+.button.primary {
+  background-color: #5cb85c;
+  color: white;
+}
+
+.index_table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.index_table th, .index_table td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: left;
+}
+
+.index_table th {
+  background-color: #f5f5f5;
+  font-weight: bold;
+}
+</style>

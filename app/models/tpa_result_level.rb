@@ -1,9 +1,9 @@
 class TpaResultLevel < ApplicationRecord
   belongs_to :tpa_test
 
-  validates :total_score, presence: true, numericality: { greater_than_or_equal_to: 0 }
+  validates :total_score, presence: true, numericality: { greater_than_or_equal_to: 200, less_than_or_equal_to: 800 }
   validates :total_questions, presence: true, numericality: { greater_than: 0 }
-  validates :average_score, presence: true, numericality: { greater_than_or_equal_to: 0.0 }
+  validates :average_score, presence: true, numericality: { greater_than_or_equal_to: 200, less_than_or_equal_to: 800 }
   validates :level_label, presence: true
   validates :level_message, presence: true
 
@@ -101,7 +101,7 @@ class TpaResultLevel < ApplicationRecord
     answers = tpa_test.tpa_answers.includes(tpa_question: :tpa_category)
 
     self.total_questions = tpa_test.questions.count
-    self.total_score = answers.correct_answers.count
+    correct_answers = answers.correct_answers.count
 
     # Calculate category-specific scores
     self.verbal_score = answers.by_category('V').correct_answers.count
@@ -109,7 +109,11 @@ class TpaResultLevel < ApplicationRecord
     self.analytic_score = answers.by_category('A').correct_answers.count
     self.spatial_score = answers.by_category('S').correct_answers.count
 
-    self.average_score = total_questions > 0 ? (total_score.to_f / total_questions * 100).round(2) : 0.0
+    # Calculate total score using new formula: (benar / total soal x 600) + 200
+    self.total_score = total_questions > 0 ? ((correct_answers.to_f / total_questions) * 600 + 200).round : 200
+
+    # Average score is now the total score (since it's calculated on 200-800 scale)
+    self.average_score = total_score
   end
 
   def determine_level
@@ -119,13 +123,16 @@ class TpaResultLevel < ApplicationRecord
   end
 
   def level_for_score(score)
-    case score
-    when 90..100 then [ 'Excellent', 'Outstanding performance across all areas' ]
-    when 80..89 then [ 'Very Good', 'Strong performance with room for minor improvements' ]
-    when 70..79 then [ 'Good', 'Solid performance with some areas for development' ]
-    when 60..69 then [ 'Fair', 'Adequate performance with significant room for improvement' ]
-    else [ 'Needs Improvement', 'Consider additional preparation and practice' ]
+    score_levels = Configs::ConfigServices.tpa_score_levels
+
+    score_levels.each do |level_key, level_config|
+      if score >= level_config['min_score'] && score <= level_config['max_score']
+        return [ level_config['label'], level_config['message'] ]
+      end
     end
+
+    # Fallback if no range matches
+    [ 'Tidak Diketahui', 'Skor tidak sesuai dengan kategori yang ditentukan' ]
   end
 
   def analysis_strengths
@@ -144,21 +151,19 @@ class TpaResultLevel < ApplicationRecord
 
   def assessment_messages
     {
-      'Excellent' => 'Exceptional academic potential with strong reasoning across all domains',
-      'Very Good' => 'Strong academic potential with well-developed reasoning skills',
-      'Good' => 'Good academic foundation with potential for further development',
-      'Fair' => 'Basic academic skills present, additional preparation recommended',
-      'default' => 'Foundational skills need strengthening before advanced academic work'
+      'Kategori Tinggi' => 'Potensi akademik yang sangat baik dengan penalaran kuat di semua domain',
+      'Kategori Rata-Rata' => 'Potensi akademik yang baik dengan keterampilan penalaran yang berkembang dengan baik',
+      'Kategori Rendah' => 'Dasar akademik yang baik dengan potensi untuk pengembangan lebih lanjut',
+      'default' => 'Keterampilan dasar perlu diperkuat sebelum pekerjaan akademik tingkat lanjut'
     }
   end
 
   def recommendation_lists
     {
-      'Excellent' => [ 'Continue challenging yourself with advanced problems', 'Consider tutoring others to reinforce knowledge' ],
-      'Very Good' => [ 'Focus on weaker categories while maintaining strengths', 'Practice timed problem-solving' ],
-      'Good' => [ 'Regular practice in identified weak areas', 'Seek additional resources for improvement' ],
-      'Fair' => [ 'Systematic review of fundamental concepts', 'Consider structured preparation program' ],
-      'default' => [ 'Basic skill building in all areas', 'Seek personalized tutoring or remedial support' ]
+      'Kategori Tinggi' => [ 'Terus menantikan diri dengan masalah-masalah tingkat lanjut', 'Pertimbangkan untuk membimbing orang lain untuk memperkuat pengetahuan' ],
+      'Kategori Rata-Rata' => [ 'Fokus pada kategori yang lebih lemah sambil mempertahankan kekuatan', 'Berlatih pemecahan masalah dengan waktu terbatas' ],
+      'Kategori Rendah' => [ 'Latihan teratur di area-area lemah yang diidentifikasi', 'Cari sumber daya tambahan untuk perbaikan' ],
+      'default' => [ 'Membangun keterampilan dasar di semua area', 'Cari bantuan tutorial atau dukungan remedial yang dipersonalisasi' ]
     }
   end
 end
