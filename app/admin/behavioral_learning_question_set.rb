@@ -9,7 +9,9 @@ ActiveAdmin.register BehavioralLearningQuestionSet do
 
   collection_action :process_google_sheets_import, method: :post do
     begin
-      service = BehavioralLearningGoogleSheetsImportService.new(params[:google_sheets_url], params[:time_limit])
+      time_limit_minutes = params[:time_limit].to_i
+      time_limit_seconds = time_limit_minutes * 60
+      service = BehavioralLearningGoogleSheetsImportService.new(params[:google_sheets_url], time_limit_seconds)
       question_set = service.import!
 
       redirect_to admin_behavioral_learning_question_set_path(question_set),

@@ -65,7 +65,7 @@ ActiveAdmin.register TpaQuestion do
       row :option_d
       row :option_e
       row :correct_answer do |question|
-        status_tag question.correct_answer, :ok
+        span question.correct_answer, class: 'status_tag ok'
       end
       row :explanation
       row :difficulty_level

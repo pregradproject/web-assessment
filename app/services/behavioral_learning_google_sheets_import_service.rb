@@ -47,13 +47,22 @@ class BehavioralLearningGoogleSheetsImportService < ApplicationService
   end
 
   def create_question_set!
-    highest_version = BehavioralLearningQuestionSet.maximum(:version) || 0
+    # Get the latest version and increment it properly
+    latest_question_set = BehavioralLearningQuestionSet.order(version: :desc).first
+    if latest_question_set
+      # Extract numeric version from strings like "v1.0" or just use the number
+      latest_version = latest_question_set.version.to_s.gsub(/[^\d]/, '').to_i
+      latest_version = 1 if latest_version == 0
+      new_version = "v#{latest_version + 1}.0"
+    else
+      new_version = 'v1.0'
+    end
 
     BehavioralLearningQuestionSet.create!(
-      version: highest_version + 1,
+      version: new_version,
       name: "Upload (#{Date.current.strftime('%Y-%m-%d')})",
       active: false,
-      time_limit: @time_limit
+      time_limit: @time_limit.to_i
     )
   end
 
