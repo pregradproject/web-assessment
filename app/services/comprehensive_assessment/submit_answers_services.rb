@@ -1,3 +1,5 @@
+require 'ostruct'
+
 module ComprehensiveAssessment
   class SubmitAnswersServices < ApplicationService
     def initialize(comprehensive_assessment_test, params, current_user)
