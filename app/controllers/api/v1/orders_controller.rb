@@ -2,13 +2,21 @@ module Api
   module V1
     class OrdersController < ApiController
       before_action :authenticate_user!, except: [ :webhook ]
-      before_action :set_test, only: [ :show, :create, :payment_token, :generate_certificate, :download_certificate ]
+      before_action :set_test, only: [ :show, :create, :payment_token, :generate_certificate, :download_certificate ], unless: -> { params[:tpa_test_id].blank? && params[:vark_test_id].blank? && params[:ai_knowledge_test_id].blank? && params[:behavioral_learning_test_id].blank? && params[:comprehensive_assessment_test_id].blank? }
 
       def show
-        order = @test.order
-        raise CkvExceptions::NotFoundError, 'Order not found' unless order
+        if params[:tpa_test_id].present? || params[:vark_test_id].present? || params[:ai_knowledge_test_id].present? || params[:behavioral_learning_test_id].present? || params[:comprehensive_assessment_test_id].present?
+          # Legacy behavior - find order through test
+          order = @test.order
+          raise CkvExceptions::NotFoundError, 'Order not found' unless order
+        else
+          # Standalone behavior - find order directly
+          order = current_user.orders.find(params[:id])
+        end
 
         json_response(Orders::CreateOrderSerializer.new(order).to_h, :ok, false)
+      rescue ActiveRecord::RecordNotFound
+        raise CkvExceptions::NotFoundError, 'Order not found'
       end
 
       def create
@@ -27,6 +35,18 @@ module Api
         result = Orders::InitiatePaymentServices.call(order)
 
         json_response(Orders::PaymentTokenSerializer.new(result).to_h, :ok, false)
+      end
+
+      def standalone_payment_token
+        order = current_user.orders.find(params[:id])
+        validate = Orders::PaymentTokenValidator.new(order)
+        raise CkvExceptions::UnprocessableEntityError, validate.errors unless validate.valid?
+
+        result = Orders::InitiatePaymentServices.call(order)
+
+        json_response(Orders::PaymentTokenSerializer.new(result).to_h, :ok, false)
+      rescue ActiveRecord::RecordNotFound
+        raise CkvExceptions::NotFoundError, 'Order not found'
       end
 
       def webhook

@@ -107,6 +107,13 @@ namespace :api do
         end
       end
 
+      # Standalone order endpoints for TPA flow
+      resources :orders, only: [ :show ] do
+        member do
+          post :payment_token, to: 'orders#standalone_payment_token'
+        end
+      end
+
       # Coupon validation endpoint
       resource :coupons, only: [] do
         collection do
