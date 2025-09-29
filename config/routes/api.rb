@@ -106,12 +106,12 @@ namespace :api do
           end
         end
       end
-    end
 
-    # Coupon validation endpoint
-    resource :coupons, only: [] do
-      collection do
-        post :validate, to: 'coupons#validate'
+      # Coupon validation endpoint
+      resource :coupons, only: [] do
+        collection do
+          post :validate, to: 'coupons#validate'
+        end
       end
     end
 
