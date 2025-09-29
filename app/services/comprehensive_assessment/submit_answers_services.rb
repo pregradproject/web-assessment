@@ -59,8 +59,9 @@ module ComprehensiveAssessment
       total_score = @comprehensive_assessment_test.comprehensive_assessment_test_answers.sum(:point)
       total_questions = @comprehensive_assessment_test.comprehensive_assessment_test_answers.count
       average_score = total_questions > 0 ? (total_score.to_f / total_questions).round(2) : 0
+      average_score_integer = average_score.to_i
 
-      threshold_level = ComprehensiveAssessmentThresholdLevel.for_score(average_score)
+      threshold_level = ComprehensiveAssessmentThresholdLevel.for_score(average_score_integer)
 
       unless threshold_level
         # Create a default threshold level if none exists

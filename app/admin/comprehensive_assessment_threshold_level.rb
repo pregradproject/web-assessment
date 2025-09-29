@@ -1,33 +1,30 @@
 ActiveAdmin.register ComprehensiveAssessmentThresholdLevel do
   menu parent: 'Comprehensive Assessment'
-  permit_params :label, :message, :min_threshold, :max_threshold, :priority
+  permit_params :level_label, :level_message, :threshold_min, :threshold_max
 
   index do
     selectable_column
     id_column
-    column :label
-    column :min_threshold
-    column :max_threshold
-    column :priority
-    column :message do |threshold|
-      truncate(threshold.message, length: 100)
+    column :level_label
+    column :threshold_min
+    column :threshold_max
+    column :level_message do |threshold|
+      truncate(threshold.level_message, length: 100)
     end
     column :created_at
     actions
   end
 
-  filter :label
-  filter :min_threshold
-  filter :max_threshold
-  filter :priority
+  filter :level_label
+  filter :threshold_min
+  filter :threshold_max
 
   form do |f|
     f.inputs 'Threshold Level Details' do
-      f.input :label
-      f.input :message, as: :text
-      f.input :min_threshold, step: 0.01
-      f.input :max_threshold, step: 0.01
-      f.input :priority, hint: 'Higher priority levels are selected first when scores match multiple thresholds'
+      f.input :level_label
+      f.input :level_message, as: :text
+      f.input :threshold_min
+      f.input :threshold_max
     end
     f.actions
   end
@@ -35,13 +32,12 @@ ActiveAdmin.register ComprehensiveAssessmentThresholdLevel do
   show do
     attributes_table do
       row :id
-      row :label
-      row :message
-      row :min_threshold
-      row :max_threshold
-      row :priority
+      row :level_label
+      row :level_message
+      row :threshold_min
+      row :threshold_max
       row 'Score Range' do |threshold|
-        "#{threshold.min_threshold} - #{threshold.max_threshold}"
+        "#{threshold.threshold_min} - #{threshold.threshold_max}"
       end
       row :created_at
       row :updated_at
