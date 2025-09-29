@@ -44,7 +44,7 @@ ActiveAdmin.register ComprehensiveAssessmentThresholdLevel do
     end
 
     panel 'Related Results' do
-      table_for ComprehensiveAssessmentResultLevel.where(level_label: resource.label).includes(:user, :comprehensive_assessment_test) do
+      table_for ComprehensiveAssessmentResultLevel.where(level_label: resource.level_label).includes(:user, :comprehensive_assessment_test) do
         column 'User' do |result|
           link_to result.user.name, admin_user_path(result.user) if result.user.present?
         end
