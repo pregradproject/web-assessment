@@ -2,6 +2,38 @@ ActiveAdmin.register TpaQuestionSet do
   menu parent: 'TPA Management', priority: 2
   permit_params :name, :version, :active, :time_limit
 
+  config.clear_action_items!
+
+  collection_action :import_from_google_sheets, method: :get do
+    render 'admin/import_google_sheets_tpa'
+  end
+
+  collection_action :process_google_sheets_import, method: :post do
+    begin
+      service = TpaGoogleSheetsImportService.new(params[:google_sheets_url], params[:time_limit])
+      question_set = service.import!
+
+      redirect_to admin_tpa_question_set_path(question_set),
+                  notice: "Successfully imported #{question_set.tpa_questions.count} questions from Google Sheets!"
+    rescue => e
+      redirect_to import_from_google_sheets_admin_tpa_question_sets_path,
+                  alert: "Import failed: #{e.message}"
+    end
+  end
+
+  member_action :make_active, method: :patch do
+    TpaQuestionSet.where(active: true).update_all(active: false)
+    resource.update!(active: true)
+    redirect_to admin_tpa_question_sets_path, notice: 'Question set is now active!'
+  end
+
+  # Add import button to index page
+  action_item :import_google_sheets, only: :index do
+    link_to 'Import from Google Sheets',
+            import_from_google_sheets_admin_tpa_question_sets_path,
+            class: 'button'
+  end
+
   index do
     selectable_column
     id_column
@@ -17,7 +49,12 @@ ActiveAdmin.register TpaQuestionSet do
       question_set.tpa_questions.count
     end
     column :created_at
-    actions
+    actions defaults: false do |resource|
+      item 'View', admin_tpa_question_set_path(resource), class: 'member_link'
+      unless resource.active?
+        item 'Make Active', make_active_admin_tpa_question_set_path(resource), method: :patch, class: 'member_link'
+      end
+    end
   end
 
   filter :name
@@ -41,8 +78,7 @@ ActiveAdmin.register TpaQuestionSet do
       row :name
       row :version
       row :active do |question_set|
-        status_tag question_set.active? ? 'Active' : 'Inactive',
-                   question_set.active? ? :ok : :error
+        status_tag question_set.active? ? 'Active' : 'Inactive'
       end
       row :time_limit do |question_set|
         "#{question_set.time_limit} minutes"
@@ -55,7 +91,7 @@ ActiveAdmin.register TpaQuestionSet do
     end
 
     panel 'Questions by Category' do
-      table_for tpa_question_set.questions_by_category do
+      table_for tpa_question_set.questions_by_category.to_a do
         column 'Category', &:first
         column 'Count', &:second
       end

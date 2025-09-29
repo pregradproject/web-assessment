@@ -1,0 +1,92 @@
+<% content_for :title, "Import TPA Questions from Google Sheets" %>
+
+<div class="panel">
+  <h3>Import TPA Questions from Google Sheets</h3>
+
+  <div class="panel_contents">
+    <%= form_tag process_google_sheets_import_admin_tpa_question_sets_path, method: :post do %>
+      <fieldset class="inputs">
+        <ol>
+          <li class="string input required">
+            <%= label_tag :google_sheets_url, "Google Sheets URL", class: "label" %>
+            <%= text_field_tag :google_sheets_url, "",
+                               placeholder: "https://docs.google.com/spreadsheets/d/...",
+                               class: "text_input",
+                               required: true %>
+            <p class="inline-hints">
+              Make sure the Google Sheet is publicly accessible and follows the template format.
+            </p>
+          </li>
+          <li class="number input required">
+            <%= label_tag :time_limit, "Question Set Time Limit", class: "label" %>
+            <%= number_field_tag :time_limit, 30, min: 1, class: "text_input", required: true %>
+          </li>
+        </ol>
+      </fieldset>
+
+      <fieldset class="actions">
+        <ol>
+          <li class="action input_action">
+            <%= submit_tag "Import Questions", class: "button" %>
+            <%= link_to "Cancel", admin_tpa_question_sets_path, class: "button" %>
+          </li>
+        </ol>
+      </fieldset>
+    <% end %>
+
+    <div class="template-info" style="margin-top: 20px; padding: 15px; background: #f8f9fa; border: 1px solid #dee2e6;">
+      <h4>Required Google Sheets Template Format:</h4>
+      <table style="width: 100%; border-collapse: collapse; margin-top: 10px;">
+        <thead>
+        <tr style="background: #e9ecef;">
+          <th style="border: 1px solid #dee2e6; padding: 8px;">Category</th>
+          <th style="border: 1px solid #dee2e6; padding: 8px;">Question</th>
+          <th style="border: 1px solid #dee2e6; padding: 8px;">Option A</th>
+          <th style="border: 1px solid #dee2e6; padding: 8px;">Option B</th>
+          <th style="border: 1px solid #dee2e6; padding: 8px;">Option C</th>
+          <th style="border: 1px solid #dee2e6; padding: 8px;">Option D</th>
+          <th style="border: 1px solid #dee2e6; padding: 8px;">Option E</th>
+          <th style="border: 1px solid #dee2e6; padding: 8px;">Correct Answer</th>
+          <th style="border: 1px solid #dee2e6; padding: 8px;">Explanation</th>
+          <th style="border: 1px solid #dee2e6; padding: 8px;">Difficulty Level</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+          <td style="border: 1px solid #dee2e6; padding: 8px;">V</td>
+          <td style="border: 1px solid #dee2e6; padding: 8px;">What is the capital of France?</td>
+          <td style="border: 1px solid #dee2e6; padding: 8px;">London</td>
+          <td style="border: 1px solid #dee2e6; padding: 8px;">Berlin</td>
+          <td style="border: 1px solid #dee2e6; padding: 8px;">Paris</td>
+          <td style="border: 1px solid #dee2e6; padding: 8px;">Madrid</td>
+          <td style="border: 1px solid #dee2e6; padding: 8px;">Rome</td>
+          <td style="border: 1px solid #dee2e6; padding: 8px;">C</td>
+          <td style="border: 1px solid #dee2e6; padding: 8px;">Paris is the capital of France</td>
+          <td style="border: 1px solid #dee2e6; padding: 8px;">2</td>
+        </tr>
+        <tr>
+          <td style="border: 1px solid #dee2e6; padding: 8px;">Q</td>
+          <td style="border: 1px solid #dee2e6; padding: 8px;">What is 2 + 2?</td>
+          <td style="border: 1px solid #dee2e6; padding: 8px;">3</td>
+          <td style="border: 1px solid #dee2e6; padding: 8px;">4</td>
+          <td style="border: 1px solid #dee2e6; padding: 8px;">5</td>
+          <td style="border: 1px solid #dee2e6; padding: 8px;">6</td>
+          <td style="border: 1px solid #dee2e6; padding: 8px;">7</td>
+          <td style="border: 1px solid #dee2e6; padding: 8px;">B</td>
+          <td style="border: 1px solid #dee2e6; padding: 8px;">2 + 2 = 4</td>
+          <td style="border: 1px solid #dee2e6; padding: 8px;">1</td>
+        </tr>
+        </tbody>
+      </table>
+      <p style="margin-top: 10px; font-size: 0.9em; color: #6c757d;">
+        <strong>Notes:</strong><br>
+        • Category must be one of: V (Verbal), Q (Quantitative), A (Analytic), S (Spatial)<br>
+        • All option fields (A, B, C, D, E) are required<br>
+        • Correct Answer must be one of: A, B, C, D, E<br>
+        • Explanation is required for each question<br>
+        • Difficulty Level must be between 1-5 (default: 3)<br>
+        • First row should contain headers exactly as shown
+      </p>
+    </div>
+  </div>
+</div>
