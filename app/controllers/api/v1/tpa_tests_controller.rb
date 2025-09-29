@@ -5,20 +5,14 @@ class Api::V1::TpaTestsController < ApiController
   def index
     @tpa_tests = current_user.tpa_tests.includes(:tpa_question_set).recent
 
-    tests_data = @tpa_tests.map do |test|
-      Tpa::TestSerializer.new(test).to_h
-    end
-
-    json_response({ data: tests_data }, :ok, false)
+    json_response(Tpa::TestListSerializer.new(@tpa_tests).to_h, :ok, false)
   end
 
   # POST /api/v1/user/tpa_tests/order
   def create_order
     @order = Tpa::CreateOrderServices.new(current_user, params[:coupon_code]).call
 
-    order_data = Orders::CreateOrderSerializer.new(@order).to_h
-
-    json_response({ data: order_data }, :created, false)
+    json_response(Orders::CreateOrderSerializer.new(@order).to_h, :created, false)
   end
 
   # POST /api/v1/user/tpa_tests
@@ -36,16 +30,12 @@ class Api::V1::TpaTestsController < ApiController
 
     raise CkvExceptions::NotFoundError, 'No active question set found' unless @question_set
 
-    question_set_data = Tpa::ActiveQuestionSetSerializer.new(@question_set).to_h
-
-    json_response({ data: question_set_data }, :ok, false)
+    json_response(Tpa::ActiveQuestionSetSerializer.new(@question_set).to_h, :ok, false)
   end
 
   # GET /api/v1/user/tpa_tests/:id
   def show
-    test_data = Tpa::TestSerializer.new(@tpa_test, include_questions: true).to_h
-
-    json_response({ data: test_data }, :ok, false)
+    json_response(Tpa::TestSerializer.new(@tpa_test, include_questions: true).to_h, :ok, false)
   end
 
   # POST /api/v1/user/tpa_tests/:id/submit_answers
@@ -57,9 +47,9 @@ class Api::V1::TpaTestsController < ApiController
       raise CkvExceptions::ForbiddenError, 'Cannot submit answers to a completed or expired test'
     end
 
-    result = Tpa::SubmitAnswersServices.new(@tpa_test, submit_answers_params[:answers]).call
+    Tpa::SubmitAnswersServices.new(@tpa_test, submit_answers_params[:answers]).call
 
-    json_response({ data: result }, :ok, false)
+    json_response('ok', :ok, false)
   end
 
   # GET /api/v1/user/tpa_tests/:id/results
@@ -69,9 +59,7 @@ class Api::V1::TpaTestsController < ApiController
 
     @result_level = Tpa::ResultCalculationServices.new(@tpa_test).call
 
-    results_data = Tpa::TestResultsSerializer.new(@result_level).to_h
-
-    json_response({ data: results_data }, :ok, false)
+    json_response(Tpa::TestResultsSerializer.new(@result_level).to_h, :ok, false)
   end
 
   private
@@ -97,8 +85,6 @@ class Api::V1::TpaTestsController < ApiController
       tpa_test_params[:order_id]
     ).call
 
-    test_data = Tpa::TestSerializer.new(@tpa_test, include_questions: true).to_h
-
-    json_response({ data: test_data }, :ok, false)
+    json_response(Tpa::TestSerializer.new(@tpa_test, include_questions: true).to_h, :ok, false)
   end
 end
