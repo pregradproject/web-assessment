@@ -204,7 +204,7 @@ module Midtrans
           id: 'certificate',
           price: order.amount.to_i,
           quantity: 1,
-          name: 'VARK Learning Style Certificate'
+          name: certificate_name_for_order(order)
         }
       ],
       callbacks: {
@@ -231,6 +231,23 @@ module Midtrans
 
   def callback_host
     Rails.env.production? ? ENV['PRODUCTION_HOST'] || 'your-production-domain.com' : 'localhost:3000'
+  end
+
+  def certificate_name_for_order(order)
+    certificate_names = {
+      vark_certificate: 'VARK Learning Style Certificate',
+      ai_knowledge_certificate: 'AI Knowledge Assessment Certificate',
+      behavioral_learning_certificate: 'Behavioral Learning Assessment Certificate',
+      comprehensive_assessment_certificate: 'Comprehensive Assessment Certificate',
+      tpa_certificate: 'TPA Assessment Certificate',
+      general_certificate: 'General Assessment Certificate'
+    }
+
+    certificate_names[order.category] || fallback_certificate_name(order)
+  end
+
+  def fallback_certificate_name(order)
+    order.test_type.include?('Assessment') ? "#{order.test_type} Certificate" : "#{order.test_type} Assessment Certificate"
   end
   end
 end
