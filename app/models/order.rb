@@ -61,7 +61,7 @@ class Order < ApplicationRecord
   end
 
   def can_download_certificate?
-    paid? && testable.completed? && generated?
+    paid? && testable&.completed? && generated?
   end
 
   def certificate_ready?
