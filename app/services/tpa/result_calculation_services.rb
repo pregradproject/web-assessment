@@ -10,6 +10,7 @@ module Tpa
       ActiveRecord::Base.transaction do
         complete_test
         create_result_level
+        generate_certificate
       end
 
       @tpa_test.tpa_result_level
@@ -44,6 +45,10 @@ module Tpa
                .where(tpa_categories: { code: category_code })
                .correct_answers
                .count
+    end
+
+    def generate_certificate
+      GenerateCertificateJob.perform_later(@tpa_test.order.id)
     end
   end
 end

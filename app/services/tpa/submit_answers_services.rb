@@ -9,7 +9,6 @@ module Tpa
       ActiveRecord::Base.transaction do
         process_answers
         mark_test_as_completed
-        generate_certificate
         @tpa_test.reload
       end
 
@@ -35,10 +34,6 @@ module Tpa
 
     def mark_test_as_completed
       @tpa_test.complete_test!
-    end
-
-    def generate_certificate
-      GenerateCertificateJob.perform_later(@tpa_test.order.id)
     end
   end
 end
