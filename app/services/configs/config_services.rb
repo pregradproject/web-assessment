@@ -10,6 +10,33 @@ module Configs
     @value_type = value_type
   end
 
+  def frontend_config_groups_direct
+    cache_key = self.class.send(:build_cache_key, 'frontend_groups')
+
+    # Try cache first
+    cached_groups = Rails.cache.read(cache_key)
+    return cached_groups if cached_groups.present?
+
+    # Build grouped configuration
+    groups = {
+      pricing: {
+        vark_price: self.class.vark_price,
+        ai_knowledge_price: self.class.ai_knowledge_price,
+        behavioral_learning_price: self.class.behavioral_learning_price,
+        comprehensive_assessment_price: self.class.comprehensive_assessment_price,
+        tpa_price: self.class.tpa_price
+      },
+      tpa: {
+        score_levels: self.class.tpa_score_levels
+      }
+    }
+
+    # Cache for 15 minutes
+    Rails.cache.write(cache_key, groups, expires_in: 15.minutes)
+
+    groups
+  end
+
   def call
     case @value
     when nil
@@ -60,6 +87,17 @@ module Configs
 
     def tpa_score_levels
       get_tpa_score_levels
+    end
+
+    def frontend_config_groups
+      service_instance = new(nil)
+      service_instance.frontend_config_groups_direct
+    end
+
+    def all_frontend_configs
+      service_instance = new
+      service_instance.instance_variable_set(:@key, nil)
+      service_instance.send(:all_frontend_configs)
     end
 
     private

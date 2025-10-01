@@ -10,115 +10,118 @@ namespace :api do
         post :password_reset_confirm, to: 'users#password_reset_confirm'
         patch :password_change, to: 'users#password_change'
       end
+    end
 
-      resources :vark_tests, only: %i[index show create] do
-        member do
-          post :submit_answers, to: 'vark_tests#submit_answers'
-          get :results, to: 'vark_tests#results'
-        end
+    # Configuration endpoint (public)
+    resource :config, only: [ :show ]
 
-        collection do
-          get :active_question_set, to: 'vark_tests#active_question_set'
-        end
-
-        resource :orders, only: %i[show create] do
-          member do
-            post :payment_token, to: 'orders#payment_token'
-            post :generate_certificate, to: 'orders#generate_certificate'
-            get :download_certificate, to: 'orders#download_certificate'
-          end
-        end
+    resources :vark_tests, only: %i[index show create] do
+      member do
+        post :submit_answers, to: 'vark_tests#submit_answers'
+        get :results, to: 'vark_tests#results'
       end
 
-      resources :ai_knowledge_tests, only: %i[index show create] do
-        member do
-          post :submit_answers, to: 'ai_knowledge_tests#submit_answers'
-          get :results, to: 'ai_knowledge_tests#results'
-        end
-
-        collection do
-          get :active_question_set, to: 'ai_knowledge_tests#active_question_set'
-        end
-
-        resource :orders, only: %i[show create] do
-          member do
-            post :payment_token, to: 'orders#payment_token'
-            post :generate_certificate, to: 'orders#generate_certificate'
-            get :download_certificate, to: 'orders#download_certificate'
-          end
-        end
+      collection do
+        get :active_question_set, to: 'vark_tests#active_question_set'
       end
 
-      resources :behavioral_learning_tests, only: %i[index show create] do
+      resource :orders, only: %i[show create] do
         member do
-          post :submit_answers, to: 'behavioral_learning_tests#submit_answers'
-          get :results, to: 'behavioral_learning_tests#results'
-        end
-
-        collection do
-          get :active_question_set, to: 'behavioral_learning_tests#active_question_set'
-        end
-
-        resource :orders, only: %i[show create] do
-          member do
-            post :payment_token, to: 'orders#payment_token'
-            post :generate_certificate, to: 'orders#generate_certificate'
-            get :download_certificate, to: 'orders#download_certificate'
-          end
+          post :payment_token, to: 'orders#payment_token'
+          post :generate_certificate, to: 'orders#generate_certificate'
+          get :download_certificate, to: 'orders#download_certificate'
         end
       end
+    end
 
-      resources :comprehensive_assessment_tests, only: %i[index show create] do
-        member do
-          post :submit_answers, to: 'comprehensive_assessment_tests#submit_answers'
-          get :results, to: 'comprehensive_assessment_tests#results'
-        end
-
-        collection do
-          get :active_question_set, to: 'comprehensive_assessment_tests#active_question_set'
-        end
-
-        resource :orders, only: %i[show create] do
-          member do
-            post :payment_token, to: 'orders#payment_token'
-            post :generate_certificate, to: 'orders#generate_certificate'
-            get :download_certificate, to: 'orders#download_certificate'
-          end
-        end
+    resources :ai_knowledge_tests, only: %i[index show create] do
+      member do
+        post :submit_answers, to: 'ai_knowledge_tests#submit_answers'
+        get :results, to: 'ai_knowledge_tests#results'
       end
 
-      resources :tpa_tests, only: %i[index show create] do
-        member do
-          post :submit_answers, to: 'tpa_tests#submit_answers'
-          get :results, to: 'tpa_tests#results'
-        end
-
-        collection do
-          get :active_question_set, to: 'tpa_tests#active_question_set'
-          post :order, to: 'tpa_tests#create_order'
-        end
-
-        resource :orders, only: %i[show create] do
-          member do
-            post :payment_token, to: 'orders#payment_token'
-            post :generate_certificate, to: 'orders#generate_certificate'
-            get :download_certificate, to: 'orders#download_certificate'
-          end
-        end
+      collection do
+        get :active_question_set, to: 'ai_knowledge_tests#active_question_set'
       end
 
-      # Standalone order endpoints for TPA flow
-      resources :orders, only: [ :show ] do
+      resource :orders, only: %i[show create] do
         member do
-          post :payment_token, to: 'orders#standalone_payment_token'
+          post :payment_token, to: 'orders#payment_token'
+          post :generate_certificate, to: 'orders#generate_certificate'
+          get :download_certificate, to: 'orders#download_certificate'
         end
       end
+    end
 
-      # Coupon validation endpoint
-      resource :coupons, only: [] do
-        collection do
-          post :validate, to: 'coupons#validate'
+    resources :behavioral_learning_tests, only: %i[index show create] do
+      member do
+        post :submit_answers, to: 'behavioral_learning_tests#submit_answers'
+        get :results, to: 'behavioral_learning_tests#results'
+      end
+
+      collection do
+        get :active_question_set, to: 'behavioral_learning_tests#active_question_set'
+      end
+
+      resource :orders, only: %i[show create] do
+        member do
+          post :payment_token, to: 'orders#payment_token'
+          post :generate_certificate, to: 'orders#generate_certificate'
+          get :download_certificate, to: 'orders#download_certificate'
         end
+      end
+    end
+
+    resources :comprehensive_assessment_tests, only: %i[index show create] do
+      member do
+        post :submit_answers, to: 'comprehensive_assessment_tests#submit_answers'
+        get :results, to: 'comprehensive_assessment_tests#results'
+      end
+
+      collection do
+        get :active_question_set, to: 'comprehensive_assessment_tests#active_question_set'
+      end
+
+      resource :orders, only: %i[show create] do
+        member do
+          post :payment_token, to: 'orders#payment_token'
+          post :generate_certificate, to: 'orders#generate_certificate'
+          get :download_certificate, to: 'orders#download_certificate'
+        end
+      end
+    end
+
+    resources :tpa_tests, only: %i[index show create] do
+      member do
+        post :submit_answers, to: 'tpa_tests#submit_answers'
+        get :results, to: 'tpa_tests#results'
+      end
+
+      collection do
+        get :active_question_set, to: 'tpa_tests#active_question_set'
+        post :order, to: 'tpa_tests#create_order'
+      end
+
+      resource :orders, only: %i[show create] do
+        member do
+          post :payment_token, to: 'orders#payment_token'
+          post :generate_certificate, to: 'orders#generate_certificate'
+          get :download_certificate, to: 'orders#download_certificate'
+        end
+      end
+    end
+
+    # Standalone order endpoints for TPA flow
+    resources :orders, only: [ :show ] do
+      member do
+        post :payment_token, to: 'orders#standalone_payment_token'
+      end
+    end
+
+    # Coupon validation endpoint
+    resource :coupons, only: [] do
+      collection do
+        post :validate, to: 'coupons#validate'
       end
     end
 
