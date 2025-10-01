@@ -245,7 +245,7 @@ ActiveAdmin.register Order do
     if resource.paid?
       resource.update!(certificate_status: 'pending_generation')
       # Here you would typically enqueue a job to regenerate the certificate
-      # GenerateCertificateJob.perform_later(resource.id)
+      GenerateCertificateJob.perform_later(resource.id)
       redirect_to admin_order_path(resource), notice: 'Certificate regeneration queued.'
     else
       redirect_to admin_order_path(resource), alert: 'Order must be paid to regenerate certificate.'
