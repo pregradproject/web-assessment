@@ -39,7 +39,7 @@ module Tpa
         {
           id: question.id,
           question_text: question.question_text,
-          image_url: question.image.attached? ? Rails.application.routes.url_helpers.rails_blob_url(question.image, only_path: false) : nil,
+          image_url: question.image.attached? ? Rails.application.routes.url_helpers.rails_blob_path(question.image, only_path: true) : nil,
           option_a: question.option_a,
           option_b: question.option_b,
           option_c: question.option_c,
