@@ -35,10 +35,11 @@ module Tpa
     def questions_data
       return [] unless @include_questions
 
-      @tpa_test.questions.includes(:tpa_category).map do |question|
+      @tpa_test.questions.includes(:tpa_category, image_attachment: :blob).map do |question|
         {
           id: question.id,
           question_text: question.question_text,
+          image_url: question.image.attached? ? Rails.application.routes.url_helpers.rails_blob_url(question.image, only_path: false) : nil,
           option_a: question.option_a,
           option_b: question.option_b,
           option_c: question.option_c,
