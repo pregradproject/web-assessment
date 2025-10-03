@@ -208,7 +208,7 @@ module Midtrans
         }
       ],
       callbacks: {
-        finish: Rails.application.routes.url_helpers.api_v1_payments_webhook_url(host: callback_host)
+        finish: Rails.application.routes.url_helpers.payments_webhook_api_v1_url(host: callback_host)
       },
       expiry: {
         start_time: Time.current.strftime('%Y-%m-%d %H:%M:%S %z'),
