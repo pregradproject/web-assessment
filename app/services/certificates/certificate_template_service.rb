@@ -192,10 +192,10 @@ module Certificates
 
     def calculate_behavioral_learning_percentages
       raw_scores = [
-        @result.category_average('M') || 0,
-        @result.category_average('A') || 0,
-        @result.category_average('H') || 0,
-        @result.category_average('R') || 0
+        @result.category_average('OBS') || 0,
+        @result.category_average('SRL') || 0,
+        @result.category_average('GOL') || 0,
+        @result.category_average('OUT') || 0
       ]
       calculate_percentages(raw_scores, 4)
     end
@@ -232,10 +232,10 @@ module Certificates
 
     def build_behavioral_learning_scores_array
       [
-        format_score(@result.category_average('M')),
-        format_score(@result.category_average('A')),
-        format_score(@result.category_average('H')),
-        format_score(@result.category_average('R'))
+        format_score(@result.category_average('OBS')),
+        format_score(@result.category_average('SRL')),
+        format_score(@result.category_average('GOL')),
+        format_score(@result.category_average('OUT'))
       ]
     end
 
@@ -495,10 +495,10 @@ module Certificates
     end
 
     BEHAVIORAL_LEARNING_SCORE_LABELS = {
-      'Monitoring' => 'Monitoring Score',
-      'Action' => 'Action Score',
-      'Happening' => 'Happening Score',
-      'Reflection' => 'Reflection Score'
+      'Observation' => 'Observation Score',
+      'Self-Regulation' => 'Self-Regulation Score',
+      'Goal Setting' => 'Goal Setting Score',
+      'Learning Outcomes' => 'Learning Outcomes Score'
     }.freeze
 
     def get_behavioral_learning_score_label(style_name)
@@ -592,24 +592,24 @@ module Certificates
 
     def behavioral_learning_style_map
       {
-        'M' => {
-          name: 'Monitoring',
-          score: -> { format_score(@result.category_average('M')) },
+        'OBS' => {
+          name: 'Observation',
+          score: -> { format_score(@result.category_average('OBS')) },
           color: '#8979FF'
         },
-        'A' => {
-          name: 'Action',
-          score: -> { format_score(@result.category_average('A')) },
+        'SRL' => {
+          name: 'Self-Regulation',
+          score: -> { format_score(@result.category_average('SRL')) },
           color: '#FF928A'
         },
-        'H' => {
-          name: 'Happening',
-          score: -> { format_score(@result.category_average('H')) },
+        'GOL' => {
+          name: 'Goal Setting',
+          score: -> { format_score(@result.category_average('GOL')) },
           color: '#3CC3DF'
         },
-        'R' => {
-          name: 'Reflection',
-          score: -> { format_score(@result.category_average('R')) },
+        'OUT' => {
+          name: 'Learning Outcomes',
+          score: -> { format_score(@result.category_average('OUT')) },
           color: '#FFAE4C'
         }
       }
@@ -617,10 +617,10 @@ module Certificates
 
     def map_category_name_to_code(category_name)
       case category_name&.downcase
-      when 'monitoring' then 'M'
-      when 'action' then 'A'
-      when 'happening' then 'H'
-      when 'reflection' then 'R'
+      when 'observation' then 'OBS'
+      when 'self-regulation' then 'SRL'
+      when 'goal setting' then 'GOL'
+      when 'learning outcomes' then 'OUT'
       else nil
       end
     end
@@ -635,10 +635,10 @@ module Certificates
         }
       elsif @test_type == :behavioral_learning
         {
-          name: 'Monitoring',
-          score: format_score(@result.category_average('M')),
+          name: 'Observation',
+          score: format_score(@result.category_average('OBS')),
           color: '#8979FF',
-          label: 'Monitoring Score'
+          label: 'Observation Score'
         }
       else
         {
