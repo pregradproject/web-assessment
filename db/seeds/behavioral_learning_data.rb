@@ -1,9 +1,9 @@
 # Create Behavioral Learning Categories
 behavioral_learning_categories = [
-  { code: 'M', name: 'Motivation', description: 'Measures internal drive and goal-setting behavior' },
-  { code: 'A', name: 'Engagement', description: 'Measures level of involvement and participation' },
-  { code: 'H', name: 'Habits', description: 'Measures consistency and routine formation' },
-  { code: 'R', name: 'Self-Regulation', description: 'Measures ability to control and manage behavior' }
+  { code: 'OBS', name: 'Observation', description: 'Measures ability to observe and analyze learning situations' },
+  { code: 'SRL', name: 'Self-Regulation', description: 'Measures ability to control and manage behavior' },
+  { code: 'GOL', name: 'Goal Setting', description: 'Measures internal drive and goal-setting behavior' },
+  { code: 'OUT', name: 'Learning Outcomes', description: 'Measures achievement of learning objectives and results' }
 ]
 
 behavioral_learning_categories.each do |category_data|
@@ -57,18 +57,18 @@ end
 
 # Sample questions for each category
 sample_questions = [
-  { category: 'M', question: 'I set clear, achievable goals for myself.' },
-  { category: 'M', question: 'I feel motivated to work toward my objectives.' },
-  { category: 'M', question: 'I maintain enthusiasm even when facing challenges.' },
-  { category: 'A', question: 'I actively participate in learning activities.' },
-  { category: 'A', question: 'I engage fully when working on tasks.' },
-  { category: 'A', question: 'I seek out opportunities to get involved.' },
-  { category: 'H', question: 'I maintain consistent daily routines.' },
-  { category: 'H', question: 'I follow through on my commitments.' },
-  { category: 'H', question: 'I stick to productive habits regularly.' },
-  { category: 'R', question: 'I can control my impulses when necessary.' },
-  { category: 'R', question: 'I manage my emotions effectively.' },
-  { category: 'R', question: 'I adjust my behavior based on feedback.' }
+  { category: 'OBS', question: 'I carefully observe my learning environment.' },
+  { category: 'OBS', question: 'I notice patterns in how I learn best.' },
+  { category: 'OBS', question: 'I analyze my learning experiences regularly.' },
+  { category: 'SRL', question: 'I can control my impulses when necessary.' },
+  { category: 'SRL', question: 'I manage my emotions effectively.' },
+  { category: 'SRL', question: 'I adjust my behavior based on feedback.' },
+  { category: 'GOL', question: 'I set clear, achievable goals for myself.' },
+  { category: 'GOL', question: 'I feel motivated to work toward my objectives.' },
+  { category: 'GOL', question: 'I maintain enthusiasm even when facing challenges.' },
+  { category: 'OUT', question: 'I achieve the learning outcomes I set.' },
+  { category: 'OUT', question: 'I can demonstrate what I have learned.' },
+  { category: 'OUT', question: 'I measure my learning progress effectively.' }
 ]
 
 sample_questions.each do |question_data|

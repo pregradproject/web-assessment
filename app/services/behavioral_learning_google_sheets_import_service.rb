@@ -98,8 +98,8 @@ class BehavioralLearningGoogleSheetsImportService < ApplicationService
     # Skip invalid rows
     return nil if category.blank? || question.blank?
 
-    # Validate category - Behavioral Learning uses M, A, H, R categories
-    valid_categories = %w[M A H R]
+    # Validate category - Behavioral Learning uses OBS, SRL, GOL, OUT categories
+    valid_categories = %w[OBS SRL GOL OUT]
     unless valid_categories.include?(category)
       raise "Invalid category '#{category}'. Must be one of: #{valid_categories.join(', ')}"
     end

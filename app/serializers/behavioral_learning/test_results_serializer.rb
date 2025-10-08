@@ -15,32 +15,32 @@ module BehavioralLearning
 
       [
         {
-          category: 'Motivation',
-          code: 'M',
-          score: object.category_score('M'),
-          average: object.category_average('M'),
-          description: categories['M']&.description
-        },
-        {
-          category: 'Engagement',
-          code: 'A',
-          score: object.category_score('A'),
-          average: object.category_average('A'),
-          description: categories['A']&.description
-        },
-        {
-          category: 'Learning Habits',
-          code: 'H',
-          score: object.category_score('H'),
-          average: object.category_average('H'),
-          description: categories['H']&.description
+          category: 'Observation',
+          code: 'OBS',
+          score: object.category_score('OBS'),
+          average: object.category_average('OBS'),
+          description: categories['OBS']&.description
         },
         {
           category: 'Self-Regulation',
-          code: 'R',
-          score: object.category_score('R'),
-          average: object.category_average('R'),
-          description: categories['R']&.description
+          code: 'SRL',
+          score: object.category_score('SRL'),
+          average: object.category_average('SRL'),
+          description: categories['SRL']&.description
+        },
+        {
+          category: 'Goal Setting',
+          code: 'GOL',
+          score: object.category_score('GOL'),
+          average: object.category_average('GOL'),
+          description: categories['GOL']&.description
+        },
+        {
+          category: 'Learning Outcomes',
+          code: 'OUT',
+          score: object.category_score('OUT'),
+          average: object.category_average('OUT'),
+          description: categories['OUT']&.description
         }
       ]
     end

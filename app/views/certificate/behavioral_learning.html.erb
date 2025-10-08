@@ -225,19 +225,19 @@
             box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         }
 
-        .score-box.monitoring {
+        .score-box.observation {
             border-color: #8979FF;
         }
 
-        .score-box.action {
+        .score-box.self-regulation {
             border-color: #FF928A;
         }
 
-        .score-box.happening {
+        .score-box.goal-setting {
             border-color: #3CC3DF;
         }
 
-        .score-box.reflection {
+        .score-box.learning-outcomes {
             border-color: #FFAE4C;
         }
 
@@ -254,19 +254,19 @@
             white-space: nowrap;
         }
 
-        .score-label.monitoring {
+        .score-label.observation {
             background-color: #8979FF;
         }
 
-        .score-label.action {
+        .score-label.self-regulation {
             background-color: #FF928A;
         }
 
-        .score-label.happening {
+        .score-label.goal-setting {
             background-color: #3CC3DF;
         }
 
-        .score-label.reflection {
+        .score-label.learning-outcomes {
             background-color: #FFAE4C;
         }
 
@@ -399,21 +399,21 @@
 
             <div class="scores-container">
                 <!-- Show all four behavioral learning scores -->
-                <div class="score-box monitoring">
-                    <div class="score-label monitoring">Monitoring Score</div>
-                    <div class="score-value"><%= @m_score %></div>
+                <div class="score-box observation">
+                    <div class="score-label observation">Observation Score</div>
+                    <div class="score-value"><%= @obs_score %></div>
                 </div>
-                <div class="score-box action">
-                    <div class="score-label action">Action Score</div>
-                    <div class="score-value"><%= @a_score %></div>
+                <div class="score-box self-regulation">
+                    <div class="score-label self-regulation">Self-Regulation Score</div>
+                    <div class="score-value"><%= @srl_score %></div>
                 </div>
-                <div class="score-box happening">
-                    <div class="score-label happening">Happening Score</div>
-                    <div class="score-value"><%= @h_score %></div>
+                <div class="score-box goal-setting">
+                    <div class="score-label goal-setting">Goal Setting Score</div>
+                    <div class="score-value"><%= @gol_score %></div>
                 </div>
-                <div class="score-box reflection">
-                    <div class="score-label reflection">Reflection Score</div>
-                    <div class="score-value"><%= @r_score %></div>
+                <div class="score-box learning-outcomes">
+                    <div class="score-label learning-outcomes">Learning Outcomes Score</div>
+                    <div class="score-value"><%= @out_score %></div>
                 </div>
             </div>
 
@@ -423,7 +423,7 @@
                     <% if @description %>
                         <%= @description %>
                     <% else %>
-                        <p>Hasil tes behavioral learning menunjukkan preferensi Anda dalam gaya pembelajaran berdasarkan kategori Monitoring, Action, Happening, dan Reflection. Setiap kategori mencerminkan cara Anda memproses informasi dan mengembangkan kemampuan.</p>
+                        <p>Hasil tes behavioral learning menunjukkan preferensi Anda dalam gaya pembelajaran berdasarkan kategori Observation, Self-Regulation, Goal Setting, dan Learning Outcomes. Setiap kategori mencerminkan cara Anda memproses informasi dan mengembangkan kemampuan.</p>
                     <% end %>
                 </div>
             </div>
@@ -495,7 +495,7 @@
             }
         },
         colors: ['#8979FF', '#FF928A', '#3CC3DF', '#FFAE4C'],
-        labels: ['Monitoring', 'Action', 'Happening', 'Reflection'],
+        labels: ['Observation', 'Self-Regulation', 'Goal Setting', 'Learning Outcomes'],
         responsive: [{
             breakpoint: 480,
             options: {

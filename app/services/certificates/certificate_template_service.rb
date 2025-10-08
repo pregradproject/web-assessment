@@ -69,10 +69,10 @@ module Certificates
     end
 
     def prepare_behavioral_learning_scores
-      @m_score = format_score(@result.category_average('M'))
-      @a_score = format_score(@result.category_average('A'))
-      @h_score = format_score(@result.category_average('H'))
-      @r_score = format_score(@result.category_average('R'))
+      @obs_score = format_score(@result.category_average('OBS'))
+      @srl_score = format_score(@result.category_average('SRL'))
+      @gol_score = format_score(@result.category_average('GOL'))
+      @out_score = format_score(@result.category_average('OUT'))
     end
 
     def prepare_comprehensive_assessment_scores

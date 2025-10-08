@@ -22,10 +22,10 @@ class BehavioralLearningResultLevel < ApplicationRecord
 
   def category_breakdown
     {
-      'M' => score_for_category('M'),
-      'A' => score_for_category('A'),
-      'H' => score_for_category('H'),
-      'R' => score_for_category('R')
+      'OBS' => score_for_category('OBS'),
+      'SRL' => score_for_category('SRL'),
+      'GOL' => score_for_category('GOL'),
+      'OUT' => score_for_category('OUT')
     }
   end
 
@@ -44,7 +44,7 @@ class BehavioralLearningResultLevel < ApplicationRecord
   end
 
   def category_averages
-    %w[M A H R].each_with_object({}) do |code, averages|
+    %w[OBS SRL GOL OUT].each_with_object({}) do |code, averages|
       averages[code] = category_average(code)
     end
   end
@@ -69,7 +69,7 @@ class BehavioralLearningResultLevel < ApplicationRecord
 
   def detailed_result_data
     {
-      description: '<h3>Behavioral Learning Analysis</h3><p>Your behavioral learning assessment shows your preferences across Monitoring, Action, Happening, and Reflection categories. These categories help identify how you approach learning and problem-solving in different situations.</p>',
+      description: '<h3>Behavioral Learning Analysis</h3><p>Your behavioral learning assessment shows your preferences across Observation, Self-Regulation, Goal Setting, and Learning Outcomes categories. These categories help identify how you approach learning and problem-solving in different situations.</p>',
       study_recommendations: '<p>Focus on leveraging your strongest behavioral learning categories while developing skills in areas that need improvement. Consider learning strategies that align with your dominant behavioral patterns.</p>'
     }
   end
