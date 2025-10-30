@@ -267,8 +267,29 @@ ActiveAdmin.register Order do
       result = midtrans_service.cancel_payment(pending_payment)
 
       if result[:success]
-        redirect_to admin_order_path(resource),
-                    notice: 'Payment simulation started. Payment cancelled on Midtrans, webhook will process it as successful.'
+        # Check if transaction was active on Midtrans
+        response_data = result[:data] || {}
+        status_code = response_data['status_code']
+        transaction_status = response_data['transaction_status']
+
+        # If transaction wasn't active (407 = expired/never started), process locally
+        if status_code == '407' || transaction_status == 'expire'
+          # Transaction never started, process as successful locally without waiting for webhook
+          pending_payment.update!(status: :settlement, paid_at: Time.current)
+          resource.update!(status: :paid)
+          if resource.testable&.completed?
+            GenerateCertificateJob.perform_later(resource.id)
+            redirect_to admin_order_path(resource),
+                        notice: 'Payment simulated successfully. Transaction was not active on Midtrans, processed locally.'
+          else
+            redirect_to admin_order_path(resource),
+                        notice: 'Payment simulated successfully. Order marked as paid.'
+          end
+        else
+          # Transaction was active, webhook will be sent
+          redirect_to admin_order_path(resource),
+                      notice: 'Payment simulation started. Payment cancelled on Midtrans, webhook will process it as successful.'
+        end
       else
         pending_payment.update!(simulated: false)
         redirect_to admin_order_path(resource), alert: "Failed to cancel payment on Midtrans: #{result[:error]}"

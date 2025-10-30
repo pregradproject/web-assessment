@@ -60,6 +60,8 @@ module Midtrans
 
   def handle_cancel_response(response)
     parsed_response = JSON.parse(response.body)
+    Rails.logger.info "Midtrans Cancel Response: #{response.code} - #{parsed_response}"
+
     if response.code == '200'
       { success: true, message: 'Payment cancelled', data: parsed_response }
     else
