@@ -272,8 +272,8 @@ ActiveAdmin.register Order do
         status_code = response_data['status_code']
         transaction_status = response_data['transaction_status']
 
-        # If transaction wasn't active (407 = expired/never started), process locally
-        if status_code == '407' || transaction_status == 'expire'
+        # If transaction wasn't active (404 = doesn't exist, 407 = expired), process locally
+        if status_code == '404' || status_code == '407' || transaction_status == 'expire'
           # Transaction never started, process as successful locally without waiting for webhook
           pending_payment.update!(status: :settlement, paid_at: Time.current)
           resource.update!(status: :paid)
