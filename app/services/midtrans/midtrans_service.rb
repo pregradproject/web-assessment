@@ -6,12 +6,15 @@ module Midtrans
   class MidtransService
   SANDBOX_BASE_URL = 'https://app.sandbox.midtrans.com/snap/v1'
   PRODUCTION_BASE_URL = 'https://app.midtrans.com/snap/v1'
+  SANDBOX_API_URL = 'https://api.sandbox.midtrans.com/v2'
+  PRODUCTION_API_URL = 'https://api.midtrans.com/v2'
 
   def initialize
     @server_key = Rails.application.credentials.dig(:midtrans, :server_key) || ENV['MIDTRANS_SERVER_KEY']
     @merchant_id = Rails.application.credentials.dig(:midtrans, :merchant_id) || ENV['MIDTRANS_MERCHANT_ID']
     @is_production = ENV['MIDTRANS_ENVIRONMENT'] == 'production'
     @base_url = @is_production ? PRODUCTION_BASE_URL : SANDBOX_BASE_URL
+    @api_url = @is_production ? PRODUCTION_API_URL : SANDBOX_API_URL
 
     Rails.logger.info "Midtrans Config: Environment=#{ENV['MIDTRANS_ENVIRONMENT']}, Production=#{@is_production}, URL=#{@base_url}"
   end
@@ -35,7 +38,39 @@ module Midtrans
     handle_notification_error(e)
   end
 
+  def cancel_payment(payment)
+    uri = URI("#{@api_url}/#{payment.midtrans_order_id}/cancel")
+    http = setup_http_client(uri)
+    request = build_cancel_request(uri)
+
+    response = http.request(request)
+    handle_cancel_response(response)
+  rescue StandardError => e
+    handle_cancel_error(e)
+  end
+
   private
+
+  def build_cancel_request(uri)
+    request = Net::HTTP::Post.new(uri)
+    request['Content-Type'] = 'application/json'
+    request['Authorization'] = "Basic #{Base64.strict_encode64("#{@server_key}:")}"
+    request
+  end
+
+  def handle_cancel_response(response)
+    parsed_response = JSON.parse(response.body)
+    if response.code == '200'
+      { success: true, message: 'Payment cancelled', data: parsed_response }
+    else
+      { success: false, error: parsed_response['status_message'] || 'Cancel failed' }
+    end
+  end
+
+  def handle_cancel_error(error)
+    Rails.logger.error "Midtrans Cancel Error: #{error.message}"
+    { success: false, error: 'Cancel request failed' }
+  end
 
   def payment_creation_failed
     { success: false, error: 'Failed to create payment record' }
@@ -91,6 +126,24 @@ module Midtrans
     transaction_status = notification_data['transaction_status']
     fraud_status = notification_data['fraud_status']
 
+    return handle_simulated_payment(payment, notification_data) if simulated_cancellation?(payment, transaction_status)
+
+    process_transaction_status(payment, notification_data, transaction_status, fraud_status)
+  end
+
+  def fraud_accepted?(fraud_status)
+    fraud_status == 'accept' || fraud_status.nil?
+  end
+
+  def simulated_cancellation?(payment, transaction_status)
+    payment.simulated && transaction_status == 'cancel'
+  end
+
+  def handle_simulated_payment(payment, notification_data)
+    handle_successful_payment(payment, notification_data)
+  end
+
+  def process_transaction_status(payment, notification_data, transaction_status, fraud_status)
     case transaction_status
     when 'capture', 'settlement'
       handle_successful_payment(payment, notification_data) if fraud_accepted?(fraud_status)
@@ -99,10 +152,6 @@ module Midtrans
     when 'deny', 'cancel', 'expire'
       handle_failed_payment(payment, transaction_status)
     end
-  end
-
-  def fraud_accepted?(fraud_status)
-    fraud_status == 'accept' || fraud_status.nil?
   end
 
   def handle_successful_payment(payment, notification_data)

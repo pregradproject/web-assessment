@@ -48,11 +48,11 @@ ActiveAdmin.register Config do
 
   after_save do |config|
     # Clear cache when configs is updated
-    ConfigServices.clear_cache(config.key)
+    Configs::ConfigServices.clear_cache(config.key)
   end
 
   after_destroy do |config|
     # Clear cache when configs is deleted
-    ConfigServices.clear_cache(config.key)
+    Configs::ConfigServices.clear_cache(config.key)
   end
 end

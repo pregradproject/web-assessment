@@ -252,6 +252,39 @@ ActiveAdmin.register Order do
     end
   end
 
+  member_action :simulate_payment, method: :patch do
+    if resource.paid?
+      redirect_to admin_order_path(resource), alert: 'Order is already paid.'
+      return
+    end
+
+    pending_payment = resource.payments.find_by(status: :pending)
+
+    if pending_payment.present?
+      # Mark payment as simulated and call Midtrans cancel API
+      pending_payment.update!(simulated: true)
+      midtrans_service = Midtrans::MidtransService.new
+      result = midtrans_service.cancel_payment(pending_payment)
+
+      if result[:success]
+        redirect_to admin_order_path(resource),
+                    notice: 'Payment simulation started. Payment cancelled on Midtrans, webhook will process it as successful.'
+      else
+        pending_payment.update!(simulated: false)
+        redirect_to admin_order_path(resource), alert: "Failed to cancel payment on Midtrans: #{result[:error]}"
+      end
+    else
+      # No payment exists, directly update order and generate certificate
+      resource.update!(status: :paid)
+      if resource.testable&.completed?
+        GenerateCertificateJob.perform_later(resource.id)
+        redirect_to admin_order_path(resource), notice: 'Payment simulated. Order marked as paid and certificate generation queued.'
+      else
+        redirect_to admin_order_path(resource), notice: 'Payment simulated. Order marked as paid.'
+      end
+    end
+  end
+
   action_item :mark_as_paid, only: :show, if: proc { resource.pending? } do
     link_to 'Mark as Paid', mark_as_paid_admin_order_path(resource), method: :patch,
             confirm: 'Are you sure you want to mark this order as paid?'
@@ -265,6 +298,11 @@ ActiveAdmin.register Order do
   action_item :regenerate_certificate, only: :show, if: proc { resource.paid? } do
     link_to 'Regenerate Certificate', regenerate_certificate_admin_order_path(resource), method: :patch,
             confirm: 'Are you sure you want to regenerate the certificate?'
+  end
+
+  action_item :simulate_payment, only: :show, if: proc { !resource.paid? } do
+    link_to 'Simulate Payment', simulate_payment_admin_order_path(resource), method: :patch,
+            confirm: 'Are you sure? This will cancel the payment on Midtrans but mark it as successful in the app.'
   end
 
   # Batch actions
