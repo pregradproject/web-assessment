@@ -277,13 +277,18 @@ ActiveAdmin.register Order do
           # Transaction never started, process as successful locally without waiting for webhook
           pending_payment.update!(status: :settlement, paid_at: Time.current)
           resource.update!(status: :paid)
+
+          # Auto-create TPA test if applicable
+          tpa_test = Tpa::AutoCreateTestServices.new(resource).call
+
           if resource.testable&.completed?
             GenerateCertificateJob.perform_later(resource.id)
             redirect_to admin_order_path(resource),
                         notice: 'Payment simulated successfully. Transaction was not active on Midtrans, processed locally.'
           else
-            redirect_to admin_order_path(resource),
-                        notice: 'Payment simulated successfully. Order marked as paid.'
+            notice_message = 'Payment simulated successfully. Order marked as paid.'
+            notice_message += ' TPA test created automatically.' if tpa_test.present?
+            redirect_to admin_order_path(resource), notice: notice_message
           end
         else
           # Transaction was active, webhook will be sent
@@ -297,11 +302,17 @@ ActiveAdmin.register Order do
     else
       # No payment exists, directly update order and generate certificate
       resource.update!(status: :paid)
+
+      # Auto-create TPA test if applicable
+      tpa_test = Tpa::AutoCreateTestServices.new(resource).call
+
       if resource.testable&.completed?
         GenerateCertificateJob.perform_later(resource.id)
         redirect_to admin_order_path(resource), notice: 'Payment simulated. Order marked as paid and certificate generation queued.'
       else
-        redirect_to admin_order_path(resource), notice: 'Payment simulated. Order marked as paid.'
+        notice_message = 'Payment simulated. Order marked as paid.'
+        notice_message += ' TPA test created automatically.' if tpa_test.present?
+        redirect_to admin_order_path(resource), notice: notice_message
       end
     end
   end
