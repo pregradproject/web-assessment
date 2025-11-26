@@ -46,7 +46,7 @@ class TpaGoogleSheetsImportService < ApplicationService
   end
 
   def create_question_set!
-    highest_version = TpaQuestionSet.maximum(:version) || 0
+    highest_version = TpaQuestionSet.maximum(:version)&.to_i || 0
 
     TpaQuestionSet.create!(
       name: "Upload (#{Date.current.strftime('%Y-%m-%d')})",
@@ -94,16 +94,16 @@ class TpaGoogleSheetsImportService < ApplicationService
 
   def extract_row_data(row)
     {
-      category: row['Category']&.strip&.upcase,
-      question_text: row['Question']&.strip,
-      option_a: row['Option A']&.strip,
-      option_b: row['Option B']&.strip,
-      option_c: row['Option C']&.strip,
-      option_d: row['Option D']&.strip,
-      option_e: row['Option E']&.strip,
-      correct_answer: row['Correct Answer']&.strip&.upcase,
-      explanation: row['Explanation']&.strip,
-      difficulty_level: (row['Difficulty Level']&.strip&.to_i || 3)
+      category: row['Category']&.to_s&.strip&.upcase,
+      question_text: row['Question']&.to_s&.strip,
+      option_a: row['Option A']&.to_s&.strip,
+      option_b: row['Option B']&.to_s&.strip,
+      option_c: row['Option C']&.to_s&.strip,
+      option_d: row['Option D']&.to_s&.strip,
+      option_e: row['Option E']&.to_s&.strip,
+      correct_answer: row['Correct Answer']&.to_s&.strip&.upcase,
+      explanation: row['Explanation']&.to_s&.strip,
+      difficulty_level: (row['Difficulty Level']&.to_s&.strip&.to_i.presence || 3)
     }
   end
 
